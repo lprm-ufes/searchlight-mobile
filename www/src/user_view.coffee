@@ -1,6 +1,6 @@
 
 class window.UserView
-  @url_login = "http://sav.wancharle.com.br/logar/"
+  @url_login = "http://sl.wancharle.com.br/user/login/"
 
   constructor: ->
     @storage = window.localStorage
@@ -32,14 +32,13 @@ class window.UserView
     p = $("#password").val()
     if (u and  p)
       url = UserView.url_login
-      $.post(url, {username:u,password:p}, (res) =>
+      $.post(url, {username:u,password:p}, (json) =>
             
-        if(res == true)
+        if json.error
+          alert(json.error)
+        else
           @setUsuario u
           @load()
-        else
-          alert("Usuário ou Senha inválidos!")
-        
         $("#submitButton").removeAttr("disabled")
 
       ,"json").fail(() ->
@@ -53,10 +52,10 @@ class window.UserView
 
   load: () ->
     if @usuario 
-      @atividadesview = new Atividades()
-      @atividadesview.clearUI()
-      @atividadesview.sincronizar()
-      window.atividadesview = @atividadesview
+      @anotacoesview = new Anotacoes()
+      @anotacoesview.clearUI()
+      @anotacoesview.sincronizar()
+      window.anotacoesview = @anotacoesview
 
       $.mobile.changePage("#pglogado",{changeHash:false})
     else

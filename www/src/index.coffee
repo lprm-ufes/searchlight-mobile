@@ -53,7 +53,7 @@ class window.App
         app.main()
 
     mostraHistorico: ()->
-      atividadesview.sincronizar()
+      anotacoesview.sincronizar()
                
     positionSucess: (gps) ->
         @userview.load()
@@ -68,15 +68,5 @@ class window.App
         window.gpscontrole = new GPSControle()
 
 
-window.ativtest = [
-  {gerencia:"RBC/ENE/JS", local:"EDMA", id:"1", usuario:"fabricia", data:"16/10/2014", h_inicio: "07:00", h_fim: "07:30", tipo: Atividade.TIPO_AULA },
-  {gerencia:"RBC/ENE/JS", local:"EDMA", id:"2", usuario:"fabricia", data:"16/11/2014", h_inicio: "08:00", h_fim: "08:30", tipo: Atividade.TIPO_AULA },
-  {gerencia:"RBC/ENE/JS", local:"EDMA", id:"3", usuario:"fabricia", data:"16/11/2014", h_inicio: "09:00", h_fim: "09:30", tipo: Atividade.TIPO_AULA },
-  {gerencia:"RBC/ENE/JS", local:"EDMA", id:"4", usuario:"fabricia", data:"22/10/2014", h_inicio: "07:00", h_fim: "07:30", tipo: Atividade.TIPO_AULA },
-  {gerencia:"RBC/ENE/JS", local:"EDMA", id:"5", usuario:"fabricia", data:"22/10/2014", h_inicio: "08:00", h_fim: "08:30", tipo: Atividade.TIPO_AULA },
-  {gerencia:"RBC/ENE/JS", local:"EDMA", id:"6", usuario:"fabricia", data:"19/10/2014", h_inicio: "09:00", h_fim: "09:30", tipo: Atividade.TIPO_AULA },
-  {gerencia:"RBC/ENE/JS", local:"EDMA", id:"7", usuario:"fabricia", data:"21/10/2014", h_inicio: "20:00", h_fim: "07:30", tipo: Atividade.TIPO_AULA },
-  {gerencia:"RBC/ENE/JS", local:"EDMA", id:"8", usuario:"fabricia", data:"21/10/2014", h_inicio: "21:00", h_fim: "07:30", tipo: Atividade.TIPO_AULA },
-  ]
 
-#window.localStorage.setObject('lista_de_atividades',window.ativtest);
+#window.localStorage.setObject('lista_de_anotacoes',window.ativtest);

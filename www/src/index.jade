@@ -44,31 +44,53 @@ html
             div(data-role="footer", data-position="fixed")
                 h4 &copy UFES 
                 
-
+            
         div#pglogado(data-role="page", data-theme="a")
-            div#painel(data-role="panel",data-position="right", data-display="overlay")
-                h1 Menu
-                ul(data-role="listview",data-inset="true",data-divider-theme="b")
-                    li
-                       a#logativrecent(href="javascript:app.mostraHistorico()") Sincronizar Anotações
-                    li
-                       a(href="javascript:userview.trocarUsuario();") Trocar de Usuario
-
-
             div(data-role="header")
                 h1 Searchlight 
-                a.ui-btn-right(href="#painel",data-transition="slidedown", data-icon="bars") Menu 
 
-             
-            
+            div(data-role="content")
+                       a.ui-btn.ui-shadow.ui-corner-all(href="") Infraestutura 
+                       a.ui-btn.ui-shadow.ui-corner-all(href="") Transporte 
+                       a.ui-btn.ui-shadow.ui-corner-all(href="") Segurança
+                       a.ui-btn.ui-shadow.ui-corner-all(href="") Personalizado
               
             div(data-role="footer", data-position="fixed")
-                h4 &copy UFES   
-    
+                div(data-role="navbar")
+                    ul
+                        li: a.ui-btn-activ.ui-state-persist(href="#pglogado", data-icon='edit', data-rel='page', data-transition='none') Ações
+                        li: a(href="#pghistorico", data-icon='bars', data-rel='page', data-transition='none') Histórico
+                        li: a(href="#pgperfil", data-icon='user', data-rel='page', data-transition='none') Perfil
 
+        div#pghistorico(data-role="page", data-theme="a")
+            div(data-role="header")
+                h1 Searchlight 
+            div(data-role="content")
+                ul#ulhistorico(data-role="listview",data-filter="true",data-filter-placeholder='Buscar', data-inset="true",data-shadow='false')
+            div(data-role="footer", data-position="fixed")
+                div(data-role="navbar")
+                    ul
+                        li: a(href="#pglogado", data-icon='edit', data-rel='page', data-transition='none') Ações
+                        li: a.ui-btn-active.ui-state-persist(href="#pghistorico", data-icon='bars', data-rel='page', data-transition='none') Histórico
+                        li: a(href="#pgperfil", data-icon='user', data-rel='page', data-transition='none') Perfil
 
-  
-   
+        div#pgperfil(data-role="page", data-theme="a")
+            div(data-role="header")
+                h1 Searchlight 
+            div(data-role="content")
+               h3.ui-bar Perfil 
+               div.ui-body
+                   a.ui-btn.ui-shadow.ui-corner-all(href="javascript:userview.trocarUsuario();") Trocar de Usuario
+               h3.ui-bar Sincronia
+               div.ui-body
+                   a#logativrecent.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.mostraHistorico()") Sincronizar Anotações
+
+            div(data-role="footer", data-position="fixed")
+                div(data-role="navbar")
+                    ul
+                        li: a(href="#pglogado", data-icon='edit',data-rel='page', data-transition='none') Ações
+                        li: a(href="#pghistorico", data-icon='bars',data-rel='page', data-transition='none') Histórico
+                        li: a.ui-btn-active.ui-state-persist(href="#pgperfil", data-role='tab', data-rel='page', data-transition='none',data-icon='user') Perfil
 
 
         script(type="text/javascript", src="cordova.js")

@@ -1,32 +1,32 @@
-class window.Atividades
+class window.Anotacoes
   @tolerancia = 5
   
   sincronizar: ()->
-        atividadesPendentes = @getAtividades() 
+        anotacoesPendentes = @getAnotacoes() 
 
-        $.post( "http://sav.wancharle.com.br/salvar/", {'usuario':userview.getUsuario(),'json':JSON.stringify(atividadesPendentes)}, 
-            ()-> 
-                console.log('envio ok')
-                $( "#painel" ).panel( "close" )
-            ,'json')
-        .done((data)->
-              atividadesview.setAtividades(data)
-              atividadesview.atualizaUI()
+       # $.post( "http://sl.wancharle.com.br/salvar/", {'usuario':userview.getUsuario(),'json':JSON.stringify(anotacoesPendentes)}, 
+       #     ()-> 
+       #         console.log('envio ok')
+       #         $( "#painel" ).panel( "close" )
+       #     ,'json')
+       # .done((data)->
+       #       anotacoesview.setAnotacoes(data)
+       #       anotacoesview.atualizaUI()
 
-        ).fail((error,textstatus)->
-            alert('Não foi possível enviar os dados registrados ao servidor. Isso ocorre provavelmente por falta de conexão de dados no momento. Tente novamente quando tver um conexão de internet estável')
-            console.log(textstatus)
-        )
-         
-  getAtividades: ()->
-    ativs= window.localStorage.getObject('lista_de_atividades')
+       # ).fail((error,textstatus)->
+       #     alert('Não foi possível enviar os dados registrados ao servidor. Isso ocorre provavelmente por falta de conexão de dados no momento. Tente novamente quando tver um conexão de internet estável')
+       #     console.log(textstatus)
+       # )
+       #  
+  getAnotacoes: ()->
+    ativs= window.localStorage.getObject('lista_de_anotacoes')
     if ativs
       return ativs
     else
       return new Array()
 
-  setAtividades:(atividades)->
-    window.localStorage.setObject('lista_de_atividades',atividades)
+  setAnotacoes:(anotacoes)->
+    window.localStorage.setObject('lista_de_anotacoes',anotacoes)
 
   fim: (id)->
     n_presentes = parseInt($('#txtpresentes'+id).val())
@@ -38,11 +38,11 @@ class window.Atividades
 
       horario_fim = formatahora(new Date())
       d = new Date()
-      d.setMinutes(d.getMinutes()-Atividades.tolerancia)
+      d.setMinutes(d.getMinutes()-Anotacoes.tolerancia)
       limite_fim = formatahora(d)
 
 
-      ativs = @getAtividades()
+      ativs = @getAnotacoes()
       for ativ, i in ativs
         if parseInt(ativ.id) == parseInt(id)
           if ativ.h_inicio_registrado
@@ -59,20 +59,20 @@ class window.Atividades
           else
             alert("É preciso iniciar a atividade antes de finalizar!")
             return false
-      @setAtividades(ativs)
-      atividadesview.atualizaUI()
+      @setAnotacoes(ativs)
+      anotacoesview.atualizaUI()
     else
       alert("Para finalizar a atividade é preciso informar o número de participantes e presentes")
       return false
 
 
   start:(id)->
-    ativs = @getAtividades()
+    ativs = @getAnotacoes()
     for ativ, i in ativs
       if parseInt(ativ.id) == parseInt(id)
         horario_inicio = formatahora(new Date())
         d = new Date()
-        d.setMinutes(d.getMinutes()+Atividades.tolerancia)
+        d.setMinutes(d.getMinutes()+Anotacoes.tolerancia)
         limite_inicio = formatahora(d)
         if limite_inicio > ativ.h_inicio
           ativ['h_inicio_registrado'] = horario_inicio
@@ -82,7 +82,7 @@ class window.Atividades
         else
           alert("Vc não pode iniciar esta atividade ainda!")
         
-    @setAtividades(ativs) 
+    @setAnotacoes(ativs) 
   atualizaOntem: (ativ) ->
     li = "<li>"
     li+="<h2 data-inset='false'>"+ativ['h_inicio'].slice(0,5)+"h - "+ativ['h_fim'].slice(0,5)+"h</h2><div>"
@@ -120,10 +120,10 @@ class window.Atividades
     if ativ.h_inicio_registrado
       li+='<p class="h_inicio_registrado">Iniciou as '+ativ.h_inicio_registrado.slice(0,5)+ 'h</p>'
     else
-      li+='<button class="ui-btn start" onclick="atividadesview.start('+ativ.id+')">iniciar</button><p style="display:none" class="h_inicio_registrado"></p>'
+      li+='<button class="ui-btn start" onclick="anotacoesview.start('+ativ.id+')">iniciar</button><p style="display:none" class="h_inicio_registrado"></p>'
     li+='</div>
     <div class="ui-block-b"> </div>
-    <div class="ui-block-c"> <button class="ui-btn" onclick="atividadesview.fim('+ativ.id+')">finalizar</button></div>
+    <div class="ui-block-c"> <button class="ui-btn" onclick="anotacoesview.fim('+ativ.id+')">finalizar</button></div>
 </div>'
     li+="</li>"
     return li
@@ -140,35 +140,35 @@ class window.Atividades
     return li+"</div></li>"
 
   atualizaUI: ()->
-      atividades = @getAtividades()
+      anotacoes = @getAnotacoes()
       #d=new Date()
       #alert(d)
       #alert(formatadata(d))
 
-      hoje = str2datePT(formatadata(new Date())) 
-      #alert(hoje)
-      if atividades
-          htmlhoje = ""
+      acoes = str2datePT(formatadata(new Date())) 
+      #alert(acoes)
+      if anotacoes
+          htmlacoes = ""
           htmlontem = ""
-          htmlamanha = ""
-          for ativ in atividades
-            if (str2datePT(ativ.data)< hoje) or (ativ.realizada==true)
+          htmlhistorico = ""
+          for ativ in anotacoes
+            if (str2datePT(ativ.data)< acoes) or (ativ.realizada==true)
               htmlontem += @atualizaOntem(ativ)
-            else if str2datePT(ativ.data) == hoje
-              htmlhoje += @atualizaHoje(ativ)
+            else if str2datePT(ativ.data) == acoes
+              htmlacoes += @atualizaHoje(ativ)
             else
-              htmlamanha += @atualizaAmanha(ativ)
+              htmlhistorico += @atualizaAmanha(ativ)
 
-          $('#ulhoje').html(htmlhoje)
+          #$('#ulacoes').html(htmlacoes)
           $('#ulontem').html(htmlontem)
-          $('#ulamanha').html(htmlamanha)
-          $('#ulamanha,#ulontem').listview({ 
+          $('#ulhistorico').html(htmlhistorico)
+          $('#ulhistorico,#ulontem').listview({ 
             autodividers:true,
             autodividersSelector:  ( li ) ->
                   return $(li).find('.data').text()
           }).listview('refresh')
 
-          $('#ulhoje').listview().listview('refresh')
+          $('#ulacoes').listview().listview('refresh')
           
           #fix: ao atualizar um collapsible eh necessario chamar sua classe
           $('div[data-role=collapsible]').collapsible()
@@ -178,15 +178,15 @@ class window.Atividades
           #fimfix.
 
   clearUI: ()->
-          htmlhoje = ""
+          #htmlacoes = ""
           htmlontem = ""
-          htmlamanha = ""
-          $('#ulhoje').html(htmlhoje)
+          htmlhistorico = ""
+          #$('#ulacoes').html(htmlacoes)
           $('#ulontem').html(htmlontem)
-          $('#ulamanha').html(htmlamanha)
-          $('#ulamanha,#ulontem').listview().listview('refresh')
+          $('#ulhistorico').html(htmlhistorico)
+          $('#ulhistorico,#ulontem').listview().listview('refresh')
 
-          $('#ulhoje').listview().listview('refresh')
+          $('#ulacoes').listview().listview('refresh')
           
 
 

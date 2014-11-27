@@ -2,7 +2,7 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   window.UserView = (function() {
-    UserView.url_login = "http://sav.wancharle.com.br/logar/";
+    UserView.url_login = "http://sl.wancharle.com.br/user/login/";
 
     function UserView() {
       this.submitLogin = __bind(this.submitLogin, this);
@@ -50,12 +50,12 @@
           username: u,
           password: p
         }, (function(_this) {
-          return function(res) {
-            if (res === true) {
+          return function(json) {
+            if (json.error) {
+              alert(json.error);
+            } else {
               _this.setUsuario(u);
               _this.load();
-            } else {
-              alert("Usuário ou Senha inválidos!");
             }
             return $("#submitButton").removeAttr("disabled");
           };
@@ -71,10 +71,10 @@
 
     UserView.prototype.load = function() {
       if (this.usuario) {
-        this.atividadesview = new Atividades();
-        this.atividadesview.clearUI();
-        this.atividadesview.sincronizar();
-        window.atividadesview = this.atividadesview;
+        this.anotacoesview = new Anotacoes();
+        this.anotacoesview.clearUI();
+        this.anotacoesview.sincronizar();
+        window.anotacoesview = this.anotacoesview;
         return $.mobile.changePage("#pglogado", {
           changeHash: false
         });
@@ -92,32 +92,19 @@
 }).call(this);
 
 (function() {
-  window.Atividades = (function() {
-    function Atividades() {}
+  window.Anotacoes = (function() {
+    function Anotacoes() {}
 
-    Atividades.tolerancia = 5;
+    Anotacoes.tolerancia = 5;
 
-    Atividades.prototype.sincronizar = function() {
-      var atividadesPendentes;
-      atividadesPendentes = this.getAtividades();
-      return $.post("http://sav.wancharle.com.br/salvar/", {
-        'usuario': userview.getUsuario(),
-        'json': JSON.stringify(atividadesPendentes)
-      }, function() {
-        console.log('envio ok');
-        return $("#painel").panel("close");
-      }, 'json').done(function(data) {
-        atividadesview.setAtividades(data);
-        return atividadesview.atualizaUI();
-      }).fail(function(error, textstatus) {
-        alert('Não foi possível enviar os dados registrados ao servidor. Isso ocorre provavelmente por falta de conexão de dados no momento. Tente novamente quando tver um conexão de internet estável');
-        return console.log(textstatus);
-      });
+    Anotacoes.prototype.sincronizar = function() {
+      var anotacoesPendentes;
+      return anotacoesPendentes = this.getAnotacoes();
     };
 
-    Atividades.prototype.getAtividades = function() {
+    Anotacoes.prototype.getAnotacoes = function() {
       var ativs;
-      ativs = window.localStorage.getObject('lista_de_atividades');
+      ativs = window.localStorage.getObject('lista_de_anotacoes');
       if (ativs) {
         return ativs;
       } else {
@@ -125,11 +112,11 @@
       }
     };
 
-    Atividades.prototype.setAtividades = function(atividades) {
-      return window.localStorage.setObject('lista_de_atividades', atividades);
+    Anotacoes.prototype.setAnotacoes = function(anotacoes) {
+      return window.localStorage.setObject('lista_de_anotacoes', anotacoes);
     };
 
-    Atividades.prototype.fim = function(id) {
+    Anotacoes.prototype.fim = function(id) {
       var ativ, ativs, d, horario_fim, i, limite_fim, n_participantes, n_presentes, _i, _len;
       n_presentes = parseInt($('#txtpresentes' + id).val());
       n_participantes = parseInt($('#txtparticipantes' + id).val());
@@ -140,9 +127,9 @@
         }
         horario_fim = formatahora(new Date());
         d = new Date();
-        d.setMinutes(d.getMinutes() - Atividades.tolerancia);
+        d.setMinutes(d.getMinutes() - Anotacoes.tolerancia);
         limite_fim = formatahora(d);
-        ativs = this.getAtividades();
+        ativs = this.getAnotacoes();
         for (i = _i = 0, _len = ativs.length; _i < _len; i = ++_i) {
           ativ = ativs[i];
           if (parseInt(ativ.id) === parseInt(id)) {
@@ -162,23 +149,23 @@
             }
           }
         }
-        this.setAtividades(ativs);
-        return atividadesview.atualizaUI();
+        this.setAnotacoes(ativs);
+        return anotacoesview.atualizaUI();
       } else {
         alert("Para finalizar a atividade é preciso informar o número de participantes e presentes");
         return false;
       }
     };
 
-    Atividades.prototype.start = function(id) {
+    Anotacoes.prototype.start = function(id) {
       var ativ, ativs, d, horario_inicio, i, limite_inicio, _i, _len;
-      ativs = this.getAtividades();
+      ativs = this.getAnotacoes();
       for (i = _i = 0, _len = ativs.length; _i < _len; i = ++_i) {
         ativ = ativs[i];
         if (parseInt(ativ.id) === parseInt(id)) {
           horario_inicio = formatahora(new Date());
           d = new Date();
-          d.setMinutes(d.getMinutes() + Atividades.tolerancia);
+          d.setMinutes(d.getMinutes() + Anotacoes.tolerancia);
           limite_inicio = formatahora(d);
           if (limite_inicio > ativ.h_inicio) {
             ativ['h_inicio_registrado'] = horario_inicio;
@@ -190,10 +177,10 @@
           }
         }
       }
-      return this.setAtividades(ativs);
+      return this.setAnotacoes(ativs);
     };
 
-    Atividades.prototype.atualizaOntem = function(ativ) {
+    Anotacoes.prototype.atualizaOntem = function(ativ) {
       var li;
       li = "<li>";
       li += "<h2 data-inset='false'>" + ativ['h_inicio'].slice(0, 5) + "h - " + ativ['h_fim'].slice(0, 5) + "h</h2><div>";
@@ -212,7 +199,7 @@
       return li + "</div></li>";
     };
 
-    Atividades.prototype.atualizaHoje = function(ativ) {
+    Anotacoes.prototype.atualizaHoje = function(ativ) {
       var li;
       li = "<li class='ativ" + ativ.id + "' data-role='collapsible' data-iconpos='right' data-inset='false'>";
       li += "<h2 data-inset='false'>" + ativ['h_inicio'].slice(0, 5) + 'h - ' + ativ['h_fim'].slice(0, 5) + "h</h2>";
@@ -225,14 +212,14 @@
       if (ativ.h_inicio_registrado) {
         li += '<p class="h_inicio_registrado">Iniciou as ' + ativ.h_inicio_registrado.slice(0, 5) + 'h</p>';
       } else {
-        li += '<button class="ui-btn start" onclick="atividadesview.start(' + ativ.id + ')">iniciar</button><p style="display:none" class="h_inicio_registrado"></p>';
+        li += '<button class="ui-btn start" onclick="anotacoesview.start(' + ativ.id + ')">iniciar</button><p style="display:none" class="h_inicio_registrado"></p>';
       }
-      li += '</div> <div class="ui-block-b"> </div> <div class="ui-block-c"> <button class="ui-btn" onclick="atividadesview.fim(' + ativ.id + ')">finalizar</button></div> </div>';
+      li += '</div> <div class="ui-block-b"> </div> <div class="ui-block-c"> <button class="ui-btn" onclick="anotacoesview.fim(' + ativ.id + ')">finalizar</button></div> </div>';
       li += "</li>";
       return li;
     };
 
-    Atividades.prototype.atualizaAmanha = function(ativ) {
+    Anotacoes.prototype.atualizaAmanha = function(ativ) {
       var li;
       li = "<li >";
       li += "<h2 data-inset='false'>" + ativ['h_inicio'].slice(0, 5) + "h - " + ativ['h_fim'].slice(0, 5) + "h</h2><div>";
@@ -244,34 +231,33 @@
       return li + "</div></li>";
     };
 
-    Atividades.prototype.atualizaUI = function() {
-      var ativ, atividades, hoje, htmlamanha, htmlhoje, htmlontem, _i, _len;
-      atividades = this.getAtividades();
-      hoje = str2datePT(formatadata(new Date()));
-      if (atividades) {
-        htmlhoje = "";
+    Anotacoes.prototype.atualizaUI = function() {
+      var acoes, anotacoes, ativ, htmlacoes, htmlhistorico, htmlontem, _i, _len;
+      anotacoes = this.getAnotacoes();
+      acoes = str2datePT(formatadata(new Date()));
+      if (anotacoes) {
+        htmlacoes = "";
         htmlontem = "";
-        htmlamanha = "";
-        for (_i = 0, _len = atividades.length; _i < _len; _i++) {
-          ativ = atividades[_i];
-          if ((str2datePT(ativ.data) < hoje) || (ativ.realizada === true)) {
+        htmlhistorico = "";
+        for (_i = 0, _len = anotacoes.length; _i < _len; _i++) {
+          ativ = anotacoes[_i];
+          if ((str2datePT(ativ.data) < acoes) || (ativ.realizada === true)) {
             htmlontem += this.atualizaOntem(ativ);
-          } else if (str2datePT(ativ.data) === hoje) {
-            htmlhoje += this.atualizaHoje(ativ);
+          } else if (str2datePT(ativ.data) === acoes) {
+            htmlacoes += this.atualizaHoje(ativ);
           } else {
-            htmlamanha += this.atualizaAmanha(ativ);
+            htmlhistorico += this.atualizaAmanha(ativ);
           }
         }
-        $('#ulhoje').html(htmlhoje);
         $('#ulontem').html(htmlontem);
-        $('#ulamanha').html(htmlamanha);
-        $('#ulamanha,#ulontem').listview({
+        $('#ulhistorico').html(htmlhistorico);
+        $('#ulhistorico,#ulontem').listview({
           autodividers: true,
           autodividersSelector: function(li) {
             return $(li).find('.data').text();
           }
         }).listview('refresh');
-        $('#ulhoje').listview().listview('refresh');
+        $('#ulacoes').listview().listview('refresh');
         $('div[data-role=collapsible]').collapsible();
         $('li[data-role=collapsible]').collapsible();
         $('input.numero').textinput();
@@ -279,19 +265,17 @@
       }
     };
 
-    Atividades.prototype.clearUI = function() {
-      var htmlamanha, htmlhoje, htmlontem;
-      htmlhoje = "";
+    Anotacoes.prototype.clearUI = function() {
+      var htmlhistorico, htmlontem;
       htmlontem = "";
-      htmlamanha = "";
-      $('#ulhoje').html(htmlhoje);
+      htmlhistorico = "";
       $('#ulontem').html(htmlontem);
-      $('#ulamanha').html(htmlamanha);
-      $('#ulamanha,#ulontem').listview().listview('refresh');
-      return $('#ulhoje').listview().listview('refresh');
+      $('#ulhistorico').html(htmlhistorico);
+      $('#ulhistorico,#ulontem').listview().listview('refresh');
+      return $('#ulacoes').listview().listview('refresh');
     };
 
-    return Atividades;
+    return Anotacoes;
 
   })();
 
@@ -460,7 +444,7 @@
     };
 
     App.prototype.mostraHistorico = function() {
-      return atividadesview.sincronizar();
+      return anotacoesview.sincronizar();
     };
 
     App.prototype.positionSucess = function(gps) {
@@ -481,81 +465,5 @@
     return App;
 
   })();
-
-  window.ativtest = [
-    {
-      gerencia: "RBC/ENE/JS",
-      local: "EDMA",
-      id: "1",
-      usuario: "fabricia",
-      data: "16/10/2014",
-      h_inicio: "07:00",
-      h_fim: "07:30",
-      tipo: Atividade.TIPO_AULA
-    }, {
-      gerencia: "RBC/ENE/JS",
-      local: "EDMA",
-      id: "2",
-      usuario: "fabricia",
-      data: "16/11/2014",
-      h_inicio: "08:00",
-      h_fim: "08:30",
-      tipo: Atividade.TIPO_AULA
-    }, {
-      gerencia: "RBC/ENE/JS",
-      local: "EDMA",
-      id: "3",
-      usuario: "fabricia",
-      data: "16/11/2014",
-      h_inicio: "09:00",
-      h_fim: "09:30",
-      tipo: Atividade.TIPO_AULA
-    }, {
-      gerencia: "RBC/ENE/JS",
-      local: "EDMA",
-      id: "4",
-      usuario: "fabricia",
-      data: "22/10/2014",
-      h_inicio: "07:00",
-      h_fim: "07:30",
-      tipo: Atividade.TIPO_AULA
-    }, {
-      gerencia: "RBC/ENE/JS",
-      local: "EDMA",
-      id: "5",
-      usuario: "fabricia",
-      data: "22/10/2014",
-      h_inicio: "08:00",
-      h_fim: "08:30",
-      tipo: Atividade.TIPO_AULA
-    }, {
-      gerencia: "RBC/ENE/JS",
-      local: "EDMA",
-      id: "6",
-      usuario: "fabricia",
-      data: "19/10/2014",
-      h_inicio: "09:00",
-      h_fim: "09:30",
-      tipo: Atividade.TIPO_AULA
-    }, {
-      gerencia: "RBC/ENE/JS",
-      local: "EDMA",
-      id: "7",
-      usuario: "fabricia",
-      data: "21/10/2014",
-      h_inicio: "20:00",
-      h_fim: "07:30",
-      tipo: Atividade.TIPO_AULA
-    }, {
-      gerencia: "RBC/ENE/JS",
-      local: "EDMA",
-      id: "8",
-      usuario: "fabricia",
-      data: "21/10/2014",
-      h_inicio: "21:00",
-      h_fim: "07:30",
-      tipo: Atividade.TIPO_AULA
-    }
-  ];
 
 }).call(this);

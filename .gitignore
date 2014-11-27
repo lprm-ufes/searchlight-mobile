@@ -1,3 +1,8 @@
+www/index.html
+js/index.js
+www/src/*.js
+www/bower_components
+
 # Mac
 .DS_Store
 # Node
