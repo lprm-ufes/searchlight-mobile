@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <!-- <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /> -->
+    <meta name="viewport" content="user-scalable=no, width=320">
+    <link rel="stylesheet" href="bower_components/jquery-mobile-bower/css/jquery.mobile-1.4.2.css">
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-mobile-bower/js/jquery.mobile-1.4.2.js"></script>
+    <title>Searchlight Mobile</title>
+  </head>
+  <body>
+    <div id="pgloading" data-role="page" data-theme="a">
+      <div data-role="header"></div>
+      <div role="main" class="ui-content"></div>
+      <div data-role="footer" data-position="fixed"></div>
+    </div>
+    <div id="pglogin" data-role="page" data-theme="a">
+      <div data-role="header">
+        <h1>Searchlight</h1>
+      </div>
+      <div role="main" class="ui-content">
+        <h3>Searchlight </h3>
+        <form id="loginForm">
+          <div data-role="fieldcontain" class="ui-hide-label">
+            <label for="username">Usuário:</label>
+            <input type="text" name="username" id="username" value="" placeholder="Usuário">
+          </div>
+          <div data-role="fieldcontain" class="ui-hide-label">
+            <label for="password">Senha:</label>
+            <input type="password" name="password" id="password" value="" placeholder="Senha">
+          </div>
+          <input type="submit" value="Entrar" id="submitButton">
+        </form>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <h4>&copy UFES </h4>
+      </div>
+    </div>
+    <div id="pglogado" data-role="page" data-theme="a">
+      <div id="painel" data-role="panel" data-position="right" data-display="overlay">
+        <h1>Menu</h1>
+        <ul data-role="listview" data-inset="true" data-divider-theme="b">
+          <li><a id="logativrecent" href="javascript:app.mostraHistorico()">Sincronizar Anotações</a></li>
+          <li><a href="javascript:userview.trocarUsuario();">Trocar de Usuario</a></li>
+        </ul>
+      </div>
+      <div data-role="header">
+        <h1>Searchlight </h1><a href="#painel" data-transition="slidedown" data-icon="bars" class="ui-btn-right">Menu </a>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <h4>&copy UFES   </h4>
+      </div>
+    </div>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">var app = new App();</script>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "slmobile",
+  "version": "0.0.0",
+  "authors": [
+    "wancharle sebastião quirino <wancharle@gmail.com>"
+  ],
+  "description": "app mobile para searchlight",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "jquery": "~2.1.1",
+    "jquery-mobile-bower": "~1.4.2"
+  }
+}
