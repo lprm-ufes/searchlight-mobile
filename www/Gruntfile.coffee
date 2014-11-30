@@ -11,7 +11,7 @@ module.exports = (grunt) ->
                 files: 'src/*.coffee'
                 tasks: ['coffee:compile','concat:dist']
             jade:
-                files: 'src/*.jade'
+                files: '**/*.jade'
                 tasks: ['jade:compile']
 
         coffee:

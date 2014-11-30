@@ -92,10 +92,37 @@
 }).call(this);
 
 (function() {
+  window.NoteView = (function() {
+    function NoteView(categoria) {
+      if (categoria) {
+        $('#pganotar-titulo').html("Anotação de " + categoria);
+        $('#pganotar-categoria').val(categoria);
+        $('#pganotar p.categoria').hide();
+      } else {
+        $('#pganotar-titulo').html("Anotação Personalizada");
+        $('#pganotar-categoria').val('');
+        $('#pganotar p.categoria').show();
+      }
+      $('#txtcomments').val('');
+      $.mobile.changePage("#pganotar", {
+        changeHash: false
+      });
+    }
+
+    return NoteView;
+
+  })();
+
   window.Anotacoes = (function() {
     function Anotacoes() {}
 
     Anotacoes.tolerancia = 5;
+
+    Anotacoes.noteview = null;
+
+    Anotacoes.prototype.anotar = function(categoria) {
+      return Anotacoes.noteview = new NoteView(categoria);
+    };
 
     Anotacoes.prototype.sincronizar = function() {
       var anotacoesPendentes;

@@ -8,6 +8,8 @@ html
         // <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /> 
         meta(name="viewport", content="user-scalable=no, width=320")
         link(rel="stylesheet", href="bower_components/jquery-mobile-bower/css/jquery.mobile-1.4.2.css")
+        link(rel="stylesheet", href="css/icones-awesome/jqm-font-awesome-isvg-ipng.min.css")
+        link(rel="stylesheet", href="font-awesome-4.2.0/css/font-awesome.min.css")
         script(src="bower_components/jquery/dist/jquery.js")
         script(src="bower_components/jquery-mobile-bower/js/jquery.mobile-1.4.2.js")
         title Searchlight Mobile
@@ -50,10 +52,22 @@ html
                 h1 Searchlight 
 
             div(data-role="content")
-                       a.ui-btn.ui-shadow.ui-corner-all(href="") Infraestutura 
-                       a.ui-btn.ui-shadow.ui-corner-all(href="") Transporte 
-                       a.ui-btn.ui-shadow.ui-corner-all(href="") Segurança
-                       a.ui-btn.ui-shadow.ui-corner-all(href="") Personalizado
+                       a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.anotar('Infraestrutura');") 
+                            i.fa.fa-building
+                            span &nbsp;Anotar Infraestrutura 
+                       a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.anotar('Transporte');") 
+                            i.fa.fa-bus
+                            span &nbsp;Anotar Transporte 
+                       a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.anotar('Crime');") 
+                            i.fa.fa-unlock-alt
+                            span &nbsp;Anotar Crime
+                       a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.anotar('Acidente');")
+                            i.fa.fa-ambulance
+                            span &nbsp;Anotar Acidente
+                       br
+                       a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.anotar()") 
+                            i.fa.fa-bullhorn
+                            span &nbsp;Personalizado
               
             div(data-role="footer", data-position="fixed")
                 div(data-role="navbar")
@@ -91,7 +105,7 @@ html
                         li: a(href="#pglogado", data-icon='edit',data-rel='page', data-transition='none') Ações
                         li: a(href="#pghistorico", data-icon='bars',data-rel='page', data-transition='none') Histórico
                         li: a.ui-btn-active.ui-state-persist(href="#pgperfil", data-role='tab', data-rel='page', data-transition='none',data-icon='user') Perfil
-
+        include templates/pganotar
 
         script(type="text/javascript", src="cordova.js")
         script(type="text/javascript", src="js/index.js")

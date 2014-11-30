@@ -1,6 +1,28 @@
+class window.NoteView
+  constructor: (categoria) ->
+    if categoria
+      $('#pganotar-titulo').html("Anotação de #{categoria}")
+      $('#pganotar-categoria').val(categoria)
+      $('#pganotar p.categoria').hide()
+    else
+      $('#pganotar-titulo').html("Anotação Personalizada")
+      $('#pganotar-categoria').val('')
+      $('#pganotar p.categoria').show()
+
+    # limpando valores
+    $('#txtcomments').val('')
+
+
+    $.mobile.changePage("#pganotar",{changeHash:false})
+
 class window.Anotacoes
   @tolerancia = 5
-  
+  @noteview = null
+
+  anotar: (categoria)->
+    Anotacoes.noteview = new NoteView(categoria)
+
+    
   sincronizar: ()->
         anotacoesPendentes = @getAnotacoes() 
 
