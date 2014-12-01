@@ -3,6 +3,8 @@ class window.GPSControle
     @gps = null 
     @time = 0
     @accuracy = 1000
+    @TIMEOUT = 10 # 10segundos
+    @HighAccuracy = true
 
     @estaAberto: ->
          gpsdata = window.localStorage.getItem('gps_data')
@@ -17,11 +19,16 @@ class window.GPSControle
         @load()
         @iniciaWatch()
         @mostraGPS()
+        $(document).on "pageinit","#pgperfil", ()->
+            $( "#pgperfiltimeout" ).on 'slidestop', ( event ) ->
+                  GPSControle.TIMEOUT = parseInt($('#pgperfiltimeout').val())
+                  console.log("Novo timeout GPS: #{GPSControle.TIMEOUT}")
        
     mostraGPS:()->
-        $("#barrastatus p.gps").html(GPSControle.gps+"<br>("+parseInt(GPSControle.accuracy)+" metros)")
+        $("#pganotar-gps").html(GPSControle.gps)
+        $("#pganotar-gps-accuracy").html(" (#{parseInt(GPSControle.accuracy)} m)") 
 
-    load: ()-> 
+    load: ()->
         if GPSControle.estaAberto()
             GPSControle.gps = @storage.getItem('gps_data')
             GPSControle.accuracy = @storage.getItem('gps_accuracy')
@@ -43,16 +50,16 @@ class window.GPSControle
             ,(error) =>
                 @watchError(error)
             ,{
-                enableHighAccuracy: true
+                enableHighAccuracy: GPSControle.HighAccuracy
                 timeout: 1*60*1000
             }
          )
     watchSucess: (position) ->
         $("#barrastatus p.hora").html(formatahora(new Date()).slice(0,5)+"h")
         timeout = (new Date()).getTime() - GPSControle.time 
-        if (timeout > 600000) or ((GPSControle.accuracy - position.coords.accuracy) > 2)
+        if (timeout > GPSControle.TIMEOUT*1000) or (GPSControle.accuracy > parseInt(position.coords.accuracy))
             GPSControle.gps = position.coords.latitude+", "+position.coords.longitude
-            GPSControle.accuracy = position.coords.accuracy 
+            GPSControle.accuracy = parseInt(position.coords.accuracy)
             GPSControle.time = (new Date()).getTime()
             console.log("latlong: "+GPSControle.gps + " accuracy:"+position.coords.accuracy)
             @mostraGPS()

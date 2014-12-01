@@ -8,7 +8,6 @@ html
         // <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /> 
         meta(name="viewport", content="user-scalable=no, width=320")
         link(rel="stylesheet", href="bower_components/jquery-mobile-bower/css/jquery.mobile-1.4.2.css")
-        link(rel="stylesheet", href="css/icones-awesome/jqm-font-awesome-isvg-ipng.min.css")
         link(rel="stylesheet", href="font-awesome-4.2.0/css/font-awesome.min.css")
         script(src="bower_components/jquery/dist/jquery.js")
         script(src="bower_components/jquery-mobile-bower/js/jquery.mobile-1.4.2.js")
@@ -92,12 +91,18 @@ html
             div(data-role="header")
                 h1 Searchlight 
             div(data-role="content")
-               h3.ui-bar Perfil 
-               div.ui-body
+               div.ui-body.ui-body-a
+                   h3  Perfil 
                    a.ui-btn.ui-shadow.ui-corner-all(href="javascript:userview.trocarUsuario();") Trocar de Usuario
-               h3.ui-bar Sincronia
-               div.ui-body
+               br
+               div.ui-body.ui-body-a
+                   h3 Sincronia
                    a#logativrecent.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.mostraHistorico()") Sincronizar Anotações
+                   p
+                        label(for="pgperfiltimeout") Cache do GPS em segundos
+                        input#pgperfiltimeout(type="range", max="60", min="1" ,name="pgperfiltimeout", placeholder="Cache GPS (segundos)", value="10")
+
+
 
             div(data-role="footer", data-position="fixed")
                 div(data-role="navbar")

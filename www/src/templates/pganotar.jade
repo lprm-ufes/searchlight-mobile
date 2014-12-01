@@ -5,32 +5,34 @@ div#pganotar(data-role="page", data-theme="a")
         h1 Searchlight 
  
     div(data-role="content")
-        h3#pganotar-titulo Categoria
+        div.ui-body.ui-body-a
+            h3#pganotar-titulo Categoria
 
-        p.categoria
-            label(for="pganotar-categoria", class="ui-hidden-accessible") Categoria
-            input#pganotar-categoria(type="text",name="pganotar-categoria", placeholder="Categoria", value="")
+            p.categoria
+                label(for="pganotar-categoria", class="ui-hidden-accessible") Categoria
+                input#pganotar-categoria(type="text",name="pganotar-categoria", placeholder="Categoria", value="")
 
-        p
-            label(for="txtcomments", class="ui-hidden-accessible") Comentários
-            textarea(type="text", rows="3", name="txtcomments",id="txtcomments",placeholder="Comentários",value="")
+            p
+                label(for="txtcomments", class="ui-hidden-accessible") Comentários
+                textarea(type="text", rows="3", name="txtcomments",id="txtcomments",placeholder="Comentários",value="")
 
-        fieldset.ui-grid-a
-            div.ui-block-a 
-                a.ui-btn.ui-shadow.ui-corner-all(href="javascript:Anotacao.noteview.take()")
-                    i.fa.fa-camera-retro
-                    br
-                    span  Fotografar
-            div.ui-block-b
-                img#fotoTirada(width="50%")
+            fieldset.ui-grid-a
+                div.ui-block-a 
+                    a.ui-btn.ui-shadow.ui-corner-all(href="javascript:Anotacao.noteview.take()")
+                        i.fa.fa-camera-retro
+                        br
+                        span  Fotografar
+                div.ui-block-b
+                    img#fotoTirada(width="50%")
 
-        p(style="text-align:center") 
-            span: i.fa.fa-location-arrow &nbsp; 
-            span.text#pganotar-gps 27.234, 23.3434 
-            span.text#pganotar-gps-accuracy (20 m) 
+            p(style="text-align:center") 
+                span: i.fa.fa-location-arrow &nbsp; 
+                span.text#pganotar-gps 27.234, 23.3434 
+                br
+                span.text#pganotar-gps-accuracy (20 m) 
 
         br
-       
+           
         fieldset.ui-grid-solo
             div.ui-block-a
                 a.ui-btn.ui-btn-b.ui-shadow.ui-corner-all(href="javascript:anotacaoview.salvar()") 
