@@ -9,11 +9,28 @@ class window.NoteView
       $('#pganotar-categoria').val('')
       $('#pganotar p.categoria').show()
 
-    # limpando valores
     $('#txtcomments').val('')
 
-
     $.mobile.changePage("#pganotar",{changeHash:false})
+  
+  fotografar: () ->
+    navigator.camera.getPicture(
+      (imageURI) =>
+        @fotoOnSuccess(imageURI)
+      ,(message) =>
+        @fotoOnFail(message)
+      ,{
+        quality: 50,
+        destinationType: Camera.DestinationType.FILE_URI 
+      })
+
+  fotoOnSuccess: (imageURI) ->
+    $('#fotoTirada').attr('src', imageURI)
+    @fotoURI = imageURI
+    console.log(imageURI)
+
+  fotoOnFail: (message)-> 
+          alert("Não foi possível fotografar pois: #{message}")
 
 class window.Anotacoes
   @tolerancia = 5

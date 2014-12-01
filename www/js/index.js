@@ -109,6 +109,31 @@
       });
     }
 
+    NoteView.prototype.fotografar = function() {
+      return navigator.camera.getPicture((function(_this) {
+        return function(imageURI) {
+          return _this.fotoOnSuccess(imageURI);
+        };
+      })(this), (function(_this) {
+        return function(message) {
+          return _this.fotoOnFail(message);
+        };
+      })(this), {
+        quality: 50,
+        destinationType: Camera.DestinationType.FILE_URI
+      });
+    };
+
+    NoteView.prototype.fotoOnSuccess = function(imageURI) {
+      $('#fotoTirada').attr('src', imageURI);
+      this.fotoURI = imageURI;
+      return console.log(imageURI);
+    };
+
+    NoteView.prototype.fotoOnFail = function(message) {
+      return alert("Não foi possível fotografar pois: " + message);
+    };
+
     return NoteView;
 
   })();
