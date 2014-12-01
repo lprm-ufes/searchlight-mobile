@@ -59,6 +59,8 @@ class window.GPSControle
         timeout = (new Date()).getTime() - GPSControle.time 
         if (timeout > GPSControle.TIMEOUT*1000) or (GPSControle.accuracy > parseInt(position.coords.accuracy))
             GPSControle.gps = position.coords.latitude+", "+position.coords.longitude
+            GPSControle.lat = position.coords.latitude
+            GPSControle.lng = position.coords.longitude
             GPSControle.accuracy = parseInt(position.coords.accuracy)
             GPSControle.time = (new Date()).getTime()
             console.log("latlong: "+GPSControle.gps + " accuracy:"+position.coords.accuracy)

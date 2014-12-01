@@ -1,36 +1,3 @@
-class window.NoteView
-  constructor: (categoria) ->
-    if categoria
-      $('#pganotar-titulo').html("Anotação de #{categoria}")
-      $('#pganotar-categoria').val(categoria)
-      $('#pganotar p.categoria').hide()
-    else
-      $('#pganotar-titulo').html("Anotação Personalizada")
-      $('#pganotar-categoria').val('')
-      $('#pganotar p.categoria').show()
-
-    $('#txtcomments').val('')
-
-    $.mobile.changePage("#pganotar",{changeHash:false})
-  
-  fotografar: () ->
-    navigator.camera.getPicture(
-      (imageURI) =>
-        @fotoOnSuccess(imageURI)
-      ,(message) =>
-        @fotoOnFail(message)
-      ,{
-        quality: 50,
-        destinationType: Camera.DestinationType.FILE_URI 
-      })
-
-  fotoOnSuccess: (imageURI) ->
-    $('#fotoTirada').attr('src', imageURI)
-    @fotoURI = imageURI
-    console.log(imageURI)
-
-  fotoOnFail: (message)-> 
-          alert("Não foi possível fotografar pois: #{message}")
 
 class window.Anotacoes
   @tolerancia = 5
@@ -228,9 +195,4 @@ class window.Anotacoes
           $('#ulacoes').listview().listview('refresh')
           
 
-
-
-
-
 # vim: set ts=2 sw=2 sts=2 expandtab:
-

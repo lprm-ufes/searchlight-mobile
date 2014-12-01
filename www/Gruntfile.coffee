@@ -43,6 +43,8 @@ module.exports = (grunt) ->
               'src/user_view.js',
               'src/anotacoes.js',
               'src/gps_controle.js',
+              'src/noteview.js',
+              'src/note.js',
               'src/index.js',
               ],
             dest: 'js/index.js'

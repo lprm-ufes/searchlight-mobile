@@ -17,12 +17,15 @@
 
     UserView.prototype.getUsuario = function() {
       this.usuario = this.storage.getItem('Usuario');
+      this.user_id = this.storage.getItem('user_id');
       return this.usuario;
     };
 
-    UserView.prototype.setUsuario = function(usuario) {
+    UserView.prototype.setUsuario = function(usuario, json) {
+      this.user_id = json.id;
       this.usuario = usuario;
-      return this.storage.setItem('Usuario', this.usuario);
+      this.storage.setItem('Usuario', this.usuario);
+      return this.storage.setItem('user_id', this.user_id);
     };
 
     UserView.prototype.clear = function() {
@@ -33,6 +36,7 @@
     UserView.prototype.trocarUsuario = function() {
       this.storage.removeItem('Usuario');
       this.usuario = null;
+      this.user_id = null;
       this.clear();
       return $.mobile.changePage('#pglogin', {
         changeHash: false
@@ -46,20 +50,26 @@
       p = $("#password").val();
       if (u && p) {
         url = UserView.url_login;
+        $.mobile.loading('show', {
+          text: 'enviando',
+          textVisible: 'true'
+        });
         $.post(url, {
           username: u,
           password: p
         }, (function(_this) {
           return function(json) {
+            $.mobile.loading('hide');
             if (json.error) {
               alert(json.error);
             } else {
-              _this.setUsuario(u);
+              _this.setUsuario(u, json);
               _this.load();
             }
             return $("#submitButton").removeAttr("disabled");
           };
         })(this), "json").fail(function() {
+          $.mobile.loading('hide');
           $("#submitButton").removeAttr("disabled");
           return alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!');
         });
@@ -92,52 +102,6 @@
 }).call(this);
 
 (function() {
-  window.NoteView = (function() {
-    function NoteView(categoria) {
-      if (categoria) {
-        $('#pganotar-titulo').html("Anotação de " + categoria);
-        $('#pganotar-categoria').val(categoria);
-        $('#pganotar p.categoria').hide();
-      } else {
-        $('#pganotar-titulo').html("Anotação Personalizada");
-        $('#pganotar-categoria').val('');
-        $('#pganotar p.categoria').show();
-      }
-      $('#txtcomments').val('');
-      $.mobile.changePage("#pganotar", {
-        changeHash: false
-      });
-    }
-
-    NoteView.prototype.fotografar = function() {
-      return navigator.camera.getPicture((function(_this) {
-        return function(imageURI) {
-          return _this.fotoOnSuccess(imageURI);
-        };
-      })(this), (function(_this) {
-        return function(message) {
-          return _this.fotoOnFail(message);
-        };
-      })(this), {
-        quality: 50,
-        destinationType: Camera.DestinationType.FILE_URI
-      });
-    };
-
-    NoteView.prototype.fotoOnSuccess = function(imageURI) {
-      $('#fotoTirada').attr('src', imageURI);
-      this.fotoURI = imageURI;
-      return console.log(imageURI);
-    };
-
-    NoteView.prototype.fotoOnFail = function(message) {
-      return alert("Não foi possível fotografar pois: " + message);
-    };
-
-    return NoteView;
-
-  })();
-
   window.Anotacoes = (function() {
     function Anotacoes() {}
 
@@ -416,6 +380,8 @@
       timeout = (new Date()).getTime() - GPSControle.time;
       if ((timeout > GPSControle.TIMEOUT * 1000) || (GPSControle.accuracy > parseInt(position.coords.accuracy))) {
         GPSControle.gps = position.coords.latitude + ", " + position.coords.longitude;
+        GPSControle.lat = position.coords.latitude;
+        GPSControle.lng = position.coords.longitude;
         GPSControle.accuracy = parseInt(position.coords.accuracy);
         GPSControle.time = (new Date()).getTime();
         console.log("latlong: " + GPSControle.gps + " accuracy:" + position.coords.accuracy);
@@ -437,6 +403,156 @@
     };
 
     return GPSControle;
+
+  })();
+
+}).call(this);
+
+(function() {
+  window.NoteView = (function() {
+    function NoteView(categoria) {
+      if (categoria) {
+        $('#pganotar-titulo').html("Anotação de " + categoria);
+        $('#pganotar-categoria').val(categoria);
+        $('#pganotar p.categoria').hide();
+      } else {
+        $('#pganotar-titulo').html("Anotação Personalizada");
+        $('#pganotar-categoria').val('');
+        $('#pganotar p.categoria').show();
+      }
+      $('#txtcomments').val('');
+      $('#fotoTirada').attr('src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
+      this.fotoURI = null;
+      $.mobile.changePage("#pganotar", {
+        changeHash: false
+      });
+    }
+
+    NoteView.prototype.salvar = function() {
+      var dados, note;
+      dados = {};
+      dados.comentarios = $('#txtcomments').val();
+      dados.categoria = $('#pganotar-categoria').val();
+      dados.fotoURI = this.fotoURI;
+      dados.data_hora = "" + (formatadata(new Date())) + " " + (formatahora(new Date()));
+      dados.lat = GPSControle.lat;
+      dados.lng = GPSControle.lng;
+      dados.accuracy = GPSControle.accuracy;
+      dados.user_id = userview.user_id;
+      note = new Note(dados);
+      return note.enviar();
+    };
+
+    NoteView.prototype.fotografar = function() {
+      return navigator.camera.getPicture((function(_this) {
+        return function(imageURI) {
+          return _this.fotoOnSuccess(imageURI);
+        };
+      })(this), (function(_this) {
+        return function(message) {
+          return _this.fotoOnFail(message);
+        };
+      })(this), {
+        quality: 50,
+        destinationType: Camera.DestinationType.FILE_URI
+      });
+    };
+
+    NoteView.prototype.fotoOnSuccess = function(imageURI) {
+      $('#fotoTirada').attr('src', imageURI);
+      this.fotoURI = imageURI;
+      return console.log(imageURI);
+    };
+
+    NoteView.prototype.fotoOnFail = function(message) {
+      return alert("Não foi possível fotografar pois: " + message);
+    };
+
+    return NoteView;
+
+  })();
+
+}).call(this);
+
+(function() {
+  window.Note = (function() {
+    Note.createURL = "http://sl.wancharle.com.br/note/create/";
+
+    function Note(dados) {
+      this.categoria = dados.categoria;
+      this.comentarios = dados.comentarios;
+      this.fotoURI = dados.fotoURI;
+      this.lat = dados.lat;
+      this.lng = dados.lng;
+      this.accuracy = dados.accuracy;
+      this.user = dados.user_id;
+      this.data_hora = dados.data_hora;
+    }
+
+    Note.prototype.enviar = function() {
+      var ft, options, params;
+      params = {};
+      params.latitude = this.lat;
+      params.longitude = this.lng;
+      params.accuracy = this.accuracy;
+      params.user = this.user;
+      params.categoria = this.categoria;
+      params.comentarios = this.comentarios;
+      params.data_hora = this.data_hora;
+      console.log(params);
+      $.mobile.loading('show', {
+        text: 'enviando',
+        textVisible: 'true'
+      });
+      if (this.fotoURI) {
+        options = new FileUploadOptions();
+        options.params = params;
+        options.fileKey = "foto";
+        options.fileName = this.fotoURI.substr(this.fotoURI.lastIndexOf('/') + 1);
+        options.mimeType = "image/jpeg";
+        options.params.fotoURL = true;
+        ft = new FileTransfer();
+        return ft.upload(this.fotoURI, encodeURI(Note.createURL), (function(_this) {
+          return function(r) {
+            return _this.envioOk(r);
+          };
+        })(this), (function(_this) {
+          return function(error) {
+            return _this.envioFail(error);
+          };
+        })(this), options);
+      } else {
+        return $.post(Note.createURL, params, function(json) {
+          $.mobile.loading('hide');
+          $.mobile.changePage("#pglogado", {
+            changeHash: false
+          });
+          return console.log(json);
+        }, 'json').fail(function() {
+          $.mobile.loading('hide');
+          return alert('Erro no envio da anotação. Verifique sua conexão wifi.');
+        });
+      }
+    };
+
+    Note.prototype.envioOk = function(r) {
+      $.mobile.loading('hide');
+      console.log("Code = " + r.responseCode);
+      console.log("Response = " + r.response);
+      console.log("Sent = " + r.bytesSent);
+      return $.mobile.changePage("#pglogado", {
+        changeHash: false
+      });
+    };
+
+    Note.prototype.envioFail = function(error) {
+      $.mobile.loading('hide');
+      alert("Erro ao enviar anotação: Code = " + error.code);
+      console.log("upload error source " + error.source);
+      return console.log("upload error target " + error.target);
+    };
+
+    return Note;
 
   })();
 

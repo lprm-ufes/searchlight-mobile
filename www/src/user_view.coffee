@@ -9,11 +9,14 @@ class window.UserView
 
   getUsuario: () ->
     @usuario = @storage.getItem('Usuario')
+    @user_id = @storage.getItem('user_id')
     return @usuario
   
-  setUsuario: (usuario)->
+  setUsuario: (usuario,json)->
+    @user_id = json.id
     @usuario =  usuario
     @storage.setItem('Usuario',@usuario)
+    @storage.setItem('user_id',@user_id)
   
   clear: () ->
     $("#username").val("")
@@ -22,6 +25,7 @@ class window.UserView
   trocarUsuario: () ->
     @storage.removeItem('Usuario')
     @usuario = null
+    @user_id = null
     @clear()
     $.mobile.changePage('#pglogin',{changeHash:false})
 
@@ -32,16 +36,19 @@ class window.UserView
     p = $("#password").val()
     if (u and  p)
       url = UserView.url_login
+      
+      $.mobile.loading('show', { text:'enviando',textVisible:'true'} )
       $.post(url, {username:u,password:p}, (json) =>
-            
+        $.mobile.loading('hide')
         if json.error
           alert(json.error)
         else
-          @setUsuario u
+          @setUsuario u, json
           @load()
         $("#submitButton").removeAttr("disabled")
 
       ,"json").fail(() ->
+         $.mobile.loading('hide')
          $("#submitButton").removeAttr("disabled")
          alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!')
 
