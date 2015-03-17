@@ -468,6 +468,14 @@
       return alert("Não foi possível fotografar pois: " + message);
     };
 
+    NoteView.prototype.lercodigo = function() {
+      return cordova.plugins.barcodeScanner.scan(function(result) {
+        return alert("We got a barcode\n Result: " + result.text + "\n Format: " + result.format + "\n Cancelled: " + result.cancelled);
+      }, function(error) {
+        return alert("Scanning failed: " + error);
+      });
+    };
+
     return NoteView;
 
   })();

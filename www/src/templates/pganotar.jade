@@ -24,6 +24,15 @@ div#pganotar(data-role="page", data-theme="a")
                         span  Fotografar
                 div.ui-block-b(style="text-align:center")
                     img#fotoTirada(width="72px",height="72px", src="/")
+            fieldset.ui-grid-a
+                div.ui-block-a 
+                    a.ui-btn.ui-shadow.ui-corner-all(href="javascript:Anotacoes.noteview.lercodigo()")
+                        i.fa.fa-barcode
+                        br
+                        span Ler código
+                div.ui-block-b(style="text-align:center")
+                    p#codigoLido(width="72px",height="72px", src="/")
+
 
             p(style="text-align:center") 
                 span: i.fa.fa-location-arrow &nbsp; 

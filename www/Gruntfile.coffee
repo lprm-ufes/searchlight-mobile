@@ -49,4 +49,4 @@ module.exports = (grunt) ->
               ],
             dest: 'js/index.js'
  
-    grunt.registerTask 'default', ['coffee', 'jade', 'watch' ]
+    grunt.registerTask 'default', ['coffee', 'jade', 'concat' ]
