@@ -1,32 +1,29 @@
 
 class window.UserView
-  @url_login = "http://sl.wancharle.com.br/user/login/"
-
   constructor: ->
-    @storage = window.localStorage
-    @usuario = this.getUsuario()
+    @slsapi = new SLSAPI({})
+
     $("#loginForm").on("submit", (e) => @submitLogin(e) )
 
-  getUsuario: () ->
-    @usuario = @storage.getItem('Usuario')
-    @user_id = @storage.getItem('user_id')
-    return @usuario
-  
-  setUsuario: (usuario,json)->
-    @user_id = json.id
-    @usuario =  usuario
-    @storage.setItem('Usuario',@usuario)
-    @storage.setItem('user_id',@user_id)
-  
+    $(document).on 'slsapi.user:loginStart', () ->
+      $.mobile.loading('show', { text:'enviando',textVisible:'true'} )
+    
+    $(document).on 'slsapi.user:loginFinish slsapi.user:loginFail', () ->
+      $.mobile.loading('hide')
+      $("#submitButton").removeAttr("disabled")
+
+    $(document).on 'slsapi.user:loginFail', () ->
+      alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!')
+
+    $(document).on 'slsapi.user:loginSuccess', () =>
+      @load()
+
   clear: () ->
     $("#username").val("")
     $("#password").val("")
 
   trocarUsuario: () ->
-    @storage.removeItem('Usuario')
-    @usuario = null
-    @user_id = null
-    @clear()
+    @slsapi.user.logout()
     $.mobile.changePage('#pglogin',{changeHash:false})
 
   submitLogin: (e) =>
@@ -34,31 +31,12 @@ class window.UserView
     $("#submitButton").attr("disabled","disabled")
     u = $("#username").val()
     p = $("#password").val()
-    if (u and  p)
-      url = UserView.url_login
-      
-      $.mobile.loading('show', { text:'enviando',textVisible:'true'} )
-      $.post(url, {username:u,password:p}, (json) =>
-        $.mobile.loading('hide')
-        if json.error
-          alert(json.error)
-        else
-          @setUsuario u, json
-          @load()
-        $("#submitButton").removeAttr("disabled")
+    @slsapi.user.login(u,p)
 
-      ,"json").fail(() ->
-         $.mobile.loading('hide')
-         $("#submitButton").removeAttr("disabled")
-         alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!')
-
-        )
-    else
-        $("#submitButton").removeAttr("disabled")
     return false
 
   load: () ->
-    if @usuario 
+    if @slsapi.user.usuario
       @anotacoesview = new Anotacoes()
       @anotacoesview.clearUI()
       @anotacoesview.sincronizar()

@@ -2,31 +2,33 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   window.UserView = (function() {
-    UserView.url_login = "http://sl.wancharle.com.br/user/login/";
-
     function UserView() {
       this.submitLogin = __bind(this.submitLogin, this);
-      this.storage = window.localStorage;
-      this.usuario = this.getUsuario();
+      this.slsapi = new SLSAPI({});
       $("#loginForm").on("submit", (function(_this) {
         return function(e) {
           return _this.submitLogin(e);
         };
       })(this));
+      $(document).on('slsapi.user:loginStart', function() {
+        return $.mobile.loading('show', {
+          text: 'enviando',
+          textVisible: 'true'
+        });
+      });
+      $(document).on('slsapi.user:loginFinish slsapi.user:loginFail', function() {
+        $.mobile.loading('hide');
+        return $("#submitButton").removeAttr("disabled");
+      });
+      $(document).on('slsapi.user:loginFail', function() {
+        return alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!');
+      });
+      $(document).on('slsapi.user:loginSuccess', (function(_this) {
+        return function() {
+          return _this.load();
+        };
+      })(this));
     }
-
-    UserView.prototype.getUsuario = function() {
-      this.usuario = this.storage.getItem('Usuario');
-      this.user_id = this.storage.getItem('user_id');
-      return this.usuario;
-    };
-
-    UserView.prototype.setUsuario = function(usuario, json) {
-      this.user_id = json.id;
-      this.usuario = usuario;
-      this.storage.setItem('Usuario', this.usuario);
-      return this.storage.setItem('user_id', this.user_id);
-    };
 
     UserView.prototype.clear = function() {
       $("#username").val("");
@@ -34,53 +36,23 @@
     };
 
     UserView.prototype.trocarUsuario = function() {
-      this.storage.removeItem('Usuario');
-      this.usuario = null;
-      this.user_id = null;
-      this.clear();
+      this.slsapi.user.logout();
       return $.mobile.changePage('#pglogin', {
         changeHash: false
       });
     };
 
     UserView.prototype.submitLogin = function(e) {
-      var p, u, url;
+      var p, u;
       $("#submitButton").attr("disabled", "disabled");
       u = $("#username").val();
       p = $("#password").val();
-      if (u && p) {
-        url = UserView.url_login;
-        $.mobile.loading('show', {
-          text: 'enviando',
-          textVisible: 'true'
-        });
-        $.post(url, {
-          username: u,
-          password: p
-        }, (function(_this) {
-          return function(json) {
-            $.mobile.loading('hide');
-            if (json.error) {
-              alert(json.error);
-            } else {
-              _this.setUsuario(u, json);
-              _this.load();
-            }
-            return $("#submitButton").removeAttr("disabled");
-          };
-        })(this), "json").fail(function() {
-          $.mobile.loading('hide');
-          $("#submitButton").removeAttr("disabled");
-          return alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!');
-        });
-      } else {
-        $("#submitButton").removeAttr("disabled");
-      }
+      this.slsapi.user.login(u, p);
       return false;
     };
 
     UserView.prototype.load = function() {
-      if (this.usuario) {
+      if (this.slsapi.user.usuario) {
         this.anotacoesview = new Anotacoes();
         this.anotacoesview.clearUI();
         this.anotacoesview.sincronizar();
