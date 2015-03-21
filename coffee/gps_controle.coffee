@@ -78,5 +78,6 @@ class window.GPSControle
         if error.code == error.TIMEOUT
            console.log('timeout gps: ' + error.message)
 
+exports.GPSControle = GPSControle
 # vim: set ts=2 sw=2 sts=2 expandtab:
 

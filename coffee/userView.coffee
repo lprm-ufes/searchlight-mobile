@@ -1,5 +1,7 @@
 
-class window.UserView
+Anotacoes = require('./anotacoes.coffee').Anotacoes
+
+class UserView
   constructor: ->
     @slsapi = new SLSAPI({})
 
@@ -36,8 +38,8 @@ class window.UserView
     return false
 
   load: () ->
-    if @slsapi.user.usuario
-      @anotacoesview = new Anotacoes()
+    if @slsapi.user.isLogged()
+      @anotacoesview = new Anotacoes(@slsapi)
       @anotacoesview.clearUI()
       @anotacoesview.sincronizar()
       window.anotacoesview = @anotacoesview
@@ -46,5 +48,6 @@ class window.UserView
     else
       $.mobile.changePage("#pglogin",{changeHash:false})
 
+exports.UserView = UserView
 
 # vim: set ts=2 sw=2 sts=2 expandtab:

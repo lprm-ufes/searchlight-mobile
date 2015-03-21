@@ -1,10 +1,13 @@
+NoteView = require('./noteview.coffee').NoteView
 
 class window.Anotacoes
   @tolerancia = 5
   @noteview = null
+  constructor: (slsapi) ->
+    @slsapi = slsapi
 
   anotar: (categoria)->
-    Anotacoes.noteview = new NoteView(categoria)
+    Anotacoes.noteview = new NoteView(categoria,@slsapi)
 
     
   sincronizar: ()->
@@ -194,5 +197,5 @@ class window.Anotacoes
 
           $('#ulacoes').listview().listview('refresh')
           
-
+exports.Anotacoes = Anotacoes
 # vim: set ts=2 sw=2 sts=2 expandtab:

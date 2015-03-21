@@ -1,27 +1,28 @@
 module.exports = (grunt) ->
-    grunt.loadNpmTasks('grunt-contrib-coffee')
-    grunt.loadNpmTasks('grunt-contrib-watch')
-    grunt.loadNpmTasks('grunt-contrib-jade')
-    grunt.loadNpmTasks('grunt-contrib-concat')
-
+    grunt.loadNpmTasks 'grunt-contrib-coffee'
+    grunt.loadNpmTasks 'grunt-contrib-watch'
+    grunt.loadNpmTasks 'grunt-contrib-jade'
+    grunt.loadNpmTasks 'grunt-contrib-concat'
+    grunt.loadNpmTasks 'grunt-browserify'
 
     grunt.initConfig
+        browserify:
+          dist:
+            files:
+              './www/js/index.js':['./coffee/index.coffee']
+            options:
+              browserifyOptions:
+                debug: grunt.option('debug')
+                transform: [ 'coffeeify']
+
         watch:
             coffee:
-                files: 'src/*.coffee'
-                tasks: ['coffee:compile','concat:dist']
+                files: 'coffee/*.coffee'
+                tasks: ['browserify',]
             jade:
                 files: '**/*.jade'
                 tasks: ['jade:compile']
 
-        coffee:
-            compile:
-                expand: true,
-                flatten: true,
-                cwd: "#{__dirname}/src/",
-                src: ['*.coffee'],
-                dest: 'src/',
-                ext: '.js'
         jade:
             compile:
                 options:
@@ -32,21 +33,19 @@ module.exports = (grunt) ->
                 files: [
                     expand: true,
                     flatten: true,
-                    cwd: "#{__dirname}/src/",
+                    cwd: "#{__dirname}/jade/",
                     src: ['*.jade'],
-                    dest: './',
+                    dest: './www/',
                     ext: '.html'
                 ]
-        concat:
-          dist:
-            src:[
-              'src/user_view.js',
-              'src/anotacoes.js',
-              'src/gps_controle.js',
-              'src/noteview.js',
-              'src/note.js',
-              'src/index.js',
-              ],
-            dest: 'js/index.js'
+        # concat:
+        #   dist:
+        #     src:[
+        #       'src/gps_controle.js',
+        #       'src/noteview.js',
+        #       'src/note.js',
+        #       'src/index.js',
+        #       ],
+        #     dest: 'js/index.js'
  
-    grunt.registerTask 'default', ['coffee', 'jade', 'concat' ]
+    grunt.registerTask 'default', ['browserify','jade' ]
