@@ -75,16 +75,5 @@ class NoteView
   fotoOnFail: (message)-> 
           alert("Não foi possível fotografar pois: #{message}")
 
-  lercodigo: () ->
-     cordova.plugins.barcodeScanner.scan(
-      (result) ->
-        alert("We got a barcode\n 
-          Result: #{result.text}\n
-          Format: #{result.format}\n
-          Cancelled: #{result.cancelled}")
-      ,(error) ->
-        alert("Scanning failed: " + error);
-    )
-
 exports.NoteView = NoteView
 # vim: set ts=2 sw=2 sts=2 expandtab:

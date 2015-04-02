@@ -352,10 +352,7 @@ window.App = (function() {
   };
 
   App.prototype.main = function() {
-    console.log('Received Event: onDeviceReady');
-    window.userview = new UserView();
-    userview.load();
-    return window.gpscontrole = new GPSControle();
+    return console.log('Received Event: onDeviceReady');
   };
 
   return App;

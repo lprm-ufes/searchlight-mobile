@@ -2,8 +2,8 @@
 Anotacoes = require('./anotacoes.coffee').Anotacoes
 
 class UserView
-  constructor: ->
-    @slsapi = new SLSAPI({})
+  constructor(urlConfServico: ->
+    @slsapi = new SLSAPI({urlConfServico:urlConfServico})
 
     $("#loginForm").on("submit", (e) => @submitLogin(e) )
 

@@ -21,6 +21,14 @@ html
             div(data-role="header")
 
             div(role="main", class="ui-content")
+                p  Para utilizar o Searchlight Mobile é necessário que este esteja vinculado a um serviço de coleta. Vc pode fazer isso clicando no botão "vincular serviço". Ao clicá-lo posicione o smartphone de forma que possa ler o código QR gerado pelo seu serviço.
+
+                a.ui-btn.ui-shadow.ui-corner-all(href="javascript:Anotacoes.noteview.lercodigo()")
+                        i.fa.fa-2x.fa-qrcode
+                        br
+                        span Vincular Serviço
+
+
 
             div(data-role="footer", data-position="fixed")
                 
@@ -41,6 +49,8 @@ html
                                 input(type="password", name="password",id="password",value="",placeholder="Senha")
 
                             input(type="submit",value="Entrar",id="submitButton")
+                            br 
+
 
 
             div(data-role="footer", data-position="fixed")
@@ -94,11 +104,17 @@ html
             div(data-role="content")
                div.ui-body.ui-body-a
                    h3  Perfil 
+                   p.usuario
                    a.ui-btn.ui-shadow.ui-corner-all(href="javascript:userview.trocarUsuario();") Trocar de Usuario
                br
                div.ui-body.ui-body-a
-                   h3 Sincronia
-                   a#logativrecent.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.mostraHistorico()") Sincronizar Anotações
+                   h3 Searchlight Service
+                   a.ui-btn.ui-shadow.ui-corner-all(href="javascript:Anotacoes.noteview.lercodigo()")
+                        i.fa.fa-barcode
+                        br
+                        span Vincular Serviço
+
+                   a#logativrecent.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.mostraHistorico()") Sincronizar
                    p
                         label(for="pgperfiltimeout") Cache do GPS em segundos
                         input#pgperfiltimeout(type="range", max="60", min="1" ,name="pgperfiltimeout", placeholder="Cache GPS (segundos)", value="10")

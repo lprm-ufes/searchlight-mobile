@@ -29,7 +29,19 @@ class window.App
 
     main: () ->
         console.log('Received Event: onDeviceReady' )
-        window.userview=new UserView()
+
+    vincularServico: ()->
+     self = @
+     cordova.plugins.barcodeScanner.scan(
+      (result) ->
+          self.loadServico(result.text)
+      ,(error) ->
+        alert("Falha na leitura do código QR: " + error);
+    )
+
+
+    loadServico: (urlConfServico) ->
+        window.userview=new UserView(urlConfServico)
         userview.load()
         window.gpscontrole = new GPSControle()
 
