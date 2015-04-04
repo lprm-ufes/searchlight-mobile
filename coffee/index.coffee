@@ -1,4 +1,4 @@
-# vim: set ts=3 sw=2 sts=2 expandtab:
+# vim: set ts=2 sw=2 sts=2 expandtab:
 
 utils = require('./utils.coffee')
 UserView = require('./userView.coffee').UserView
@@ -6,44 +6,57 @@ GPSControle = require('./gps_controle.coffee').GPSControle
 
 class window.App
     # Application Constructor
-    constructor: () ->
-        @storage = window.localStorage
-        @userview = null
-        this.bindEvents()
-          
-    bindEvents: () ->
-        document.addEventListener('deviceready', this.onDeviceReady, false)
+    constructor: ->
+      @storage = window.localStorage
+      @userview = null
+      this.bindEvents()
+        
+    bindEvents: ->
+      document.addEventListener('deviceready', this.onDeviceReady, false)
 
-    
-    onDeviceReady: () ->
-        app.main()
+    onDeviceReady:->
+      app.main()
 
-    mostraHistorico: ()->
-      anotacoesview.sincronizar()
-               
-    positionSucess: (gps) ->
-        @userview.load()
+    main: ->
+      console.log('Received Event: onDeviceReady' )
+      if @getUrlConfServico()
+        @loadServico(@urlConfServico)
+      else
+        $.mobile.changePage("#pgservico",{changeHash:false})
 
-    positionError: (error) ->
-        alert('Não foi possível obter sua localização. Verifique as configurações do seu smartphone.') 
-
-    main: () ->
-        console.log('Received Event: onDeviceReady' )
-
-    vincularServico: ()->
-     self = @
-     cordova.plugins.barcodeScanner.scan(
-      (result) ->
+    trocarServico: ->
+      userview.slsapi.user.logout()
+      @setUrlConfServico(null)
+      $.mobile.changePage("#pgservico",{changeHash:false})
+      
+    vincularServico: ->
+      self = @
+      console.log('ola')
+      cordova.plugins.barcodeScanner.scan(
+        (result) ->
+          console.log('ola')
           self.loadServico(result.text)
-      ,(error) ->
-        alert("Falha na leitura do código QR: " + error);
-    )
+        ,(error) ->
+          console.log('ola')
+          alert("Falha na leitura do código QR: " + error)
+        )
 
+    getUrlConfServico: ->
+      @urlConfServico = @storage.getItem('urlConfServico')
+      return @urlConfServico
+
+    setUrlConfServico: (url) ->
+      @urlConfServico = url
+      if url
+        @storage.setItem('urlConfServico', @urlConfServico)
+      else
+        @storage.removeItem('urlConfServico')
 
     loadServico: (urlConfServico) ->
-        window.userview=new UserView(urlConfServico)
-        userview.load()
-        window.gpscontrole = new GPSControle()
+      @setUrlConfServico(urlConfServico)
+      window.userview = new UserView(urlConfServico)
+      userview.load()
+      window.gpscontrole = new GPSControle()
 
 
 #window.localStorage.setObject('lista_de_anotacoes',window.ativtest);

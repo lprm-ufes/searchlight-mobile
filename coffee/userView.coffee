@@ -2,7 +2,7 @@
 Anotacoes = require('./anotacoes.coffee').Anotacoes
 
 class UserView
-  constructor(urlConfServico: ->
+  constructor: (urlConfServico) ->
     @slsapi = new SLSAPI({urlConfServico:urlConfServico})
 
     $("#loginForm").on("submit", (e) => @submitLogin(e) )
@@ -29,7 +29,7 @@ class UserView
     $.mobile.changePage('#pglogin',{changeHash:false})
 
   submitLogin: (e) =>
-    #disable the button so we can't resubmit while we wait
+    # disable the button so we can't resubmit while we wait
     $("#submitButton").attr("disabled","disabled")
     u = $("#username").val()
     p = $("#password").val()

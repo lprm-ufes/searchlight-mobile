@@ -339,20 +339,57 @@ window.App = (function() {
     return app.main();
   };
 
-  App.prototype.mostraHistorico = function() {
-    return anotacoesview.sincronizar();
-  };
-
-  App.prototype.positionSucess = function(gps) {
-    return this.userview.load();
-  };
-
-  App.prototype.positionError = function(error) {
-    return alert('Não foi possível obter sua localização. Verifique as configurações do seu smartphone.');
-  };
-
   App.prototype.main = function() {
-    return console.log('Received Event: onDeviceReady');
+    console.log('Received Event: onDeviceReady');
+    if (this.getUrlConfServico()) {
+      return this.loadServico(this.urlConfServico);
+    } else {
+      return $.mobile.changePage("#pgservico", {
+        changeHash: false
+      });
+    }
+  };
+
+  App.prototype.trocarServico = function() {
+    userview.slsapi.user.logout();
+    this.setUrlConfServico(null);
+    return $.mobile.changePage("#pgservico", {
+      changeHash: false
+    });
+  };
+
+  App.prototype.vincularServico = function() {
+    var self;
+    self = this;
+    console.log('ola');
+    return cordova.plugins.barcodeScanner.scan(function(result) {
+      console.log('ola');
+      return self.loadServico(result.text);
+    }, function(error) {
+      console.log('ola');
+      return alert("Falha na leitura do código QR: " + error);
+    });
+  };
+
+  App.prototype.getUrlConfServico = function() {
+    this.urlConfServico = this.storage.getItem('urlConfServico');
+    return this.urlConfServico;
+  };
+
+  App.prototype.setUrlConfServico = function(url) {
+    this.urlConfServico = url;
+    if (url) {
+      return this.storage.setItem('urlConfServico', this.urlConfServico);
+    } else {
+      return this.storage.removeItem('urlConfServico');
+    }
+  };
+
+  App.prototype.loadServico = function(urlConfServico) {
+    this.setUrlConfServico(urlConfServico);
+    window.userview = new UserView(urlConfServico);
+    userview.load();
+    return window.gpscontrole = new GPSControle();
   };
 
   return App;
@@ -403,18 +440,17 @@ NoteView = (function() {
   }
 
   NoteView.prototype.salvar = function() {
-    var dados, note;
-    dados = {};
-    dados.comentarios = $('#txtcomments').val();
-    dados.categoria = $('#pganotar-categoria').val();
-    dados.fotoURI = this.fotoURI;
-    dados.data_hora = (formatadata(new Date())) + " " + (formatahora(new Date()));
-    dados.lat = GPSControle.lat;
-    dados.lng = GPSControle.lng;
-    dados.accuracy = GPSControle.accuracy;
-    dados.user_id = this.slsapi.user.user_id;
-    note = new SLSAPI.notes.Note(dados);
-    return this.slsapi.notes.enviar(note, function(r) {
+    var note;
+    note = {};
+    note.comentarios = $('#txtcomments').val();
+    note.categoria = $('#pganotar-categoria').val();
+    note.fotoURI = this.fotoURI;
+    note.data_hora = (formatadata(new Date())) + " " + (formatahora(new Date()));
+    note.latitude = GPSControle.lat;
+    note.longitude = GPSControle.lng;
+    note.accuracy = GPSControle.accuracy;
+    note.user = this.slsapi.user.user_id;
+    return this.slsapi.notes.enviar(note, null, function(r) {
       console.log("Code = " + r.responseCode);
       console.log("Response = " + r.response);
       return console.log("Sent = " + r.bytesSent);
@@ -451,14 +487,6 @@ NoteView = (function() {
     return alert("Não foi possível fotografar pois: " + message);
   };
 
-  NoteView.prototype.lercodigo = function() {
-    return cordova.plugins.barcodeScanner.scan(function(result) {
-      return alert("We got a barcode\n Result: " + result.text + "\n Format: " + result.format + "\n Cancelled: " + result.cancelled);
-    }, function(error) {
-      return alert("Scanning failed: " + error);
-    });
-  };
-
   return NoteView;
 
 })();
@@ -474,9 +502,11 @@ var Anotacoes, UserView,
 Anotacoes = require('./anotacoes.coffee').Anotacoes;
 
 UserView = (function() {
-  function UserView() {
+  function UserView(urlConfServico) {
     this.submitLogin = bind(this.submitLogin, this);
-    this.slsapi = new SLSAPI({});
+    this.slsapi = new SLSAPI({
+      urlConfServico: urlConfServico
+    });
     $("#loginForm").on("submit", (function(_this) {
       return function(e) {
         return _this.submitLogin(e);

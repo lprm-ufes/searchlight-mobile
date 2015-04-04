@@ -31,19 +31,19 @@ class NoteView
       alert('Erro no envio da anotação. Verifique sua conexão wifi.')
 
   salvar: () ->
-    dados = {}
-    dados.comentarios = $('#txtcomments').val()
-    dados.categoria = $('#pganotar-categoria').val()
-    dados.fotoURI = @fotoURI
-    dados.data_hora = "#{formatadata(new Date())} #{formatahora(new Date())}"
-    dados.lat = GPSControle.lat
-    dados.lng = GPSControle.lng
-    dados.accuracy = GPSControle.accuracy
-    dados.user_id = @slsapi.user.user_id
+    note = {}
+    note.comentarios = $('#txtcomments').val()
+    note.categoria = $('#pganotar-categoria').val()
+    note.fotoURI = @fotoURI
+    note.data_hora = "#{formatadata(new Date())} #{formatahora(new Date())}"
+    note.latitude = GPSControle.lat
+    note.longitude = GPSControle.lng
+    note.accuracy = GPSControle.accuracy
+    note.user = @slsapi.user.user_id
 
-    note = new SLSAPI.notes.Note(dados)
     @slsapi.notes.enviar(
       note
+      ,null
       ,(r)-> # On success do this
         console.log("Code = #{r.responseCode}")
         console.log("Response = #{r.response}")

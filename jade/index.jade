@@ -10,6 +10,7 @@ html
         link(rel="stylesheet", href="bower_components/jquery-mobile-bower/css/jquery.mobile-1.4.2.css")
         link(rel="stylesheet", href="font-awesome-4.2.0/css/font-awesome.min.css")
         script(src="bower_components/jquery/dist/jquery.js")
+        script(src="bower_components/blueimp-md5/js/md5.min.js")
         script(src="bower_components/slsapi.js/dist/slsapi.js")
         script(src="bower_components/jquery-mobile-bower/js/jquery.mobile-1.4.2.js")
         title Searchlight Mobile
@@ -17,20 +18,24 @@ html
         
     body
 
-        div#pgloading(data-role="page", data-theme="a")
+        div#splash(data-role="page", data-theme="a")
+            div(role="main", class="ui-content")
+                
+ 
+        div#pgservico(data-role="page", data-theme="a")
             div(data-role="header")
+                h1 Searchlight
 
             div(role="main", class="ui-content")
                 p  Para utilizar o Searchlight Mobile é necessário que este esteja vinculado a um serviço de coleta. Vc pode fazer isso clicando no botão "vincular serviço". Ao clicá-lo posicione o smartphone de forma que possa ler o código QR gerado pelo seu serviço.
 
-                a.ui-btn.ui-shadow.ui-corner-all(href="javascript:Anotacoes.noteview.lercodigo()")
+                a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.vincularServico()")
                         i.fa.fa-2x.fa-qrcode
                         br
                         span Vincular Serviço
 
-
-
             div(data-role="footer", data-position="fixed")
+                h4 &copy UFES 
                 
         div#pglogin(data-role="page", data-theme="a")
             div(data-role="header")
@@ -48,8 +53,13 @@ html
                                 label(for="password") Senha:
                                 input(type="password", name="password",id="password",value="",placeholder="Senha")
 
-                            input(type="submit",value="Entrar",id="submitButton")
+                            p 
+                                input(type="submit",value="Entrar",id="submitButton")
                             br 
+                            p(style='text-align:center') ou 
+                            br
+                            p 
+                                a.ui-btn(href="javascript:app.trocarServico()") Escolher outro serviço 
 
 
 
@@ -91,6 +101,7 @@ html
                 h1 Searchlight 
             div(data-role="content")
                 ul#ulhistorico(data-role="listview",data-filter="true",data-filter-placeholder='Buscar', data-inset="true",data-shadow='false')
+
             div(data-role="footer", data-position="fixed")
                 div(data-role="navbar")
                     ul
@@ -99,25 +110,28 @@ html
                         li: a(href="#pgperfil", data-icon='user', data-rel='page', data-transition='none') Perfil
 
         div#pgperfil(data-role="page", data-theme="a")
-            div(data-role="header")
+           div(data-role="header")
                 h1 Searchlight 
-            div(data-role="content")
+           div(data-role="content")
                div.ui-body.ui-body-a
                    h3  Perfil 
                    p.usuario
                    a.ui-btn.ui-shadow.ui-corner-all(href="javascript:userview.trocarUsuario();") Trocar de Usuario
-               br
-               div.ui-body.ui-body-a
-                   h3 Searchlight Service
-                   a.ui-btn.ui-shadow.ui-corner-all(href="javascript:Anotacoes.noteview.lercodigo()")
-                        i.fa.fa-barcode
-                        br
-                        span Vincular Serviço
-
-                   a#logativrecent.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.mostraHistorico()") Sincronizar
                    p
                         label(for="pgperfiltimeout") Cache do GPS em segundos
                         input#pgperfiltimeout(type="range", max="60", min="1" ,name="pgperfiltimeout", placeholder="Cache GPS (segundos)", value="10")
+               br
+               div.ui-body.ui-body-a
+                   h3 Searchlight Service
+                   a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.trocarServico()") Escolher serviço de coleta
+
+                   a#logativrecent.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.mostraHistorico()") Sincronizar
+
+               br
+               div.ui-body.ui-body-a
+                   h3 Searchlight Viewer
+                   a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.vincularVisualizacao()") Vincular visualização
+               
 
 
 
@@ -133,3 +147,4 @@ html
         script(type="text/javascript", src="js/index.js")
         script(type="text/javascript").
              var app = new App();
+
