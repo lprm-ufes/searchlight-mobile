@@ -10,8 +10,7 @@ html
         link(rel="stylesheet", href="bower_components/jquery-mobile-bower/css/jquery.mobile-1.4.2.css")
         link(rel="stylesheet", href="font-awesome-4.2.0/css/font-awesome.min.css")
         script(src="bower_components/jquery/dist/jquery.js")
-        script(src="bower_components/blueimp-md5/js/md5.min.js")
-        script(src="bower_components/slsapi.js/dist/slsapi.js")
+        script(src="bower_components/slsapi/dist/slsapi.js")
         script(src="bower_components/jquery-mobile-bower/js/jquery.mobile-1.4.2.js")
         title Searchlight Mobile
 
@@ -93,7 +92,7 @@ html
                 div(data-role="navbar")
                     ul
                         li: a.ui-btn-activ.ui-state-persist(href="#pglogado", data-icon='edit', data-rel='page', data-transition='none') Ações
-                        li: a(href="#pghistorico", data-icon='bars', data-rel='page', data-transition='none') Histórico
+                        li: a(href="javascript:anotacoesview.listar()", data-icon='bars', data-rel='page', data-transition='none') Histórico
                         li: a(href="#pgperfil", data-icon='user', data-rel='page', data-transition='none') Perfil
 
         div#pghistorico(data-role="page", data-theme="a")
@@ -106,7 +105,7 @@ html
                 div(data-role="navbar")
                     ul
                         li: a(href="#pglogado", data-icon='edit', data-rel='page', data-transition='none') Ações
-                        li: a.ui-btn-active.ui-state-persist(href="#pghistorico", data-icon='bars', data-rel='page', data-transition='none') Histórico
+                        li: a.ui-btn-active.ui-state-persist(href="javascript:anotacoesview.listar()", data-icon='bars', data-rel='page', data-transition='none') Histórico
                         li: a(href="#pgperfil", data-icon='user', data-rel='page', data-transition='none') Perfil
 
         div#pgperfil(data-role="page", data-theme="a")
@@ -124,13 +123,8 @@ html
                div.ui-body.ui-body-a
                    h3 Searchlight Service
                    a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.trocarServico()") Escolher serviço de coleta
-
                    a#logativrecent.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.mostraHistorico()") Sincronizar
 
-               br
-               div.ui-body.ui-body-a
-                   h3 Searchlight Viewer
-                   a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.vincularVisualizacao()") Vincular visualização
                
 
 
@@ -139,7 +133,7 @@ html
                 div(data-role="navbar")
                     ul
                         li: a(href="#pglogado", data-icon='edit',data-rel='page', data-transition='none') Ações
-                        li: a(href="#pghistorico", data-icon='bars',data-rel='page', data-transition='none') Histórico
+                        li: a(href="javascript:anotacoesview.listar()", data-icon='bars',data-rel='page', data-transition='none') Histórico
                         li: a.ui-btn-active.ui-state-persist(href="#pgperfil", data-role='tab', data-rel='page', data-transition='none',data-icon='user') Perfil
         include templates/pganotar
 

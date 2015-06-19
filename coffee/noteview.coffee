@@ -19,14 +19,18 @@ class NoteView
 
     $.mobile.changePage("#pganotar",{changeHash:false})
 
-    $(document).on 'slsapi.note:uploadStart', ()->
+
+    @slsapi.off SLSAPI.Notes.EVENT_ADD_NOTE_START
+    @slsapi.on SLSAPI.Notes.EVENT_ADD_NOTE_START, ()->
       $.mobile.loading('show', { text:'enviando',textVisible:'true'} )
 
-    $(document).on 'slsapi.note:uploadFinish', ()->
+    @slsapi.off SLSAPI.Notes.EVENT_ADD_NOTE_FINISH
+    @slsapi.on SLSAPI.Notes.EVENT_ADD_NOTE_FINISH, ()->
       $.mobile.loading('hide')
       $.mobile.changePage("#pglogado",{changeHash:false})
 
-    $(document).on 'slsapi.note:uploadFail', ()->
+    @slsapi.off SLSAPI.Notes.EVENT_ADD_NOTE_FAIL
+    @slsapi.on SLSAPI.Notes.EVENT_ADD_NOTE_FAIL, ()->
       $.mobile.loading('hide')
       alert('Erro no envio da anotação. Verifique sua conexão wifi.')
 

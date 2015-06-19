@@ -1,4 +1,7 @@
 NoteView = require('./noteview.coffee').NoteView
+ListView = require('./listView.coffee').ListView
+
+GPSControle = require('./gps_controle.coffee').GPSControle
 
 class window.Anotacoes
   @tolerancia = 5
@@ -9,6 +12,8 @@ class window.Anotacoes
   anotar: (categoria)->
     Anotacoes.noteview = new NoteView(categoria,@slsapi)
 
+  listar: ()->
+    Anotacoes.listview = new ListView(@slsapi)
     
   sincronizar: ()->
         anotacoesPendentes = @getAnotacoes() 

@@ -5,20 +5,30 @@ class UserView
   constructor: (urlConfServico) ->
     @slsapi = new SLSAPI({urlConfServico:urlConfServico})
 
-    $("#loginForm").on("submit", (e) => @submitLogin(e) )
+    @slsapi.on SLSAPI.Config.EVENT_READY, ()=>
+      $("#loginForm").on("submit", (e) => @submitLogin(e) )
 
-    $(document).on 'slsapi.user:loginStart', () ->
-      $.mobile.loading('show', { text:'enviando',textVisible:'true'} )
+      @slsapi.on SLSAPI.User.EVENT_LOGIN_START, () ->
+        $.mobile.loading('show', { text:'enviando',textVisible:'true'} )
+      
+
+      @slsapi.on SLSAPI.User.EVENT_LOGIN_FAIL, (err) ->
+        $.mobile.loading('hide')
+        $("#submitButton").removeAttr("disabled")
+        if err.response.body.error
+          alert(err.response.body.error)
+        else
+          alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!')
+
+      @slsapi.on SLSAPI.User.EVENT_LOGIN_SUCCESS, () =>
+        $.mobile.loading('hide')
+        $("#submitButton").removeAttr("disabled")
+        @load()
+
+    @slsapi.on SLSAPI.Config.EVENT_FAIL, (err)=>
+      alert('Não foi possivel conectar ao serviço, verifique sua conexao de dados ou sua rede wifi!')
+      console.log(err)
     
-    $(document).on 'slsapi.user:loginFinish slsapi.user:loginFail', () ->
-      $.mobile.loading('hide')
-      $("#submitButton").removeAttr("disabled")
-
-    $(document).on 'slsapi.user:loginFail', () ->
-      alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!')
-
-    $(document).on 'slsapi.user:loginSuccess', () =>
-      @load()
 
   clear: () ->
     $("#username").val("")
@@ -29,10 +39,13 @@ class UserView
     $.mobile.changePage('#pglogin',{changeHash:false})
 
   submitLogin: (e) =>
-    # disable the button so we can't resubmit while we wait
-    $("#submitButton").attr("disabled","disabled")
     u = $("#username").val()
     p = $("#password").val()
+    if (u and  p)
+      # disable the button so we can't resubmit while we wait
+      $("#submitButton").attr("disabled","disabled")
+    else
+      alert('Forneça um usuario e uma senha para autenticação')
     @slsapi.user.login(u,p)
 
     return false

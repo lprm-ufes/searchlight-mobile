@@ -1,7 +1,11 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var NoteView;
+var GPSControle, ListView, NoteView;
 
 NoteView = require('./noteview.coffee').NoteView;
+
+ListView = require('./listView.coffee').ListView;
+
+GPSControle = require('./gps_controle.coffee').GPSControle;
 
 window.Anotacoes = (function() {
   Anotacoes.tolerancia = 5;
@@ -14,6 +18,10 @@ window.Anotacoes = (function() {
 
   Anotacoes.prototype.anotar = function(categoria) {
     return Anotacoes.noteview = new NoteView(categoria, this.slsapi);
+  };
+
+  Anotacoes.prototype.listar = function() {
+    return Anotacoes.listview = new ListView(this.slsapi);
   };
 
   Anotacoes.prototype.sincronizar = function() {
@@ -202,7 +210,7 @@ exports.Anotacoes = Anotacoes;
 
 
 
-},{"./noteview.coffee":4}],2:[function(require,module,exports){
+},{"./gps_controle.coffee":2,"./listView.coffee":4,"./noteview.coffee":5}],2:[function(require,module,exports){
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 window.GPSControle = (function() {
@@ -398,7 +406,49 @@ window.App = (function() {
 
 
 
-},{"./gps_controle.coffee":2,"./userView.coffee":5,"./utils.coffee":6}],4:[function(require,module,exports){
+},{"./gps_controle.coffee":2,"./userView.coffee":6,"./utils.coffee":7}],4:[function(require,module,exports){
+var ListView;
+
+ListView = (function() {
+  ListView.dataPool = null;
+
+  function ListView(slsapi) {
+    this.slsapi = slsapi;
+    $.mobile.changePage("#pghistorico", {
+      changeHash: false
+    });
+    ListView.dataPool = SLSAPI.dataPool.createDataPool(this.slsapi.mashup);
+    this.loadData();
+  }
+
+  ListView.prototype.loadData = function() {
+    var position;
+    position = {
+      latitude: GPSControle.lat,
+      longitude: GPSControle.lng,
+      distance: 10000
+    };
+    ListView.dataPool.loadAllData('', position);
+    this.slsapi.off(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP);
+    return this.slsapi.on(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP, function(datapool) {
+      console.log(datapool.dataSources[0].notes);
+      return console.log(datapool.dataSources[1].notes);
+    });
+  };
+
+  ListView.prototype.selecionar = function() {};
+
+  return ListView;
+
+})();
+
+module.exports = {
+  ListView: ListView
+};
+
+
+
+},{}],5:[function(require,module,exports){
 var GPSControle, NoteView;
 
 GPSControle = require('./gps_controle.coffee').GPSControle;
@@ -421,19 +471,22 @@ NoteView = (function() {
     $.mobile.changePage("#pganotar", {
       changeHash: false
     });
-    $(document).on('slsapi.note:uploadStart', function() {
+    this.slsapi.off(SLSAPI.Notes.EVENT_ADD_NOTE_START);
+    this.slsapi.on(SLSAPI.Notes.EVENT_ADD_NOTE_START, function() {
       return $.mobile.loading('show', {
         text: 'enviando',
         textVisible: 'true'
       });
     });
-    $(document).on('slsapi.note:uploadFinish', function() {
+    this.slsapi.off(SLSAPI.Notes.EVENT_ADD_NOTE_FINISH);
+    this.slsapi.on(SLSAPI.Notes.EVENT_ADD_NOTE_FINISH, function() {
       $.mobile.loading('hide');
       return $.mobile.changePage("#pglogado", {
         changeHash: false
       });
     });
-    $(document).on('slsapi.note:uploadFail', function() {
+    this.slsapi.off(SLSAPI.Notes.EVENT_ADD_NOTE_FAIL);
+    this.slsapi.on(SLSAPI.Notes.EVENT_ADD_NOTE_FAIL, function() {
       $.mobile.loading('hide');
       return alert('Erro no envio da anotação. Verifique sua conexão wifi.');
     });
@@ -495,7 +548,7 @@ exports.NoteView = NoteView;
 
 
 
-},{"./gps_controle.coffee":2}],5:[function(require,module,exports){
+},{"./gps_controle.coffee":2}],6:[function(require,module,exports){
 var Anotacoes, UserView,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -507,27 +560,37 @@ UserView = (function() {
     this.slsapi = new SLSAPI({
       urlConfServico: urlConfServico
     });
-    $("#loginForm").on("submit", (function(_this) {
-      return function(e) {
-        return _this.submitLogin(e);
+    this.slsapi.on(SLSAPI.Config.EVENT_READY, (function(_this) {
+      return function() {
+        $("#loginForm").on("submit", function(e) {
+          return _this.submitLogin(e);
+        });
+        _this.slsapi.on(SLSAPI.User.EVENT_LOGIN_START, function() {
+          return $.mobile.loading('show', {
+            text: 'enviando',
+            textVisible: 'true'
+          });
+        });
+        _this.slsapi.on(SLSAPI.User.EVENT_LOGIN_FAIL, function(err) {
+          $.mobile.loading('hide');
+          $("#submitButton").removeAttr("disabled");
+          if (err.response.body.error) {
+            return alert(err.response.body.error);
+          } else {
+            return alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!');
+          }
+        });
+        return _this.slsapi.on(SLSAPI.User.EVENT_LOGIN_SUCCESS, function() {
+          $.mobile.loading('hide');
+          $("#submitButton").removeAttr("disabled");
+          return _this.load();
+        });
       };
     })(this));
-    $(document).on('slsapi.user:loginStart', function() {
-      return $.mobile.loading('show', {
-        text: 'enviando',
-        textVisible: 'true'
-      });
-    });
-    $(document).on('slsapi.user:loginFinish slsapi.user:loginFail', function() {
-      $.mobile.loading('hide');
-      return $("#submitButton").removeAttr("disabled");
-    });
-    $(document).on('slsapi.user:loginFail', function() {
-      return alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!');
-    });
-    $(document).on('slsapi.user:loginSuccess', (function(_this) {
-      return function() {
-        return _this.load();
+    this.slsapi.on(SLSAPI.Config.EVENT_FAIL, (function(_this) {
+      return function(err) {
+        alert('Não foi possivel conectar ao serviço, verifique sua conexao de dados ou sua rede wifi!');
+        return console.log(err);
       };
     })(this));
   }
@@ -546,9 +609,13 @@ UserView = (function() {
 
   UserView.prototype.submitLogin = function(e) {
     var p, u;
-    $("#submitButton").attr("disabled", "disabled");
     u = $("#username").val();
     p = $("#password").val();
+    if (u && p) {
+      $("#submitButton").attr("disabled", "disabled");
+    } else {
+      alert('Forneça um usuario e uma senha para autenticação');
+    }
     this.slsapi.user.login(u, p);
     return false;
   };
@@ -577,7 +644,7 @@ exports.UserView = UserView;
 
 
 
-},{"./anotacoes.coffee":1}],6:[function(require,module,exports){
+},{"./anotacoes.coffee":1}],7:[function(require,module,exports){
 window.zeroPad = function(num, places) {
   var zero;
   zero = places - num.toString().length + 1;
