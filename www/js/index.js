@@ -431,8 +431,33 @@ ListView = (function() {
     ListView.dataPool.loadAllData('', position);
     this.slsapi.off(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP);
     return this.slsapi.on(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP, function(datapool) {
-      console.log(datapool.dataSources[0].notes);
-      return console.log(datapool.dataSources[1].notes);
+      var distance, ds, html, i, j, k, len, len1, len2, li, n, note, ref, ref1, v;
+      html = '';
+      $('#ulhistorico').empty();
+      ref = datapool.dataSources;
+      for (i = 0, len = ref.length; i < len; i++) {
+        ds = ref[i];
+        console.log(ds.url);
+        v = [];
+        ref1 = ds.notes;
+        for (j = 0, len1 = ref1.length; j < len1; j++) {
+          note = ref1[j];
+          console.log(note);
+          distance = getDistanceFromLatLonInKm(parseFloat(position.latitude), parseFloat(position.longitude), note.geo.coordinates[1], note.geo.coordinates[0]);
+          v.push([distance, note]);
+        }
+        v.sort(function(a, b) {
+          return a[0] - b[0];
+        });
+        for (k = 0, len2 = v.length; k < len2; k++) {
+          n = v[k];
+          distance = n[0], note = n[1];
+          li = "<li><a href=''><h2>" + note.user.username + "</h2><p>" + (formatDistance(distance)) + "</p><p>" + note.texto + "</p></a></li>";
+          html = html + " " + li;
+        }
+      }
+      $('#ulhistorico').html(html);
+      return $('#ulhistorico').listview().listview('refresh');
     });
   };
 
@@ -691,6 +716,29 @@ window.formatadata = function(data) {
 
 window.formatahora = function(data) {
   return zeroPad(data.getHours(), 2) + ":" + zeroPad(data.getMinutes(), 2) + ':' + zeroPad(data.getSeconds(), 2);
+};
+
+window.formatDistance = function(distance) {
+  if (distance < 0.1) {
+    return ((distance * 1000).toFixed(0)) + " m";
+  } else {
+    return (distance.toFixed(1)) + " km";
+  }
+};
+
+window.getDistanceFromLatLonInKm = function(lat1, lon1, lat2, lon2) {
+  var R, a, c, d, dLat, dLon;
+  R = 6371;
+  dLat = deg2rad(lat2 - lat1);
+  dLon = deg2rad(lon2 - lon1);
+  a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  d = R * c;
+  return d;
+};
+
+window.deg2rad = function(deg) {
+  return deg * (Math.PI / 180);
 };
 
 
