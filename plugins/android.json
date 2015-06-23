@@ -597,6 +597,9 @@
         },
         "com.phonegap.plugins.barcodescanner": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
+        },
+        "org.apache.cordova.console": {
+            "PACKAGE_NAME": "br.com.wancharle.slmobile"
         }
     },
     "dependent_plugins": {}
