@@ -210,7 +210,7 @@ exports.Anotacoes = Anotacoes;
 
 
 
-},{"./gps_controle.coffee":2,"./listView.coffee":4,"./noteview.coffee":5}],2:[function(require,module,exports){
+},{"./gps_controle.coffee":2,"./listView.coffee":4,"./noteview.coffee":6}],2:[function(require,module,exports){
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 window.GPSControle = (function() {
@@ -406,11 +406,15 @@ window.App = (function() {
 
 
 
-},{"./gps_controle.coffee":2,"./userView.coffee":6,"./utils.coffee":7}],4:[function(require,module,exports){
-var ListView;
+},{"./gps_controle.coffee":2,"./userView.coffee":7,"./utils.coffee":8}],4:[function(require,module,exports){
+var NoteView;
 
-ListView = (function() {
+NoteView = require('./noteView.coffee').NoteView;
+
+window.ListView = (function() {
   ListView.dataPool = null;
+
+  ListView.noteView = null;
 
   function ListView(slsapi) {
     this.slsapi = slsapi;
@@ -431,7 +435,7 @@ ListView = (function() {
     ListView.dataPool.loadAllData('', position);
     this.slsapi.off(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP);
     return this.slsapi.on(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP, function(datapool) {
-      var distance, ds, html, i, j, k, len, len1, len2, li, n, note, ref, ref1, v;
+      var distance, ds, html, i, img, j, k, len, len1, len2, li, n, note, ref, ref1, v;
       html = '';
       $('#ulhistorico').empty();
       ref = datapool.dataSources;
@@ -452,7 +456,11 @@ ListView = (function() {
         for (k = 0, len2 = v.length; k < len2; k++) {
           n = v[k];
           distance = n[0], note = n[1];
-          li = "<li><a href=''><h2>" + note.user.username + "</h2><p>" + (formatDistance(distance)) + "</p><p>" + note.texto + "</p></a></li>";
+          img = '';
+          if (note.fotoURL) {
+            img = "<img src='" + note.fotoURL + "' />";
+          }
+          li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + "<h2>" + note.user.username + "</h2><p>" + (formatDistance(distance)) + "</p><p>" + (note.texto || note.comentarios) + "</p></a></li>";
           html = html + " " + li;
         }
       }
@@ -461,19 +469,89 @@ ListView = (function() {
     });
   };
 
-  ListView.prototype.selecionar = function() {};
+  ListView.selecionar = function(hashid) {
+    var note;
+    note = ListView.getNoteByHashid(hashid);
+    return ListView.noteView = new NoteView(note);
+  };
+
+  ListView.getNoteByHashid = function(hashid) {
+    var ds, i, j, len, len1, n, ref, ref1;
+    ref = ListView.dataPool.dataSources;
+    for (i = 0, len = ref.length; i < len; i++) {
+      ds = ref[i];
+      ref1 = ds.notes;
+      for (j = 0, len1 = ref1.length; j < len1; j++) {
+        n = ref1[j];
+        if (n.hashid && n.hashid === hashid) {
+          return n;
+        }
+      }
+    }
+    return null;
+  };
 
   return ListView;
 
 })();
 
 module.exports = {
-  ListView: ListView
+  ListView: window.ListView
 };
 
 
 
-},{}],5:[function(require,module,exports){
+},{"./noteView.coffee":5}],5:[function(require,module,exports){
+var NoteView;
+
+NoteView = (function() {
+  NoteView.mapa = null;
+
+  NoteView.criaMapa = function(note) {
+    var marker, pos;
+    pos = L.latLng(note.latitude, note.longitude);
+    NoteView.mapa = L.map('mapa', {
+      minZoom: 15,
+      maxZoom: 17
+    });
+    L.tileLayer('http://{s}.tiles.mapbox.com/v3/rezo.ihpe97f0/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(NoteView.mapa);
+    marker = L.marker(pos);
+    marker.addTo(NoteView.mapa);
+    NoteView.mapa.setView(pos, 16);
+    NoteView.mapa.invalidateSize(false);
+    return NoteView.mapa;
+  };
+
+  function NoteView(note1) {
+    this.note = note1;
+    $.mobile.changePage("#pgnoteview", {
+      changeHash: false
+    });
+    if (NoteView.mapa) {
+      NoteView.mapa.remove();
+    }
+    this.mapa = NoteView.criaMapa(this.note);
+    setTimeout(function() {
+      console.log('oi');
+      return NoteView.mapa.invalidateSize(false);
+    }, 1000);
+    $('#pgnoteview p.comentarios').html(this.note.comentarios || this.note.texto);
+    $('#pgnoteview p.categoria').html(this.note.cat || this.note.user.username);
+  }
+
+  return NoteView;
+
+})();
+
+module.exports = {
+  NoteView: NoteView
+};
+
+
+
+},{}],6:[function(require,module,exports){
 var GPSControle, NoteView;
 
 GPSControle = require('./gps_controle.coffee').GPSControle;
@@ -573,7 +651,7 @@ exports.NoteView = NoteView;
 
 
 
-},{"./gps_controle.coffee":2}],6:[function(require,module,exports){
+},{"./gps_controle.coffee":2}],7:[function(require,module,exports){
 var Anotacoes, UserView,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -669,7 +747,7 @@ exports.UserView = UserView;
 
 
 
-},{"./anotacoes.coffee":1}],7:[function(require,module,exports){
+},{"./anotacoes.coffee":1}],8:[function(require,module,exports){
 window.zeroPad = function(num, places) {
   var zero;
   zero = places - num.toString().length + 1;

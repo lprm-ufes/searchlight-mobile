@@ -1,8 +1,9 @@
+NoteView = require('./noteView.coffee').NoteView
 
-
-class ListView
+class window.ListView
   @dataPool: null
-
+  @noteView: null
+  
   constructor: (@slsapi) ->
     $.mobile.changePage("#pghistorico",{changeHash:false})
 
@@ -27,16 +28,30 @@ class ListView
           distance = getDistanceFromLatLonInKm(parseFloat(position.latitude),parseFloat(position.longitude),note.geo.coordinates[1],note.geo.coordinates[0])
           v.push([distance,note])
         v.sort((a,b)-> a[0] - b[0])
+
         #imprimindo o resultado
         for n in v
           [distance, note] = n
-          li = "<li><a href=''><h2>#{note.user.username}</h2><p>#{formatDistance(distance)}</p><p>#{note.texto}</p></a></li>"
+          img = ''
+          if note.fotoURL
+            img="<img src='#{note.fotoURL}' />"
+          li = "<li><a href='javascript:ListView.selecionar(\"#{note.hashid}\")'>#{img}<h2>#{note.user.username}</h2><p>#{formatDistance(distance)}</p><p>#{note.texto or note.comentarios}</p></a></li>"
           html="#{html} #{li}"
 
       $('#ulhistorico').html(html)
       $('#ulhistorico').listview().listview('refresh')
 
-  selecionar: () ->
+  @selecionar: (hashid) ->
+    note = ListView.getNoteByHashid(hashid)
+    ListView.noteView = new NoteView(note)
 
-module.exports= {ListView: ListView}
+
+  @getNoteByHashid: (hashid)->
+    for ds in ListView.dataPool.dataSources
+      for n in ds.notes
+        if n.hashid and n.hashid == hashid
+          return n
+    return null
+
+module.exports= {ListView: window.ListView}
 # vim: set ts=2 sw=2 sts=2 expandtab:

@@ -1,0 +1,21 @@
+
+div#pgnoteview(data-role="page", data-theme="a")
+    div(data-role="header")
+        a.ui-btn.ui-btn-left.ui-btn-inline.ui-mini.ui-corner-all.ui-btn-icon-left.ui-icon-back(href="#pghistorico") Voltar
+        h1 Searchlight 
+ 
+    div(data-role="content")
+        div#mapa(style="height:200px;width:100%")
+        div.ui-body.ui-body-a
+            p.categoria
+            p.comentarios
+            p
+                a.ui-btn.ui-shadow.ui-corner-all(href="javascript:Anotacoes.noteview.anexar()")
+                        i.fa.fa-paperclip
+                        span  &nbsp;Adicionar nota
+        
+
+
+    div(data-role="footer", data-position="fixed")
+        h4 &copy UFES
+

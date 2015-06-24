@@ -9,9 +9,11 @@ html
         meta(name="viewport", content="user-scalable=no, width=320")
         link(rel="stylesheet", href="bower_components/jquery-mobile-bower/css/jquery.mobile-1.4.2.css")
         link(rel="stylesheet", href="font-awesome-4.2.0/css/font-awesome.min.css")
+        link(rel="stylesheet", href="bower_components/leaflet/dist/leaflet.css")
         script(src="bower_components/jquery/dist/jquery.js")
         script(src="bower_components/slsapi/dist/slsapi.js")
         script(src="bower_components/jquery-mobile-bower/js/jquery.mobile-1.4.2.js")
+        script(src="bower_components/leaflet/dist/leaflet-src.js")
         title Searchlight Mobile
 
         
@@ -92,7 +94,7 @@ html
                 div(data-role="navbar")
                     ul
                         li: a.ui-btn-activ.ui-state-persist(href="#pglogado", data-icon='edit', data-rel='page', data-transition='none') Ações
-                        li: a(href="javascript:anotacoesview.listar()", data-icon='bars', data-rel='page', data-transition='none') Histórico
+                        li: a(href="javascript:anotacoesview.listar()", data-icon='bars', data-rel='page', data-transition='none') Notas
                         li: a(href="#pgperfil", data-icon='user', data-rel='page', data-transition='none') Perfil
 
         div#pghistorico(data-role="page", data-theme="a")
@@ -105,7 +107,7 @@ html
                 div(data-role="navbar")
                     ul
                         li: a(href="#pglogado", data-icon='edit', data-rel='page', data-transition='none') Ações
-                        li: a.ui-btn-active.ui-state-persist(href="javascript:anotacoesview.listar()", data-icon='bars', data-rel='page', data-transition='none') Histórico
+                        li: a.ui-btn-active.ui-state-persist(href="javascript:anotacoesview.listar()", data-icon='bars', data-rel='page', data-transition='none') Notas
                         li: a(href="#pgperfil", data-icon='user', data-rel='page', data-transition='none') Perfil
 
         div#pgperfil(data-role="page", data-theme="a")
@@ -133,9 +135,10 @@ html
                 div(data-role="navbar")
                     ul
                         li: a(href="#pglogado", data-icon='edit',data-rel='page', data-transition='none') Ações
-                        li: a(href="javascript:anotacoesview.listar()", data-icon='bars',data-rel='page', data-transition='none') Histórico
+                        li: a(href="javascript:anotacoesview.listar()", data-icon='bars',data-rel='page', data-transition='none') Notas
                         li: a.ui-btn-active.ui-state-persist(href="#pgperfil", data-role='tab', data-rel='page', data-transition='none',data-icon='user') Perfil
         include templates/pganotar
+        include templates/pgnoteview
 
         script(type="text/javascript", src="cordova.js")
         script(type="text/javascript", src="js/index.js")
