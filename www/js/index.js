@@ -369,12 +369,9 @@ window.App = (function() {
   App.prototype.vincularServico = function() {
     var self;
     self = this;
-    console.log('ola');
     return cordova.plugins.barcodeScanner.scan(function(result) {
-      console.log('ola');
       return self.loadServico(result.text);
     }, function(error) {
-      console.log('ola');
       return alert("Falha na leitura do código QR: " + error);
     });
   };
@@ -441,12 +438,10 @@ window.ListView = (function() {
       ref = datapool.dataSources;
       for (i = 0, len = ref.length; i < len; i++) {
         ds = ref[i];
-        console.log(ds.url);
         v = [];
         ref1 = ds.notes;
         for (j = 0, len1 = ref1.length; j < len1; j++) {
           note = ref1[j];
-          console.log(note);
           distance = getDistanceFromLatLonInKm(parseFloat(position.latitude), parseFloat(position.longitude), note.geo.coordinates[1], note.geo.coordinates[0]);
           v.push([distance, note]);
         }

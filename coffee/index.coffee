@@ -31,13 +31,10 @@ class window.App
       
     vincularServico: ->
       self = @
-      console.log('ola')
       cordova.plugins.barcodeScanner.scan(
         (result) ->
-          console.log('ola')
           self.loadServico(result.text)
         ,(error) ->
-          console.log('ola')
           alert("Falha na leitura do código QR: " + error)
         )
 
