@@ -547,106 +547,56 @@ module.exports = {
 
 
 },{}],6:[function(require,module,exports){
-var GPSControle, NoteView;
-
-GPSControle = require('./gps_controle.coffee').GPSControle;
+var NoteView;
 
 NoteView = (function() {
-  function NoteView(categoria, slsapi) {
-    this.slsapi = slsapi;
-    if (categoria) {
-      $('#pganotar-titulo').html("Anotação de " + categoria);
-      $('#pganotar-categoria').val(categoria);
-      $('#pganotar p.categoria').hide();
-    } else {
-      $('#pganotar-titulo').html("Anotação Personalizada");
-      $('#pganotar-categoria').val('');
-      $('#pganotar p.categoria').show();
-    }
-    $('#txtcomments').val('');
-    $('#fotoTirada').attr('src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
-    this.fotoURI = null;
-    $.mobile.changePage("#pganotar", {
+  NoteView.mapa = null;
+
+  NoteView.criaMapa = function(note) {
+    var marker, pos;
+    pos = L.latLng(note.latitude, note.longitude);
+    NoteView.mapa = L.map('mapa', {
+      minZoom: 15,
+      maxZoom: 17
+    });
+    L.tileLayer('http://{s}.tiles.mapbox.com/v3/rezo.ihpe97f0/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(NoteView.mapa);
+    marker = L.marker(pos);
+    marker.addTo(NoteView.mapa);
+    NoteView.mapa.setView(pos, 16);
+    NoteView.mapa.invalidateSize(false);
+    return NoteView.mapa;
+  };
+
+  function NoteView(note1) {
+    this.note = note1;
+    $.mobile.changePage("#pgnoteview", {
       changeHash: false
     });
-    this.slsapi.off(SLSAPI.Notes.EVENT_ADD_NOTE_START);
-    this.slsapi.on(SLSAPI.Notes.EVENT_ADD_NOTE_START, function() {
-      return $.mobile.loading('show', {
-        text: 'enviando',
-        textVisible: 'true'
-      });
-    });
-    this.slsapi.off(SLSAPI.Notes.EVENT_ADD_NOTE_FINISH);
-    this.slsapi.on(SLSAPI.Notes.EVENT_ADD_NOTE_FINISH, function() {
-      $.mobile.loading('hide');
-      return $.mobile.changePage("#pglogado", {
-        changeHash: false
-      });
-    });
-    this.slsapi.off(SLSAPI.Notes.EVENT_ADD_NOTE_FAIL);
-    this.slsapi.on(SLSAPI.Notes.EVENT_ADD_NOTE_FAIL, function() {
-      $.mobile.loading('hide');
-      return alert('Erro no envio da anotação. Verifique sua conexão wifi.');
-    });
+    if (NoteView.mapa) {
+      NoteView.mapa.remove();
+    }
+    this.mapa = NoteView.criaMapa(this.note);
+    setTimeout(function() {
+      console.log('oi');
+      return NoteView.mapa.invalidateSize(false);
+    }, 1000);
+    $('#pgnoteview p.comentarios').html(this.note.comentarios || this.note.texto);
+    $('#pgnoteview p.categoria').html(this.note.cat || this.note.user.username);
   }
-
-  NoteView.prototype.salvar = function() {
-    var note;
-    note = {};
-    note.comentarios = $('#txtcomments').val();
-    note.categoria = $('#pganotar-categoria').val();
-    note.fotoURI = this.fotoURI;
-    note.data_hora = (formatadata(new Date())) + " " + (formatahora(new Date()));
-    note.latitude = GPSControle.lat;
-    note.longitude = GPSControle.lng;
-    note.accuracy = GPSControle.accuracy;
-    note.user = this.slsapi.user.user_id;
-    return this.slsapi.notes.enviar(note, null, function(r) {
-      console.log("Code = " + r.responseCode);
-      console.log("Response = " + r.response);
-      return console.log("Sent = " + r.bytesSent);
-    }, function(error) {
-      $.mobile.loading('hide');
-      alert("Erro ao enviar anotação: Code = " + error.code);
-      console.log("upload error source " + error.source);
-      return console.log("upload error target " + error.target);
-    });
-  };
-
-  NoteView.prototype.fotografar = function() {
-    return navigator.camera.getPicture((function(_this) {
-      return function(imageURI) {
-        return _this.fotoOnSuccess(imageURI);
-      };
-    })(this), (function(_this) {
-      return function(message) {
-        return _this.fotoOnFail(message);
-      };
-    })(this), {
-      quality: 50,
-      destinationType: Camera.DestinationType.FILE_URI
-    });
-  };
-
-  NoteView.prototype.fotoOnSuccess = function(imageURI) {
-    $('#fotoTirada').attr('src', imageURI);
-    this.fotoURI = imageURI;
-    return console.log(imageURI);
-  };
-
-  NoteView.prototype.fotoOnFail = function(message) {
-    return alert("Não foi possível fotografar pois: " + message);
-  };
 
   return NoteView;
 
 })();
 
-exports.NoteView = NoteView;
+module.exports = {
+  NoteView: NoteView
+};
 
 
 
-},{"./gps_controle.coffee":2}],7:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 var Anotacoes, UserView,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 

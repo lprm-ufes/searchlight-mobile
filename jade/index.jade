@@ -98,10 +98,18 @@ html
                         li: a(href="#pgperfil", data-icon='user', data-rel='page', data-transition='none') Perfil
 
         div#pghistorico(data-role="page", data-theme="a")
-            div(data-role="header")
-                h1 Searchlight 
+            div(data-role="header", data-position='fixed')
+                h1 Notas
+                div#notasnav(data-role="navbar" data-iconpos="left")
+                    ul
+                        li
+                            a.ui-btn-active(href="#" data-rra-id="1") Coletadas
+                        li
+                             a(href="#" data-rra-id="2") Fornecidas 
+
             div(data-role="content")
-                ul#ulhistorico(data-role="listview",data-filter="true",data-filter-placeholder='Buscar', data-inset="true",data-shadow='false')
+                ul#ulcoletadas(data-role="listview",data-filter="true",data-filter-placeholder='Buscar', data-inset="true",data-shadow='false')
+                ul#ulfornecidas(data-role="listview",data-filter="true",data-filter-placeholder='Buscar', data-inset="true",data-shadow='false')
 
             div(data-role="footer", data-position="fixed")
                 div(data-role="navbar")

@@ -15,7 +15,8 @@
     "tests"
   ],
   "dependencies": {
-    "slsapi": "git@bitbucket.org:wancharle/searchlight-service-api.git"
+    "slsapi": "git@bitbucket.org:wancharle/searchlight-service-api.git",
+    "leaflet": "~0.7.3"
   },
   "devDependencies": {
     "jquery": "~2.1.1",
