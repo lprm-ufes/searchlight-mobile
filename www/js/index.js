@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var GPSControle, ListView, NoteView;
+var GPSControle, ListView, NoteAdd;
 
-NoteView = require('./noteview.coffee').NoteView;
+NoteAdd = require('./noteadd.coffee').NoteAdd;
 
 ListView = require('./listView.coffee').ListView;
 
@@ -17,7 +17,7 @@ window.Anotacoes = (function() {
   }
 
   Anotacoes.prototype.anotar = function(categoria) {
-    return Anotacoes.noteview = new NoteView(categoria, this.slsapi);
+    return Anotacoes.noteview = new NoteAdd(categoria, this.slsapi);
   };
 
   Anotacoes.prototype.listar = function() {
@@ -210,7 +210,7 @@ exports.Anotacoes = Anotacoes;
 
 
 
-},{"./gps_controle.coffee":2,"./listView.coffee":4,"./noteview.coffee":6}],2:[function(require,module,exports){
+},{"./gps_controle.coffee":2,"./listView.coffee":4,"./noteadd.coffee":6}],2:[function(require,module,exports){
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 window.GPSControle = (function() {
@@ -419,22 +419,34 @@ window.ListView = (function() {
       changeHash: false
     });
     ListView.dataPool = SLSAPI.dataPool.createDataPool(this.slsapi.mashup);
+    $("#notasnav a").off('click');
+    $("#notasnav a").on('click', function() {
+      var ul_id;
+      ul_id = $(this).data('ul-id');
+      $("#notasnav a").removeClass('ui-state-persist');
+      $(this).addClass('ui-state-persist');
+      $('#divulcoletadas,#divulfornecidas').hide();
+      return $("#" + ul_id).show();
+    });
     this.loadData();
   }
 
   ListView.prototype.loadData = function() {
-    var position;
+    var position, storageNotebookId;
     position = {
       latitude: GPSControle.lat,
       longitude: GPSControle.lng,
       distance: 10000
     };
     ListView.dataPool.loadAllData('', position);
+    storageNotebookId = this.slsapi.notes.storageNotebook.id;
+    console.log('storage', storageNotebookId);
     this.slsapi.off(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP);
     return this.slsapi.on(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP, function(datapool) {
-      var distance, ds, html, i, img, j, k, len, len1, len2, li, n, note, ref, ref1, v;
+      var distance, ds, html, htmlc, i, img, j, k, len, len1, len2, li, n, note, ref, ref1, v;
       html = '';
-      $('#ulhistorico').empty();
+      htmlc = '';
+      $('#ulfornecidas,#ulcoletadas').empty();
       ref = datapool.dataSources;
       for (i = 0, len = ref.length; i < len; i++) {
         ds = ref[i];
@@ -453,14 +465,22 @@ window.ListView = (function() {
           distance = n[0], note = n[1];
           img = '';
           if (note.fotoURL) {
-            img = "<img src='" + note.fotoURL + "' />";
+            img = "<img width='100px' height='100px' src='" + note.fotoURL + "' />";
           }
-          li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + "<h2>" + note.user.username + "</h2><p>" + (formatDistance(distance)) + "</p><p>" + (note.texto || note.comentarios) + "</p></a></li>";
-          html = html + " " + li;
+          if (ds.url.indexOf(storageNotebookId) > 0) {
+            li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + "<p>" + (note.texto || note.comentarios) + "</p><p class='ul-li-aside'>" + (formatDistance(distance)) + "</p></a></li>";
+            htmlc = htmlc + " " + li;
+          } else {
+            li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + "<p>" + (note.texto || note.comentarios) + "</p><p>" + (formatDistance(distance)) + "</p></a></li>";
+            html = html + " " + li;
+          }
         }
       }
-      $('#ulhistorico').html(html);
-      return $('#ulhistorico').listview().listview('refresh');
+      $('#ulfornecidas').html(html);
+      $('#ulcoletadas').html(htmlc);
+      $('#ulfornecidas,#ulcoletadas').listview().listview('refresh');
+      $('#divulcoletadas,#divulfornecidas').hide();
+      return $("#notasnav a.coletadas").click();
     });
   };
 
@@ -529,7 +549,6 @@ NoteView = (function() {
     }
     this.mapa = NoteView.criaMapa(this.note);
     setTimeout(function() {
-      console.log('oi');
       return NoteView.mapa.invalidateSize(false);
     }, 1000);
     $('#pgnoteview p.comentarios').html(this.note.comentarios || this.note.texto);
@@ -547,56 +566,106 @@ module.exports = {
 
 
 },{}],6:[function(require,module,exports){
-var NoteView;
+var GPSControle, NoteAdd;
 
-NoteView = (function() {
-  NoteView.mapa = null;
+GPSControle = require('./gps_controle.coffee').GPSControle;
 
-  NoteView.criaMapa = function(note) {
-    var marker, pos;
-    pos = L.latLng(note.latitude, note.longitude);
-    NoteView.mapa = L.map('mapa', {
-      minZoom: 15,
-      maxZoom: 17
-    });
-    L.tileLayer('http://{s}.tiles.mapbox.com/v3/rezo.ihpe97f0/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(NoteView.mapa);
-    marker = L.marker(pos);
-    marker.addTo(NoteView.mapa);
-    NoteView.mapa.setView(pos, 16);
-    NoteView.mapa.invalidateSize(false);
-    return NoteView.mapa;
-  };
-
-  function NoteView(note1) {
-    this.note = note1;
-    $.mobile.changePage("#pgnoteview", {
+NoteAdd = (function() {
+  function NoteAdd(categoria, slsapi) {
+    this.slsapi = slsapi;
+    if (categoria) {
+      $('#pganotar-titulo').html("Anotação de " + categoria);
+      $('#pganotar-categoria').val(categoria);
+      $('#pganotar p.categoria').hide();
+    } else {
+      $('#pganotar-titulo').html("Anotação Personalizada");
+      $('#pganotar-categoria').val('');
+      $('#pganotar p.categoria').show();
+    }
+    $('#txtcomments').val('');
+    $('#fotoTirada').attr('src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
+    this.fotoURI = null;
+    $.mobile.changePage("#pganotar", {
       changeHash: false
     });
-    if (NoteView.mapa) {
-      NoteView.mapa.remove();
-    }
-    this.mapa = NoteView.criaMapa(this.note);
-    setTimeout(function() {
-      console.log('oi');
-      return NoteView.mapa.invalidateSize(false);
-    }, 1000);
-    $('#pgnoteview p.comentarios').html(this.note.comentarios || this.note.texto);
-    $('#pgnoteview p.categoria').html(this.note.cat || this.note.user.username);
+    this.slsapi.off(SLSAPI.Notes.EVENT_ADD_NOTE_START);
+    this.slsapi.on(SLSAPI.Notes.EVENT_ADD_NOTE_START, function() {
+      return $.mobile.loading('show', {
+        text: 'enviando',
+        textVisible: 'true'
+      });
+    });
+    this.slsapi.off(SLSAPI.Notes.EVENT_ADD_NOTE_FINISH);
+    this.slsapi.on(SLSAPI.Notes.EVENT_ADD_NOTE_FINISH, function() {
+      $.mobile.loading('hide');
+      return $.mobile.changePage("#pglogado", {
+        changeHash: false
+      });
+    });
+    this.slsapi.off(SLSAPI.Notes.EVENT_ADD_NOTE_FAIL);
+    this.slsapi.on(SLSAPI.Notes.EVENT_ADD_NOTE_FAIL, function() {
+      $.mobile.loading('hide');
+      return alert('Erro no envio da anotação. Verifique sua conexão wifi.');
+    });
   }
 
-  return NoteView;
+  NoteAdd.prototype.salvar = function() {
+    var note;
+    note = {};
+    note.comentarios = $('#txtcomments').val();
+    note.categoria = $('#pganotar-categoria').val();
+    note.fotoURI = this.fotoURI;
+    note.data_hora = (formatadata(new Date())) + " " + (formatahora(new Date()));
+    note.latitude = GPSControle.lat;
+    note.longitude = GPSControle.lng;
+    note.accuracy = GPSControle.accuracy;
+    note.user = this.slsapi.user.user_id;
+    return this.slsapi.notes.enviar(note, null, function(r) {
+      console.log("Code = " + r.responseCode);
+      console.log("Response = " + r.response);
+      return console.log("Sent = " + r.bytesSent);
+    }, function(error) {
+      $.mobile.loading('hide');
+      alert("Erro ao enviar anotação: Code = " + error.code);
+      console.log("upload error source " + error.source);
+      return console.log("upload error target " + error.target);
+    });
+  };
+
+  NoteAdd.prototype.fotografar = function() {
+    return navigator.camera.getPicture((function(_this) {
+      return function(imageURI) {
+        return _this.fotoOnSuccess(imageURI);
+      };
+    })(this), (function(_this) {
+      return function(message) {
+        return _this.fotoOnFail(message);
+      };
+    })(this), {
+      quality: 50,
+      destinationType: Camera.DestinationType.FILE_URI
+    });
+  };
+
+  NoteAdd.prototype.fotoOnSuccess = function(imageURI) {
+    $('#fotoTirada').attr('src', imageURI);
+    this.fotoURI = imageURI;
+    return console.log(imageURI);
+  };
+
+  NoteAdd.prototype.fotoOnFail = function(message) {
+    return alert("Não foi possível fotografar pois: " + message);
+  };
+
+  return NoteAdd;
 
 })();
 
-module.exports = {
-  NoteView: NoteView
-};
+exports.NoteAdd = NoteAdd;
 
 
 
-},{}],7:[function(require,module,exports){
+},{"./gps_controle.coffee":2}],7:[function(require,module,exports){
 var Anotacoes, UserView,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 

@@ -22,7 +22,7 @@ class NoteView
       NoteView.mapa.remove()
     @mapa = NoteView.criaMapa(@note)
     setTimeout(()-> 
-      console.log('oi');NoteView.mapa.invalidateSize(false);
+      NoteView.mapa.invalidateSize(false);
     ,1000)
 
 

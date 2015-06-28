@@ -1,4 +1,4 @@
-NoteView = require('./noteview.coffee').NoteView
+NoteAdd = require('./noteadd.coffee').NoteAdd
 ListView = require('./listView.coffee').ListView
 
 GPSControle = require('./gps_controle.coffee').GPSControle
@@ -10,7 +10,7 @@ class window.Anotacoes
     @slsapi = slsapi
 
   anotar: (categoria)->
-    Anotacoes.noteview = new NoteView(categoria,@slsapi)
+    Anotacoes.noteview = new NoteAdd(categoria,@slsapi)
 
   listar: ()->
     Anotacoes.listview = new ListView(@slsapi)

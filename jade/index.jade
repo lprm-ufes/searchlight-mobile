@@ -103,13 +103,15 @@ html
                 div#notasnav(data-role="navbar" data-iconpos="left")
                     ul
                         li
-                            a.ui-btn-active(href="#" data-rra-id="1") Coletadas
+                            a.ui-btn-active.coletadas( data-ul-id="divulcoletadas") Coletadas
                         li
-                             a(href="#" data-rra-id="2") Fornecidas 
+                             a.fornecidas(data-ul-id="divulfornecidas") Fornecidas 
 
             div(data-role="content")
-                ul#ulcoletadas(data-role="listview",data-filter="true",data-filter-placeholder='Buscar', data-inset="true",data-shadow='false')
-                ul#ulfornecidas(data-role="listview",data-filter="true",data-filter-placeholder='Buscar', data-inset="true",data-shadow='false')
+                div#divulcoletadas
+                    ul#ulcoletadas(data-role="listview",data-filter="true",data-filter-placeholder='Buscar notas coletadas', data-inset="true",data-shadow='false')
+                div#divulfornecidas
+                    ul#ulfornecidas(data-role="listview",data-filter="true",data-filter-placeholder='Buscar notas fornecidas', data-inset="true",data-shadow='false')
 
             div(data-role="footer", data-position="fixed")
                 div(data-role="navbar")

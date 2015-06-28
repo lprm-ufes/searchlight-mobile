@@ -1,7 +1,7 @@
 GPSControle = require('./gps_controle.coffee').GPSControle
 
 
-class NoteView
+class NoteAdd
   constructor: (categoria,slsapi) ->
     @slsapi = slsapi
     if categoria
@@ -79,5 +79,5 @@ class NoteView
   fotoOnFail: (message)-> 
           alert("Não foi possível fotografar pois: #{message}")
 
-exports.NoteView = NoteView
+exports.NoteAdd = NoteAdd
 # vim: set ts=2 sw=2 sts=2 expandtab:
