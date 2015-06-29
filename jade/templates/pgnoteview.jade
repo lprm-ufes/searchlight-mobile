@@ -3,6 +3,10 @@ div#pgnoteview(data-role="page", data-theme="a")
     div(data-role="header")
         a.ui-btn.ui-btn-left.ui-btn-inline.ui-mini.ui-corner-all.ui-btn-icon-left.ui-icon-back(href="#pghistorico") Voltar
         h1 Searchlight 
+        a.ui-btn-right.ui-mini.btn-deletar-nota(data-role='button',data-inline='true')
+            i.fa.fa-trash-o
+            span  
+            
  
     div(data-role="content")
         div#mapa(style="height:200px;width:100%")
@@ -10,11 +14,11 @@ div#pgnoteview(data-role="page", data-theme="a")
             p.categoria
             p.comentarios
             p
-                a.ui-btn.ui-shadow.ui-corner-all(href="javascript:Anotacoes.noteview.anexar()")
-                        i.fa.fa-paperclip
-                        span  &nbsp;Adicionar nota
-        
-
+                a.btn-adicionar-nota(data-role='button')
+                    i.fa.fa-plus
+                    span  &nbsp;Adicionar nota
+        div
+            ul#ulfilhos(data-role="listview",data-inset="true",data-shadow='false')
 
     div(data-role="footer", data-position="fixed")
         h4 &copy UFES

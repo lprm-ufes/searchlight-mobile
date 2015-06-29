@@ -2,14 +2,22 @@ GPSControle = require('./gps_controle.coffee').GPSControle
 
 
 class NoteAdd
-  constructor: (categoria,slsapi) ->
+  constructor: (categoria,slsapi,anexar=false,note=null) ->
     @slsapi = slsapi
+    if anexar
+      @parentId = note.hashid
+    $('#pganotar p.nota-relacionada').hide()
     if categoria
       $('#pganotar-titulo').html("Anotação de #{categoria}")
       $('#pganotar-categoria').val(categoria)
       $('#pganotar p.categoria').hide()
     else
-      $('#pganotar-titulo').html("Anotação Personalizada")
+      if anexar
+        $('#pganotar-titulo').html("Anotação Relacionada")
+        $('#pganotar p.nota-relacionada').html("<strong>Nota relacionada:</strong>#{note.comentarios or note.texto}")
+        $('#pganotar p.nota-relacionada').show()
+      else
+        $('#pganotar-titulo').html("Anotação Personalizada")
       $('#pganotar-categoria').val('')
       $('#pganotar p.categoria').show()
 
@@ -18,6 +26,12 @@ class NoteAdd
     @fotoURI = null
 
     $.mobile.changePage("#pganotar",{changeHash:false})
+
+    $('#pganotar a.btnFotografar').off('click')
+    $('#pganotar a.btnFotografar').on('click', => @fotografar())
+
+    $('#pganotar a.btnSalvar').off('click')
+    $('#pganotar a.btnSalvar').on('click', => @salvar())
 
 
     @slsapi.off SLSAPI.Notes.EVENT_ADD_NOTE_START
@@ -36,6 +50,8 @@ class NoteAdd
 
   salvar: () ->
     note = {}
+    if @parentId
+      note.id_parent = @parentId
     note.comentarios = $('#txtcomments').val()
     note.categoria = $('#pganotar-categoria').val()
     note.fotoURI = @fotoURI

@@ -8,198 +8,34 @@ ListView = require('./listView.coffee').ListView;
 GPSControle = require('./gps_controle.coffee').GPSControle;
 
 window.Anotacoes = (function() {
-  Anotacoes.tolerancia = 5;
-
-  Anotacoes.noteview = null;
-
   function Anotacoes(slsapi) {
     this.slsapi = slsapi;
   }
 
   Anotacoes.prototype.anotar = function(categoria) {
-    return Anotacoes.noteview = new NoteAdd(categoria, this.slsapi);
+    return Anotacoes.noteadd = new NoteAdd(categoria, this.slsapi);
+  };
+
+  Anotacoes.prototype.anexar = function(note) {
+    return Anotacoes.noteadd = new NoteAdd(null, this.slsapi, true, note);
   };
 
   Anotacoes.prototype.listar = function() {
     return Anotacoes.listview = new ListView(this.slsapi);
   };
 
-  Anotacoes.prototype.sincronizar = function() {
-    var anotacoesPendentes;
-    return anotacoesPendentes = this.getAnotacoes();
-  };
-
-  Anotacoes.prototype.getAnotacoes = function() {
-    var ativs;
-    ativs = window.localStorage.getObject('lista_de_anotacoes');
-    if (ativs) {
-      return ativs;
-    } else {
-      return new Array();
+  Anotacoes.prototype.deletar = function(note) {
+    if (confirm('Deseja apagar esta anotação?')) {
+      return this.slsapi.notes.getByQuery("hashid=" + note.hashid, (function(_this) {
+        return function(notes) {
+          return _this.slsapi.notes["delete"](notes[0].id, function() {
+            return _this.listar();
+          });
+        };
+      })(this), function() {
+        return alert('erro ao deletar nota');
+      });
     }
-  };
-
-  Anotacoes.prototype.setAnotacoes = function(anotacoes) {
-    return window.localStorage.setObject('lista_de_anotacoes', anotacoes);
-  };
-
-  Anotacoes.prototype.fim = function(id) {
-    var ativ, ativs, d, horario_fim, i, j, len, limite_fim, n_participantes, n_presentes;
-    n_presentes = parseInt($('#txtpresentes' + id).val());
-    n_participantes = parseInt($('#txtparticipantes' + id).val());
-    if (isInteger(n_presentes) && isInteger(n_participantes)) {
-      if (n_presentes < n_participantes) {
-        alert("O número de pessoas presentes deve ser igual ou superior ou número de pessoas participantes da atividade!");
-        return;
-      }
-      horario_fim = formatahora(new Date());
-      d = new Date();
-      d.setMinutes(d.getMinutes() - Anotacoes.tolerancia);
-      limite_fim = formatahora(d);
-      ativs = this.getAnotacoes();
-      for (i = j = 0, len = ativs.length; j < len; i = ++j) {
-        ativ = ativs[i];
-        if (parseInt(ativ.id) === parseInt(id)) {
-          if (ativ.h_inicio_registrado) {
-            if (limite_fim > ativ.h_fim) {
-              alert("Periodo para finalizar esta atividade terminou. Por isso, esta atividade NÃO será registrada.");
-              return false;
-            }
-            ativ.h_fim_registrado = horario_fim;
-            ativ.gps = GPSControle.gps;
-            ativ.numero_de_presentes = n_presentes;
-            ativ.numero_de_participantes = n_participantes;
-            ativ.realizada = true;
-          } else {
-            alert("É preciso iniciar a atividade antes de finalizar!");
-            return false;
-          }
-        }
-      }
-      this.setAnotacoes(ativs);
-      return anotacoesview.atualizaUI();
-    } else {
-      alert("Para finalizar a atividade é preciso informar o número de participantes e presentes");
-      return false;
-    }
-  };
-
-  Anotacoes.prototype.start = function(id) {
-    var ativ, ativs, d, horario_inicio, i, j, len, limite_inicio;
-    ativs = this.getAnotacoes();
-    for (i = j = 0, len = ativs.length; j < len; i = ++j) {
-      ativ = ativs[i];
-      if (parseInt(ativ.id) === parseInt(id)) {
-        horario_inicio = formatahora(new Date());
-        d = new Date();
-        d.setMinutes(d.getMinutes() + Anotacoes.tolerancia);
-        limite_inicio = formatahora(d);
-        if (limite_inicio > ativ.h_inicio) {
-          ativ['h_inicio_registrado'] = horario_inicio;
-          $('li.ativ' + id + ' button.ui-btn.start').hide();
-          $('li.ativ' + id + ' p.h_inicio_registrado').show();
-          $('li.ativ' + id + ' p.h_inicio_registrado').html('Iniciou as ' + horario_inicio.slice(0, 5) + 'h');
-        } else {
-          alert("Vc não pode iniciar esta atividade ainda!");
-        }
-      }
-    }
-    return this.setAnotacoes(ativs);
-  };
-
-  Anotacoes.prototype.atualizaOntem = function(ativ) {
-    var li;
-    li = "<li>";
-    li += "<h2 data-inset='false'>" + ativ['h_inicio'].slice(0, 5) + "h - " + ativ['h_fim'].slice(0, 5) + "h</h2><div>";
-    li += "<p> Gerência: " + ativ['gerencia'] + "</p>";
-    li += "<span style='display:none' class='data'> " + ativ['data'] + '</span>';
-    if (ativ.realizada) {
-      li += "<p>Realizada de " + ativ['h_inicio_registrado'].slice(0, 5) + "h às " + ativ['h_fim_registrado'].slice(0, 5) + "h</p>";
-    } else {
-      li += "<p>De " + ativ['h_inicio'].slice(0, 5) + "h às " + ativ['h_fim'].slice(0, 5) + "h</p>";
-    }
-    if (ativ['tipo'] === Atividade.TIPO_AULA) {
-      li += "<p> Participantes/Presentes: " + ativ['numero_de_participantes'] + "/" + ativ['numero_de_presentes'] + "</p>";
-    }
-    li += "<p>GPS: " + ativ['gps'] + "</p>";
-    li += "<p>Professor: " + ativ['usuario'] + "</p>";
-    return li + "</div></li>";
-  };
-
-  Anotacoes.prototype.atualizaHoje = function(ativ) {
-    var li;
-    li = "<li class='ativ" + ativ.id + "' data-role='collapsible' data-iconpos='right' data-inset='false'>";
-    li += "<h2 data-inset='false'>" + ativ['h_inicio'].slice(0, 5) + 'h - ' + ativ['h_fim'].slice(0, 5) + "h</h2>";
-    li += "<span style='display:none' class='data'> " + ativ['data'] + '</span>';
-    li += "<p> Gerência: " + ativ['gerencia'] + "</p>";
-    li += "<p> Local: " + ativ['local'] + "</p>";
-    li += "<p> De " + ativ['h_inicio'].slice(0, 5) + "h às " + ativ['h_fim'].slice(0, 5) + "h</p>";
-    li += "<div data-role=\"fieldcontain\"> <label for=\"txtpresentes" + ativ.id + "\">Presentes:</label> <input name=\"txtpresentes" + ativ.id + "\" class=\"numero\" id=\"txtpresentes" + ativ.id + "\" step=\"1\"  value=\"" + (getIntVazio(ativ.numero_de_presentes)) + "\" type=\"number\"/> </div> <div data-role=\"fieldcontain\"> <label for=\"txtparticipantes" + ativ.id + "\">Participantes:</label> <input name=\"txtparticipantes" + ativ.id + "\" class=\"numero\" id=\"txtparticipantes" + ativ.id + "\" step=\"1\"  value=\"" + (getIntVazio(ativ.numero_de_participantes)) + "\" type=\"number\"/> </div>";
-    li += '<div class="ui-grid-b"> <div class="ui-block-a">';
-    if (ativ.h_inicio_registrado) {
-      li += '<p class="h_inicio_registrado">Iniciou as ' + ativ.h_inicio_registrado.slice(0, 5) + 'h</p>';
-    } else {
-      li += '<button class="ui-btn start" onclick="anotacoesview.start(' + ativ.id + ')">iniciar</button><p style="display:none" class="h_inicio_registrado"></p>';
-    }
-    li += '</div> <div class="ui-block-b"> </div> <div class="ui-block-c"> <button class="ui-btn" onclick="anotacoesview.fim(' + ativ.id + ')">finalizar</button></div> </div>';
-    li += "</li>";
-    return li;
-  };
-
-  Anotacoes.prototype.atualizaAmanha = function(ativ) {
-    var li;
-    li = "<li >";
-    li += "<h2 data-inset='false'>" + ativ['h_inicio'].slice(0, 5) + "h - " + ativ['h_fim'].slice(0, 5) + "h</h2><div>";
-    li += "<p> Gerência: " + ativ['gerencia'] + "</p>";
-    li += "<span  style='display:none' class='data'> " + ativ['data'] + '</span>';
-    li += "<p>Local: " + ativ['local'] + "</p>";
-    li += "<p>De " + ativ['h_inicio'].slice(0, 5) + "h às " + ativ['h_fim'].slice(0, 5) + "h</p>";
-    li += "<p>Professor: " + ativ['usuario'] + "</p>";
-    return li + "</div></li>";
-  };
-
-  Anotacoes.prototype.atualizaUI = function() {
-    var acoes, anotacoes, ativ, htmlacoes, htmlhistorico, htmlontem, j, len;
-    anotacoes = this.getAnotacoes();
-    acoes = str2datePT(formatadata(new Date()));
-    if (anotacoes) {
-      htmlacoes = "";
-      htmlontem = "";
-      htmlhistorico = "";
-      for (j = 0, len = anotacoes.length; j < len; j++) {
-        ativ = anotacoes[j];
-        if ((str2datePT(ativ.data) < acoes) || (ativ.realizada === true)) {
-          htmlontem += this.atualizaOntem(ativ);
-        } else if (str2datePT(ativ.data) === acoes) {
-          htmlacoes += this.atualizaHoje(ativ);
-        } else {
-          htmlhistorico += this.atualizaAmanha(ativ);
-        }
-      }
-      $('#ulontem').html(htmlontem);
-      $('#ulhistorico').html(htmlhistorico);
-      $('#ulhistorico,#ulontem').listview({
-        autodividers: true,
-        autodividersSelector: function(li) {
-          return $(li).find('.data').text();
-        }
-      }).listview('refresh');
-      $('#ulacoes').listview().listview('refresh');
-      $('div[data-role=collapsible]').collapsible();
-      $('li[data-role=collapsible]').collapsible();
-      $('input.numero').textinput();
-      return $('input.numero').textinput('refresh');
-    }
-  };
-
-  Anotacoes.prototype.clearUI = function() {
-    var htmlhistorico, htmlontem;
-    htmlontem = "";
-    htmlhistorico = "";
-    $('#ulontem').html(htmlontem);
-    $('#ulhistorico').html(htmlhistorico);
-    $('#ulhistorico,#ulontem').listview().listview('refresh');
-    return $('#ulacoes').listview().listview('refresh');
   };
 
   return Anotacoes;
@@ -440,7 +276,7 @@ window.ListView = (function() {
     };
     ListView.dataPool.loadAllData('', position);
     storageNotebookId = this.slsapi.notes.storageNotebook.id;
-    console.log('storage', storageNotebookId);
+    ListView.storageNotebookId = storageNotebookId;
     this.slsapi.off(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP);
     return this.slsapi.on(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP, function(datapool) {
       var distance, ds, html, htmlc, i, img, j, k, len, len1, len2, li, n, note, ref, ref1, v;
@@ -539,6 +375,20 @@ NoteView = (function() {
     return NoteView.mapa;
   };
 
+  NoteView.getFilhos = function(note) {
+    var ds, f, filhos, i, len, ref;
+    filhos = [];
+    ref = ListView.dataPool.dataSources;
+    for (i = 0, len = ref.length; i < len; i++) {
+      ds = ref[i];
+      f = ds.notesChildren[note.hashid];
+      if (f) {
+        filhos = filhos.concat(f);
+      }
+    }
+    return filhos;
+  };
+
   function NoteView(note1) {
     this.note = note1;
     $.mobile.changePage("#pgnoteview", {
@@ -553,7 +403,46 @@ NoteView = (function() {
     }, 1000);
     $('#pgnoteview p.comentarios').html(this.note.comentarios || this.note.texto);
     $('#pgnoteview p.categoria').html(this.note.cat || this.note.user.username);
+    $('#pgnoteview a.btn-adicionar-nota').off('click');
+    $('#pgnoteview a.btn-adicionar-nota').on('click', (function(_this) {
+      return function() {
+        return anotacoesview.anexar(_this.note);
+      };
+    })(this));
+    $('#pgnoteview a.btn-deletar-nota').off('click');
+    $('#pgnoteview a.btn-deletar-nota').on('click', (function(_this) {
+      return function() {
+        return anotacoesview.deletar(_this.note);
+      };
+    })(this));
+    if (this.note.notebook && this.note.notebook === ListView.storageNotebookId) {
+      $('#pgnoteview a.btn-deletar-nota').show();
+      $('#pgnoteview a.btn-adicionar-nota').hide();
+    } else {
+      $('#pgnoteview a.btn-deletar-nota').hide();
+      $('#pgnoteview a.btn-adicionar-nota').show();
+    }
+    this.listaFilhos();
   }
+
+  NoteView.prototype.listaFilhos = function() {
+    var fi, html, i, img, len, li, note;
+    $('#ulfilhos').empty();
+    html = '';
+    fi = NoteView.getFilhos(this.note);
+    console.log(fi);
+    for (i = 0, len = fi.length; i < len; i++) {
+      note = fi[i];
+      img = '';
+      if (note.fotoURL) {
+        img = "<img width='100px' height='100px' src='" + note.fotoURL + "' />";
+      }
+      li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + "<p>" + (note.texto || note.comentarios) + "</p></a></li>";
+      html = html + " " + li;
+    }
+    $('#ulfilhos').html(html);
+    return $('#ulfilhos').listview().listview('refresh');
+  };
 
   return NoteView;
 
@@ -571,14 +460,30 @@ var GPSControle, NoteAdd;
 GPSControle = require('./gps_controle.coffee').GPSControle;
 
 NoteAdd = (function() {
-  function NoteAdd(categoria, slsapi) {
+  function NoteAdd(categoria, slsapi, anexar, note) {
+    if (anexar == null) {
+      anexar = false;
+    }
+    if (note == null) {
+      note = null;
+    }
     this.slsapi = slsapi;
+    if (anexar) {
+      this.parentId = note.hashid;
+    }
+    $('#pganotar p.nota-relacionada').hide();
     if (categoria) {
       $('#pganotar-titulo').html("Anotação de " + categoria);
       $('#pganotar-categoria').val(categoria);
       $('#pganotar p.categoria').hide();
     } else {
-      $('#pganotar-titulo').html("Anotação Personalizada");
+      if (anexar) {
+        $('#pganotar-titulo').html("Anotação Relacionada");
+        $('#pganotar p.nota-relacionada').html("<strong>Nota relacionada:</strong>" + (note.comentarios || note.texto));
+        $('#pganotar p.nota-relacionada').show();
+      } else {
+        $('#pganotar-titulo').html("Anotação Personalizada");
+      }
       $('#pganotar-categoria').val('');
       $('#pganotar p.categoria').show();
     }
@@ -588,6 +493,18 @@ NoteAdd = (function() {
     $.mobile.changePage("#pganotar", {
       changeHash: false
     });
+    $('#pganotar a.btnFotografar').off('click');
+    $('#pganotar a.btnFotografar').on('click', (function(_this) {
+      return function() {
+        return _this.fotografar();
+      };
+    })(this));
+    $('#pganotar a.btnSalvar').off('click');
+    $('#pganotar a.btnSalvar').on('click', (function(_this) {
+      return function() {
+        return _this.salvar();
+      };
+    })(this));
     this.slsapi.off(SLSAPI.Notes.EVENT_ADD_NOTE_START);
     this.slsapi.on(SLSAPI.Notes.EVENT_ADD_NOTE_START, function() {
       return $.mobile.loading('show', {
@@ -612,6 +529,9 @@ NoteAdd = (function() {
   NoteAdd.prototype.salvar = function() {
     var note;
     note = {};
+    if (this.parentId) {
+      note.id_parent = this.parentId;
+    }
     note.comentarios = $('#txtcomments').val();
     note.categoria = $('#pganotar-categoria').val();
     note.fotoURI = this.fotoURI;
@@ -740,8 +660,6 @@ UserView = (function() {
   UserView.prototype.load = function() {
     if (this.slsapi.user.isLogged()) {
       this.anotacoesview = new Anotacoes(this.slsapi);
-      this.anotacoesview.clearUI();
-      this.anotacoesview.sincronizar();
       window.anotacoesview = this.anotacoesview;
       return $.mobile.changePage("#pglogado", {
         changeHash: false

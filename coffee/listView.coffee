@@ -26,7 +26,7 @@ class window.ListView
     ListView.dataPool.loadAllData('',position)
 
     storageNotebookId = @slsapi.notes.storageNotebook.id
-    console.log('storage',storageNotebookId)
+    ListView.storageNotebookId = storageNotebookId
 
     @slsapi.off SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP
     @slsapi.on SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP, (datapool)->

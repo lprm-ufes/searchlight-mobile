@@ -8,6 +8,7 @@ div#pganotar(data-role="page", data-theme="a")
         div.ui-body.ui-body-a
             h3#pganotar-titulo Categoria
 
+            p.nota-relacionada
             p.categoria
                 label(for="pganotar-categoria", class="ui-hidden-accessible") Categoria
                 input#pganotar-categoria(type="text",name="pganotar-categoria", placeholder="Categoria", value="")
@@ -18,7 +19,7 @@ div#pganotar(data-role="page", data-theme="a")
 
             fieldset.ui-grid-a
                 div.ui-block-a 
-                    a.ui-btn.ui-shadow.ui-corner-all(href="javascript:Anotacoes.noteview.fotografar()")
+                    a.ui-btn.ui-shadow.ui-corner-all.btnFotografar
                         i.fa.fa-camera-retro
                         br
                         span  Fotografar
@@ -35,7 +36,7 @@ div#pganotar(data-role="page", data-theme="a")
            
         fieldset.ui-grid-solo
             div.ui-block-a
-                a.ui-btn.ui-btn-b.ui-shadow.ui-corner-all(href="javascript:Anotacoes.noteview.salvar()") 
+                a.btnSalvar.ui-btn.ui-btn-b.ui-shadow.ui-corner-all
                     i.fa.fa-save
                     span &nbsp;Salvar
 

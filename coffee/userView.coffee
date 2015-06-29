@@ -53,8 +53,6 @@ class UserView
   load: () ->
     if @slsapi.user.isLogged()
       @anotacoesview = new Anotacoes(@slsapi)
-      @anotacoesview.clearUI()
-      @anotacoesview.sincronizar()
       window.anotacoesview = @anotacoesview
 
       $.mobile.changePage("#pglogado",{changeHash:false})
