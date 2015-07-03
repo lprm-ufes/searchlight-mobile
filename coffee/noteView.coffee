@@ -39,6 +39,7 @@ class NoteView
     $('#pgnoteview p.comentarios').html(@note.comentarios or @note.texto)
     $('#pgnoteview p.categoria').html(@note.cat or @note.user.username)
     
+
     $('#pgnoteview a.btn-adicionar-nota').off('click')
     $('#pgnoteview a.btn-adicionar-nota').on 'click', =>
       anotacoesview.anexar(@note)
@@ -46,6 +47,24 @@ class NoteView
     $('#pgnoteview a.btn-deletar-nota').off('click')
     $('#pgnoteview a.btn-deletar-nota').on 'click', =>
       anotacoesview.deletar(@note)
+
+    if @note.fotoURL 
+      $('#pgnoteview p.foto').html("<img src='#{@note.fotoURL}' width='100%' />")
+      $('#pgnoteview p.foto').show()
+    else 
+      $('#pgnoteview p.foto').hide()
+
+    if @note.youtubeVideoId
+      $('#pgnoteview a.btn-tocar-video').off('click')
+      $('#pgnoteview a.btn-tocar-video').on 'click', =>
+        YoutubeVideoPlayer.openVideo(@note.youtubeVideoId);
+
+      $('#notevideo').attr('src',"http://img.youtube.com/vi/#{@note.youtubeVideoId}/sddefault.jpg")
+      $('#pgnoteview fieldset.video').show()
+    else
+      $('#pgnoteview fieldset.video').hide()
+
+
 
     if @note.notebook and @note.notebook ==ListView.storageNotebookId
       $('#pgnoteview a.btn-deletar-nota').show()
@@ -64,9 +83,17 @@ class NoteView
     console.log(fi)
     for note in fi
       img = ''
+      video = ''
       if note.fotoURL
         img="<img width='100px' height='100px' src='#{note.fotoURL}' />"
-      li = "<li><a href='javascript:ListView.selecionar(\"#{note.hashid}\")'>#{img}<p>#{note.texto or note.comentarios}</p></a></li>"
+      else
+        if note.youtubeVideoId
+          img="<img width='100px' height='100px' src='http://img.youtube.com/vi/#{note.youtubeVideoId}/sddefault.jpg' />"
+
+      if note.youtubeVideoId
+        video = "<span class='fa fa-file-video-o'>&nbsp;</span>"
+
+      li = "<li><a href='javascript:ListView.selecionar(\"#{note.hashid}\")'>#{img}#{video}<p>#{note.texto or note.comentarios}</p></a></li>"
       html="#{html} #{li}"
 
     $('#ulfilhos').html(html)

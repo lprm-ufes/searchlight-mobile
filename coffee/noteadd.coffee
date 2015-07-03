@@ -23,12 +23,18 @@ class NoteAdd
 
     $('#txtcomments').val('')
     $('#fotoTirada').attr('src','data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==')
+    $('#youtubeThumb').attr('src','data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==')
     @fotoURI = null
 
     $.mobile.changePage("#pganotar",{changeHash:false})
 
+    $('#fotoTirada').off('click')
+    $('#fotoTirada').on('click', => @escolherFoto())
     $('#pganotar a.btnFotografar').off('click')
     $('#pganotar a.btnFotografar').on('click', => @fotografar())
+    $('#pganotar a.btnYoutube').off('click')
+    $('#pganotar a.btnYoutube').on('click', => @linkarYoutube())
+
 
     $('#pganotar a.btnSalvar').off('click')
     $('#pganotar a.btnSalvar').on('click', => @salvar())
@@ -52,6 +58,10 @@ class NoteAdd
     note = {}
     if @parentId
       note.id_parent = @parentId
+
+    if @youtubeVideoId
+      note.youtubeVideoId = @youtubeVideoId
+
     note.comentarios = $('#txtcomments').val()
     note.categoria = $('#pganotar-categoria').val()
     note.fotoURI = @fotoURI
@@ -75,6 +85,26 @@ class NoteAdd
         console.log("upload error source #{error.source}")
         console.log("upload error target #{error.target}")
       )
+
+  linkarYoutube: ->
+    videoid = prompt('informe o id do video no youtube')
+    if videoid
+      @youtubeVideoId = videoid 
+      $('#youtubeThumb').attr('src',"http://img.youtube.com/vi/#{videoid}/sddefault.jpg")
+
+
+  escolherFoto: () ->
+    navigator.camera.getPicture(
+      (imageURI) =>
+        @fotoOnSuccess(imageURI)
+      ,(message) =>
+        @fotoOnFail(message)
+      ,{
+        quality: 50,
+        destinationType: Camera.DestinationType.FILE_URI, 
+        sourceType:Camera.PictureSourceType.PHOTOLIBRARY
+      })
+
 
   fotografar: () ->
     navigator.camera.getPicture(

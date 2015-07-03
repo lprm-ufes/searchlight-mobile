@@ -279,7 +279,7 @@ window.ListView = (function() {
     ListView.storageNotebookId = storageNotebookId;
     this.slsapi.off(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP);
     return this.slsapi.on(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP, function(datapool) {
-      var distance, ds, html, htmlc, i, img, j, k, len, len1, len2, li, n, note, ref, ref1, v;
+      var distance, ds, html, htmlc, i, img, j, k, len, len1, len2, li, n, note, ref, ref1, v, video;
       html = '';
       htmlc = '';
       $('#ulfornecidas,#ulcoletadas').empty();
@@ -300,14 +300,22 @@ window.ListView = (function() {
           n = v[k];
           distance = n[0], note = n[1];
           img = '';
+          video = '';
           if (note.fotoURL) {
             img = "<img width='100px' height='100px' src='" + note.fotoURL + "' />";
+          } else {
+            if (note.youtubeVideoId) {
+              img = "<img width='100px' height='100px' src='http://img.youtube.com/vi/" + note.youtubeVideoId + "/sddefault.jpg' />";
+            }
+          }
+          if (note.youtubeVideoId) {
+            video = "<span class='fa fa-file-video-o'>&nbsp;</span>";
           }
           if (ds.url.indexOf(storageNotebookId) > 0) {
-            li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + "<p>" + (note.texto || note.comentarios) + "</p><p class='ul-li-aside'>" + (formatDistance(distance)) + "</p></a></li>";
+            li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + video + "<p>" + (note.texto || note.comentarios) + "</p><p class='ul-li-aside'>" + (formatDistance(distance)) + "</p></a></li>";
             htmlc = htmlc + " " + li;
           } else {
-            li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + "<p>" + (note.texto || note.comentarios) + "</p><p>" + (formatDistance(distance)) + "</p></a></li>";
+            li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + video + "<p>" + (note.texto || note.comentarios) + "</p><p>" + (formatDistance(distance)) + "</p></a></li>";
             html = html + " " + li;
           }
         }
@@ -415,6 +423,24 @@ NoteView = (function() {
         return anotacoesview.deletar(_this.note);
       };
     })(this));
+    if (this.note.fotoURL) {
+      $('#pgnoteview p.foto').html("<img src='" + this.note.fotoURL + "' width='100%' />");
+      $('#pgnoteview p.foto').show();
+    } else {
+      $('#pgnoteview p.foto').hide();
+    }
+    if (this.note.youtubeVideoId) {
+      $('#pgnoteview a.btn-tocar-video').off('click');
+      $('#pgnoteview a.btn-tocar-video').on('click', (function(_this) {
+        return function() {
+          return YoutubeVideoPlayer.openVideo(_this.note.youtubeVideoId);
+        };
+      })(this));
+      $('#notevideo').attr('src', "http://img.youtube.com/vi/" + this.note.youtubeVideoId + "/sddefault.jpg");
+      $('#pgnoteview fieldset.video').show();
+    } else {
+      $('#pgnoteview fieldset.video').hide();
+    }
     if (this.note.notebook && this.note.notebook === ListView.storageNotebookId) {
       $('#pgnoteview a.btn-deletar-nota').show();
       $('#pgnoteview a.btn-adicionar-nota').hide();
@@ -426,7 +452,7 @@ NoteView = (function() {
   }
 
   NoteView.prototype.listaFilhos = function() {
-    var fi, html, i, img, len, li, note;
+    var fi, html, i, img, len, li, note, video;
     $('#ulfilhos').empty();
     html = '';
     fi = NoteView.getFilhos(this.note);
@@ -434,10 +460,18 @@ NoteView = (function() {
     for (i = 0, len = fi.length; i < len; i++) {
       note = fi[i];
       img = '';
+      video = '';
       if (note.fotoURL) {
         img = "<img width='100px' height='100px' src='" + note.fotoURL + "' />";
+      } else {
+        if (note.youtubeVideoId) {
+          img = "<img width='100px' height='100px' src='http://img.youtube.com/vi/" + note.youtubeVideoId + "/sddefault.jpg' />";
+        }
       }
-      li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + "<p>" + (note.texto || note.comentarios) + "</p></a></li>";
+      if (note.youtubeVideoId) {
+        video = "<span class='fa fa-file-video-o'>&nbsp;</span>";
+      }
+      li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + video + "<p>" + (note.texto || note.comentarios) + "</p></a></li>";
       html = html + " " + li;
     }
     $('#ulfilhos').html(html);
@@ -489,14 +523,27 @@ NoteAdd = (function() {
     }
     $('#txtcomments').val('');
     $('#fotoTirada').attr('src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
+    $('#youtubeThumb').attr('src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
     this.fotoURI = null;
     $.mobile.changePage("#pganotar", {
       changeHash: false
     });
+    $('#fotoTirada').off('click');
+    $('#fotoTirada').on('click', (function(_this) {
+      return function() {
+        return _this.escolherFoto();
+      };
+    })(this));
     $('#pganotar a.btnFotografar').off('click');
     $('#pganotar a.btnFotografar').on('click', (function(_this) {
       return function() {
         return _this.fotografar();
+      };
+    })(this));
+    $('#pganotar a.btnYoutube').off('click');
+    $('#pganotar a.btnYoutube').on('click', (function(_this) {
+      return function() {
+        return _this.linkarYoutube();
       };
     })(this));
     $('#pganotar a.btnSalvar').off('click');
@@ -532,6 +579,9 @@ NoteAdd = (function() {
     if (this.parentId) {
       note.id_parent = this.parentId;
     }
+    if (this.youtubeVideoId) {
+      note.youtubeVideoId = this.youtubeVideoId;
+    }
     note.comentarios = $('#txtcomments').val();
     note.categoria = $('#pganotar-categoria').val();
     note.fotoURI = this.fotoURI;
@@ -549,6 +599,31 @@ NoteAdd = (function() {
       alert("Erro ao enviar anotação: Code = " + error.code);
       console.log("upload error source " + error.source);
       return console.log("upload error target " + error.target);
+    });
+  };
+
+  NoteAdd.prototype.linkarYoutube = function() {
+    var videoid;
+    videoid = prompt('informe o id do video no youtube');
+    if (videoid) {
+      this.youtubeVideoId = videoid;
+      return $('#youtubeThumb').attr('src', "http://img.youtube.com/vi/" + videoid + "/sddefault.jpg");
+    }
+  };
+
+  NoteAdd.prototype.escolherFoto = function() {
+    return navigator.camera.getPicture((function(_this) {
+      return function(imageURI) {
+        return _this.fotoOnSuccess(imageURI);
+      };
+    })(this), (function(_this) {
+      return function(message) {
+        return _this.fotoOnFail(message);
+      };
+    })(this), {
+      quality: 50,
+      destinationType: Camera.DestinationType.FILE_URI,
+      sourceType: Camera.PictureSourceType.PHOTOLIBRARY
     });
   };
 

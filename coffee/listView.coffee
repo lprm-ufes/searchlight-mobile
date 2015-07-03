@@ -49,13 +49,19 @@ class window.ListView
         for n in v
           [distance, note] = n
           img = ''
+          video = ''
           if note.fotoURL
             img="<img width='100px' height='100px' src='#{note.fotoURL}' />"
+          else
+            if note.youtubeVideoId
+              img="<img width='100px' height='100px' src='http://img.youtube.com/vi/#{note.youtubeVideoId}/sddefault.jpg' />"
+          if note.youtubeVideoId
+            video = "<span class='fa fa-file-video-o'>&nbsp;</span>"
           if ds.url.indexOf(storageNotebookId) > 0
-            li = "<li><a href='javascript:ListView.selecionar(\"#{note.hashid}\")'>#{img}<p>#{note.texto or note.comentarios}</p><p class='ul-li-aside'>#{formatDistance(distance)}</p></a></li>"
+            li = "<li><a href='javascript:ListView.selecionar(\"#{note.hashid}\")'>#{img}#{video}<p>#{note.texto or note.comentarios}</p><p class='ul-li-aside'>#{formatDistance(distance)}</p></a></li>"
             htmlc="#{htmlc} #{li}"
           else
-            li = "<li><a href='javascript:ListView.selecionar(\"#{note.hashid}\")'>#{img}<p>#{note.texto or note.comentarios}</p><p>#{formatDistance(distance)}</p></a></li>"
+            li = "<li><a href='javascript:ListView.selecionar(\"#{note.hashid}\")'>#{img}#{video}<p>#{note.texto or note.comentarios}</p><p>#{formatDistance(distance)}</p></a></li>"
             html="#{html} #{li}"
 
       $('#ulfornecidas').html(html)
