@@ -25,6 +25,7 @@ class NoteAdd
     $('#fotoTirada').attr('src','data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==')
     $('#youtubeThumb').attr('src','data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==')
     @fotoURI = null
+    @identificador = null
 
     $.mobile.changePage("#pganotar",{changeHash:false})
 
@@ -34,7 +35,9 @@ class NoteAdd
     $('#pganotar a.btnFotografar').on('click', => @fotografar())
     $('#pganotar a.btnYoutube').off('click')
     $('#pganotar a.btnYoutube').on('click', => @linkarYoutube())
-
+    
+    $('#pganotar a.btnQRcode').off('click')
+    $('#pganotar a.btnQRcode').on('click', => @identificar())
 
     $('#pganotar a.btnSalvar').off('click')
     $('#pganotar a.btnSalvar').on('click', => @salvar())
@@ -62,6 +65,9 @@ class NoteAdd
     if @youtubeVideoId
       note.youtubeVideoId = @youtubeVideoId
 
+    if @identificador
+      note.identificador = @identificador
+
     note.comentarios = $('#txtcomments').val()
     note.categoria = $('#pganotar-categoria').val()
     note.fotoURI = @fotoURI
@@ -84,6 +90,18 @@ class NoteAdd
         alert("Erro ao enviar anotação: Code = #{error.code}")
         console.log("upload error source #{error.source}")
         console.log("upload error target #{error.target}")
+      )
+
+
+  identificar: ->
+    self = @
+    cordova.plugins.barcodeScanner.scan(
+      (result) ->
+        self.identificador=result.text
+        $('#noteHashid').text(self.identificador)
+        console.log(result.text)
+      ,(error) ->
+        alert("Falha na leitura do código QR: " + error)
       )
 
   linkarYoutube: ->

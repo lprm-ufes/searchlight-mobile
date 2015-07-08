@@ -1,9 +1,11 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var GPSControle, ListView, NoteAdd;
+var GPSControle, ListView, NoteAdd, NoteView;
 
 NoteAdd = require('./noteadd.coffee').NoteAdd;
 
 ListView = require('./listView.coffee').ListView;
+
+NoteView = require('./noteView.coffee').NoteView;
 
 GPSControle = require('./gps_controle.coffee').GPSControle;
 
@@ -18,6 +20,25 @@ window.Anotacoes = (function() {
 
   Anotacoes.prototype.anexar = function(note) {
     return Anotacoes.noteadd = new NoteAdd(null, this.slsapi, true, note);
+  };
+
+  Anotacoes.prototype.showAnotacaoByIdentificador = function(identificador) {
+    return this.slsapi.notes.getByQuery("identificador=" + identificador, function(results) {
+      return Anotacoes.noteidentificada = new NoteView(results[0]);
+    }, function(fail) {
+      return console.log("Falha ao buscar nota " + identificador);
+    });
+  };
+
+  Anotacoes.prototype.identificar = function() {
+    var self;
+    self = this;
+    return cordova.plugins.barcodeScanner.scan(function(result) {
+      self.showAnotacaoByIdentificador(result.text);
+      return console.log(result.text);
+    }, function(error) {
+      return alert("Falha na leitura do código QR: " + error);
+    });
   };
 
   Anotacoes.prototype.listar = function() {
@@ -46,7 +67,7 @@ exports.Anotacoes = Anotacoes;
 
 
 
-},{"./gps_controle.coffee":2,"./listView.coffee":4,"./noteadd.coffee":6}],2:[function(require,module,exports){
+},{"./gps_controle.coffee":2,"./listView.coffee":4,"./noteView.coffee":5,"./noteadd.coffee":6}],2:[function(require,module,exports){
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 window.GPSControle = (function() {
@@ -525,6 +546,7 @@ NoteAdd = (function() {
     $('#fotoTirada').attr('src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
     $('#youtubeThumb').attr('src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
     this.fotoURI = null;
+    this.identificador = null;
     $.mobile.changePage("#pganotar", {
       changeHash: false
     });
@@ -544,6 +566,12 @@ NoteAdd = (function() {
     $('#pganotar a.btnYoutube').on('click', (function(_this) {
       return function() {
         return _this.linkarYoutube();
+      };
+    })(this));
+    $('#pganotar a.btnQRcode').off('click');
+    $('#pganotar a.btnQRcode').on('click', (function(_this) {
+      return function() {
+        return _this.identificar();
       };
     })(this));
     $('#pganotar a.btnSalvar').off('click');
@@ -582,6 +610,9 @@ NoteAdd = (function() {
     if (this.youtubeVideoId) {
       note.youtubeVideoId = this.youtubeVideoId;
     }
+    if (this.identificador) {
+      note.identificador = this.identificador;
+    }
     note.comentarios = $('#txtcomments').val();
     note.categoria = $('#pganotar-categoria').val();
     note.fotoURI = this.fotoURI;
@@ -599,6 +630,18 @@ NoteAdd = (function() {
       alert("Erro ao enviar anotação: Code = " + error.code);
       console.log("upload error source " + error.source);
       return console.log("upload error target " + error.target);
+    });
+  };
+
+  NoteAdd.prototype.identificar = function() {
+    var self;
+    self = this;
+    return cordova.plugins.barcodeScanner.scan(function(result) {
+      self.identificador = result.text;
+      $('#noteHashid').text(self.identificador);
+      return console.log(result.text);
+    }, function(error) {
+      return alert("Falha na leitura do código QR: " + error);
     });
   };
 
