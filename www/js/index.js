@@ -45,7 +45,7 @@ window.Anotacoes = (function() {
 
   Anotacoes.prototype.rastrear = function() {
     gpscontrole.modoTrilha = true;
-    Anotacoes.rastrearView = new RastrearView();
+    Anotacoes.rastrearView = new RastrearView(this.slsapi);
     return RastrearView.updateMapa();
   };
 
@@ -90,6 +90,8 @@ window.GPSControle = (function() {
   GPSControle.HighAccuracy = true;
 
   GPSControle.trilha = [];
+
+  GPSControle.checkpointDistance = 250;
 
   GPSControle.estaAberto = function() {
     var gpsdata;
@@ -149,8 +151,9 @@ window.GPSControle = (function() {
         vetor = [lastPosition[0], lastPosition[1], newPosition[0], newPosition[1]];
         console.log(vetor);
         distance = getDistanceFromLatLonInKm.apply(null, vetor) * 1000;
+        GPSControle.distance = distance;
         $("#pgrastrearview p.comentarios").html(GPSControle.trilha.length + ' pontos, ' + distance.toFixed(2) + ' metros do ultimo ponto');
-        if (distance > 30) {
+        if (distance > GPSControle.checkpointDistance) {
           GPSControle.trilha.push(newPosition);
           $(document).trigger('newposition.gpscontrole');
         }
@@ -435,6 +438,11 @@ NoteView = (function() {
     }).addTo(NoteView.mapa);
     marker = L.marker(pos);
     marker.addTo(NoteView.mapa);
+    if (note.trilha) {
+      NoteView.polyline = L.polyline(note.trilha, {
+        color: 'red'
+      }).addTo(NoteView.mapa);
+    }
     NoteView.mapa.setView(pos, 16);
     NoteView.mapa.invalidateSize(false);
     return NoteView.mapa;
@@ -747,6 +755,10 @@ RastrearView = (function() {
 
   RastrearView.geoJson = null;
 
+  RastrearView.slsapi = null;
+
+  RastrearView.id = false;
+
   RastrearView.criaMapa = function() {
     var pos;
     pos = L.latLng([GPSControle.lat, GPSControle.lng]);
@@ -767,8 +779,63 @@ RastrearView = (function() {
     return RastrearView.mapa;
   };
 
-  function RastrearView() {
-    var lastPosition;
+  RastrearView.saveid = function(r) {
+    var storage;
+    storage = window.localStorage;
+    RastrearView.id = r.id;
+    storage.setItem('id_rastreamento', RastrearView.id);
+    return $("#pgrastrearview p.comentarios").html('ID:' + r.id + ', ' + GPSControle.trilha.length + ' pontos, ' + GPSControle.distance.toFixed(2) + ' metros do ultimo ponto');
+  };
+
+  RastrearView.update = function() {
+    var query, slsapi;
+    slsapi = RastrearView.slsapi;
+    query = {
+      'trilha': GPSControle.trilha,
+      'latitude': GPSControle.lat,
+      'longitude': GPSControle.lng
+    };
+    return slsapi.notes.update(RastrearView.id, query, function(r) {
+      $("#pgrastrearview p.comentarios").html('ID:' + r.id + ', ' + GPSControle.trilha.length + ' pontos, ' + GPSControle.distance.toFixed(2) + ' metros do ultimo ponto');
+      return console.log("Updata ok: Sent = " + r.bytesSent);
+    }, function(error) {
+      $.mobile.loading('hide');
+      console.log("Erro ao enviar anotação: Code = " + error.code);
+      console.log("upload error source " + error.source);
+      return console.log("upload error target " + error.target);
+    });
+  };
+
+  RastrearView.save = function() {
+    var note, slsapi;
+    note = {};
+    slsapi = RastrearView.slsapi;
+    note.comentarios = 'nota de rastreamento';
+    note.categoria = 'rastreamento';
+    note.data_hora = (formatadata(new Date())) + " " + (formatahora(new Date()));
+    note.latitude = GPSControle.lat;
+    note.longitude = GPSControle.lng;
+    note.accuracy = GPSControle.accuracy;
+    note.user = slsapi.user.user_id;
+    note.trilha = GPSControle.trilha;
+    return slsapi.notes.enviar(note, null, function(r) {
+      RastrearView.saveid(r);
+      console.log("Code = " + r.responseCode);
+      console.log("Response = " + r.response);
+      return console.log("Sent = " + r.bytesSent);
+    }, function(error) {
+      $.mobile.loading('hide');
+      console.log("Erro ao enviar anotação: Code = " + error.code);
+      console.log("upload error source " + error.source);
+      return console.log("upload error target " + error.target);
+    });
+  };
+
+  function RastrearView(slsapi) {
+    var lastPosition, storage;
+    storage = window.localStorage;
+    RastrearView.id = storage.getItem('id_rastreamento');
+    RastrearView.slsapi = slsapi;
     $.mobile.changePage("#pgrastrearview", {
       changeHash: false
     });
@@ -794,6 +861,10 @@ RastrearView = (function() {
   }
 
   RastrearView.stop = function() {
+    var storage;
+    storage = window.localStorage;
+    RastrearView.id = "";
+    storage.setItem('id_rastreamento', RastrearView.id);
     GPSControle.trilha = [];
     gpscontrole.modoTrilha = false;
     gpscontrole.save();
@@ -804,6 +875,12 @@ RastrearView = (function() {
 
   RastrearView.updateMapa = function() {
     var pos;
+    GPSControle.checkpointDistance = parseInt($('#pgrastrear-distancia').val());
+    if (RastrearView.id) {
+      RastrearView.update();
+    } else {
+      RastrearView.save();
+    }
     pos = L.latLng([GPSControle.lat, GPSControle.lng]);
     RastrearView.marker.setLatLng(pos);
     return RastrearView.polyline.setLatLngs(GPSControle.trilha);

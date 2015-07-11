@@ -35,7 +35,7 @@ class window.Anotacoes
 
   rastrear: ->
     gpscontrole.modoTrilha = true
-    Anotacoes.rastrearView = new RastrearView()
+    Anotacoes.rastrearView = new RastrearView(@slsapi)
     RastrearView.updateMapa()
     
   listar: ()->

@@ -12,6 +12,9 @@ class NoteView
     }).addTo(NoteView.mapa)
     marker = L.marker(pos)
     marker.addTo(NoteView.mapa)
+
+    if note.trilha
+      NoteView.polyline = L.polyline(note.trilha, {color: 'red'}).addTo(NoteView.mapa)
     NoteView.mapa.setView(pos,16)
     NoteView.mapa.invalidateSize(false)
 

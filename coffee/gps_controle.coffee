@@ -6,6 +6,7 @@ class window.GPSControle
     @TIMEOUT = 10 # 10segundos
     @HighAccuracy = true
     @trilha = []
+    @checkpointDistance = 250
 
     @estaAberto: ->
          gpsdata = window.localStorage.getItem('gps_data')
@@ -54,8 +55,9 @@ class window.GPSControle
           vetor = [lastPosition[0],lastPosition[1],newPosition[0],newPosition[1]]
           console.log(vetor)
           distance = getDistanceFromLatLonInKm.apply(null,vetor) * 1000
+          GPSControle.distance = distance
           $("#pgrastrearview p.comentarios").html(GPSControle.trilha.length + ' pontos, '+ distance.toFixed(2) + ' metros do ultimo ponto')
-          if distance > 30
+          if distance > GPSControle.checkpointDistance
             GPSControle.trilha.push(newPosition)
             $(document).trigger('newposition.gpscontrole')
         else
