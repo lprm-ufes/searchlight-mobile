@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var GPSControle, ListView, NoteAdd, NoteView;
+var GPSControle, ListView, NoteAdd, NoteView, RastrearView;
 
 NoteAdd = require('./noteadd.coffee').NoteAdd;
 
@@ -8,6 +8,8 @@ ListView = require('./listView.coffee').ListView;
 NoteView = require('./noteView.coffee').NoteView;
 
 GPSControle = require('./gps_controle.coffee').GPSControle;
+
+RastrearView = require('./rastrearView.coffee').RastrearView;
 
 window.Anotacoes = (function() {
   function Anotacoes(slsapi) {
@@ -41,6 +43,12 @@ window.Anotacoes = (function() {
     });
   };
 
+  Anotacoes.prototype.rastrear = function() {
+    gpscontrole.modoTrilha = true;
+    Anotacoes.rastrearView = new RastrearView();
+    return RastrearView.updateMapa();
+  };
+
   Anotacoes.prototype.listar = function() {
     return Anotacoes.listview = new ListView(this.slsapi);
   };
@@ -67,7 +75,7 @@ exports.Anotacoes = Anotacoes;
 
 
 
-},{"./gps_controle.coffee":2,"./listView.coffee":4,"./noteView.coffee":5,"./noteadd.coffee":6}],2:[function(require,module,exports){
+},{"./gps_controle.coffee":2,"./listView.coffee":4,"./noteView.coffee":5,"./noteadd.coffee":6,"./rastrearView.coffee":7}],2:[function(require,module,exports){
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 window.GPSControle = (function() {
@@ -80,6 +88,8 @@ window.GPSControle = (function() {
   GPSControle.TIMEOUT = 10;
 
   GPSControle.HighAccuracy = true;
+
+  GPSControle.trilha = [];
 
   GPSControle.estaAberto = function() {
     var gpsdata;
@@ -95,6 +105,8 @@ window.GPSControle = (function() {
     this.iniciaWatch = bind(this.iniciaWatch, this);
     this.storage = window.localStorage;
     GPSControle.accuracy = 1000;
+    this.modoTrilha = false;
+    GPSControle.trilha = [];
     this.load();
     this.iniciaWatch();
     this.mostraGPS();
@@ -113,9 +125,11 @@ window.GPSControle = (function() {
 
   GPSControle.prototype.load = function() {
     if (GPSControle.estaAberto()) {
+      this.modoTrilha = this.storage.getItem('gps_modotrilha');
       GPSControle.gps = this.storage.getItem('gps_data');
       GPSControle.accuracy = this.storage.getItem('gps_accuracy');
       GPSControle.time = this.storage.getItem('gps_time');
+      GPSControle.trilha = this.storage.getObject('gps_trilha');
       this.mostraGPS();
       return true;
     } else {
@@ -124,9 +138,31 @@ window.GPSControle = (function() {
   };
 
   GPSControle.prototype.save = function() {
+    var distance, lastPosition, newPosition, vetor;
     this.storage.setItem('gps_data', GPSControle.gps);
     this.storage.setItem('gps_time', GPSControle.time);
-    return this.storage.setItem('gps_accuracy', GPSControle.accuracy);
+    this.storage.setItem('gps_accuracy', GPSControle.accuracy);
+    newPosition = [GPSControle.lat, GPSControle.lng];
+    if (this.modoTrilha) {
+      if (GPSControle.trilha.length > 0) {
+        lastPosition = GPSControle.trilha[GPSControle.trilha.length - 1];
+        vetor = [lastPosition[0], lastPosition[1], newPosition[0], newPosition[1]];
+        console.log(vetor);
+        distance = getDistanceFromLatLonInKm.apply(null, vetor) * 1000;
+        $("#pgrastrearview p.comentarios").html(GPSControle.trilha.length + ' pontos, ' + distance.toFixed(2) + ' metros do ultimo ponto');
+        if (distance > 30) {
+          GPSControle.trilha.push(newPosition);
+          $(document).trigger('newposition.gpscontrole');
+        }
+      } else {
+        GPSControle.trilha.push(newPosition);
+      }
+    } else {
+      GPSControle.trilha = [];
+      GPSControle.trilha.push(newPosition);
+    }
+    this.storage.setItem('gps_modotrilha', this.modoTrilha);
+    return this.storage.setObject('gps_trilha', GPSControle.trilha);
   };
 
   GPSControle.prototype.iniciaWatch = function() {
@@ -260,7 +296,7 @@ window.App = (function() {
 
 
 
-},{"./gps_controle.coffee":2,"./userView.coffee":7,"./utils.coffee":8}],4:[function(require,module,exports){
+},{"./gps_controle.coffee":2,"./userView.coffee":8,"./utils.coffee":9}],4:[function(require,module,exports){
 var NoteView;
 
 NoteView = require('./noteView.coffee').NoteView;
@@ -704,6 +740,86 @@ exports.NoteAdd = NoteAdd;
 
 
 },{"./gps_controle.coffee":2}],7:[function(require,module,exports){
+var RastrearView;
+
+RastrearView = (function() {
+  RastrearView.mapa = null;
+
+  RastrearView.geoJson = null;
+
+  RastrearView.criaMapa = function() {
+    var pos;
+    pos = L.latLng([GPSControle.lat, GPSControle.lng]);
+    RastrearView.mapa = L.map('mapaRastreio', {
+      minZoom: 15,
+      maxZoom: 17
+    });
+    L.tileLayer('http://{s}.tiles.mapbox.com/v3/rezo.ihpe97f0/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(RastrearView.mapa);
+    RastrearView.polyline = L.polyline(GPSControle.trilha, {
+      color: 'red'
+    }).addTo(RastrearView.mapa);
+    RastrearView.marker = L.marker(pos);
+    RastrearView.marker.addTo(RastrearView.mapa);
+    RastrearView.mapa.setView(pos, 16);
+    RastrearView.mapa.invalidateSize(false);
+    return RastrearView.mapa;
+  };
+
+  function RastrearView() {
+    var lastPosition;
+    $.mobile.changePage("#pgrastrearview", {
+      changeHash: false
+    });
+    lastPosition = GPSControle.trilha.slice(-1, 1);
+    if (RastrearView.mapa) {
+      RastrearView.mapa.remove();
+    }
+    this.mapa = RastrearView.criaMapa();
+    setTimeout(function() {
+      return RastrearView.mapa.invalidateSize(false);
+    }, 1000);
+    $(document).bind('newposition.gpscontrole', function() {
+      return RastrearView.updateMapa();
+    });
+    $('a.btn-parar-rastreamento').off('click');
+    $('a.btn-parar-rastreamento').on('click', function() {
+      return RastrearView.stop();
+    });
+    $('a.btn-atualizar-rastreamento').off('click');
+    $('a.btn-atualizar-rastreamento').on('click', function() {
+      return RastrearView.updateMapa();
+    });
+  }
+
+  RastrearView.stop = function() {
+    GPSControle.trilha = [];
+    gpscontrole.modoTrilha = false;
+    gpscontrole.save();
+    return $.mobile.changePage("#pglogado", {
+      changeHash: true
+    });
+  };
+
+  RastrearView.updateMapa = function() {
+    var pos;
+    pos = L.latLng([GPSControle.lat, GPSControle.lng]);
+    RastrearView.marker.setLatLng(pos);
+    return RastrearView.polyline.setLatLngs(GPSControle.trilha);
+  };
+
+  return RastrearView;
+
+})();
+
+module.exports = {
+  RastrearView: RastrearView
+};
+
+
+
+},{}],8:[function(require,module,exports){
 var Anotacoes, UserView,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -797,7 +913,7 @@ exports.UserView = UserView;
 
 
 
-},{"./anotacoes.coffee":1}],8:[function(require,module,exports){
+},{"./anotacoes.coffee":1}],9:[function(require,module,exports){
 window.zeroPad = function(num, places) {
   var zero;
   zero = places - num.toString().length + 1;

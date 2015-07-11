@@ -3,6 +3,7 @@ ListView = require('./listView.coffee').ListView
 NoteView = require('./noteView.coffee').NoteView
 
 GPSControle = require('./gps_controle.coffee').GPSControle
+RastrearView = require('./rastrearView.coffee').RastrearView
 
 class window.Anotacoes
   constructor: (slsapi) ->
@@ -32,6 +33,11 @@ class window.Anotacoes
         alert("Falha na leitura do código QR: " + error)
       )
 
+  rastrear: ->
+    gpscontrole.modoTrilha = true
+    Anotacoes.rastrearView = new RastrearView()
+    RastrearView.updateMapa()
+    
   listar: ()->
     Anotacoes.listview = new ListView(@slsapi)
 

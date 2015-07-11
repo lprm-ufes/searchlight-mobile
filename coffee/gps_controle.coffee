@@ -5,6 +5,7 @@ class window.GPSControle
     @accuracy = 1000
     @TIMEOUT = 10 # 10segundos
     @HighAccuracy = true
+    @trilha = []
 
     @estaAberto: ->
          gpsdata = window.localStorage.getItem('gps_data')
@@ -16,6 +17,8 @@ class window.GPSControle
     constructor: () ->
         @storage = window.localStorage
         GPSControle.accuracy = 1000
+        @modoTrilha = false
+        GPSControle.trilha = []
         @load()
         @iniciaWatch()
         @mostraGPS()
@@ -30,9 +33,11 @@ class window.GPSControle
 
     load: ()->
         if GPSControle.estaAberto()
+            @modoTrilha = @storage.getItem('gps_modotrilha')
             GPSControle.gps = @storage.getItem('gps_data')
             GPSControle.accuracy = @storage.getItem('gps_accuracy')
             GPSControle.time = @storage.getItem('gps_time')
+            GPSControle.trilha = @storage.getObject('gps_trilha')
             @mostraGPS()
             return true
         else
@@ -42,6 +47,26 @@ class window.GPSControle
       @storage.setItem('gps_data',GPSControle.gps)
       @storage.setItem('gps_time',GPSControle.time)
       @storage.setItem('gps_accuracy',GPSControle.accuracy)
+      newPosition=[GPSControle.lat,GPSControle.lng]
+      if @modoTrilha 
+        if GPSControle.trilha.length > 0
+          lastPosition = GPSControle.trilha[GPSControle.trilha.length - 1]
+          vetor = [lastPosition[0],lastPosition[1],newPosition[0],newPosition[1]]
+          console.log(vetor)
+          distance = getDistanceFromLatLonInKm.apply(null,vetor) * 1000
+          $("#pgrastrearview p.comentarios").html(GPSControle.trilha.length + ' pontos, '+ distance.toFixed(2) + ' metros do ultimo ponto')
+          if distance > 30
+            GPSControle.trilha.push(newPosition)
+            $(document).trigger('newposition.gpscontrole')
+        else
+            GPSControle.trilha.push(newPosition)
+      else
+        GPSControle.trilha = []
+        GPSControle.trilha.push(newPosition)
+
+      @storage.setItem('gps_modotrilha',@modoTrilha)
+      @storage.setObject('gps_trilha',GPSControle.trilha)
+
 
     iniciaWatch: () =>
          @watchid = navigator.geolocation.watchPosition(

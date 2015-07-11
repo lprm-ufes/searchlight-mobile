@@ -86,10 +86,17 @@ html
                             i.fa.fa-ambulance
                             span &nbsp;Anotar Acidente
                        br
+
                        a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.identificar();")
                             i.fa.fa-qrcode
                             span &nbsp;Anotação Identificada
                        br
+                       a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.rastrear();")
+                            i.fa.fa-location
+                            span &nbsp;Rastrear
+                       br
+
+
 
                        a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.anotar()") 
                             i.fa.fa-bullhorn
@@ -154,6 +161,7 @@ html
                         li: a.ui-btn-active.ui-state-persist(href="#pgperfil", data-role='tab', data-rel='page', data-transition='none',data-icon='user') Perfil
         include templates/pganotar
         include templates/pgnoteview
+        include templates/pgrastrear
 
         script(type="text/javascript", src="cordova.js")
         script(type="text/javascript", src="js/index.js")

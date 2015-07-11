@@ -1,0 +1,25 @@
+
+div#pgrastrearview(data-role="page", data-theme="a")
+    div(data-role="header")
+        a.ui-btn.ui-btn-left.ui-btn-inline.ui-mini.ui-corner-all.ui-btn-icon-left.ui-icon-back(href="#pghistorico") Voltar
+        h1 Searchlight 
+ 
+    div(data-role="content")
+        div#mapaRastreio(style="height:200px;width:100%")
+        div.ui-body.ui-body-a
+            p.comentarios
+            p
+                a.btn-atualizar-rastreamento(data-role='button')
+                    i.fa.fa-refresh
+                    span  &nbsp;Atualizar Posição
+
+            p
+                a.btn-parar-rastreamento(data-role='button')
+                    i.fa.fa-stop
+                    span  &nbsp;Parar Rastreamento
+
+
+
+    div(data-role="footer", data-position="fixed")
+        h4 &copy UFES
+
