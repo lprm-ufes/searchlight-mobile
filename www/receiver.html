@@ -1,0 +1,39 @@
+<html>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />                                                                                                                            
+<script src="http://wancharle.com.br/sl/searchlight.min.js"></script>
+<script> window.scriptFolder = 'http://wancharle.com.br/sl/' </script>
+<script>
+var sls = null;
+function carrega(url){
+   console.log('carregando...');
+   $.getJSON(url,function (conf){
+       console.log(conf)
+   conf.container_id = 'porto' 
+   L.Icon.Default.imagePath = "http://wancharle.com.br/sl/images/leaflet"
+   slv = new Searchlight(conf);
+    })
+}
+</script>
+<style>
+#pac,#porto,#google { width:90%; margin:10px auto;}
+#map-pac,#map-porto,#map-google {width:100%; height:85%;}
+#lista-pac,#lista-porto,#lista-google { height: 85%!important; overflow: auto}
+</style>
+<body>
+
+<div id="porto"> </div>
+ 
+    <script src="js/receiver.js"></script>
+<div id="imagemodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-body">
+<img id="imagetv" src="http://placehold.it/1000x600" class="img-responsive">
+</div>
+</div>
+</div>
+</div>
+
+    </body>
+</html>

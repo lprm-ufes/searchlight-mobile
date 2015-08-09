@@ -2,10 +2,11 @@
 
 utils = require('./utils.coffee')
 UserView = require('./userView.coffee').UserView
+SecondScreen = require('./SecondScreen.coffee').SecondScreen
 GPSControle = require('./gps_controle.coffee').GPSControle
 
 class window.App
-    # Application Constructor
+   # Application Constructor
     constructor: ->
       @storage = window.localStorage
       @userview = null
@@ -19,6 +20,12 @@ class window.App
 
     main: ->
       console.log('Received Event: onDeviceReady' )
+      cordova.plugins.backgroundMode.enable();
+      cordova.plugins.backgroundMode.onactivate = ()->
+        console.log('backgroundMode: ativado')
+      cordova.plugins.backgroundMode.ondeactivate = ()->
+        console.log('backgroundMode: off')
+
       if @getUrlConfServico()
         @loadServico(@urlConfServico)
       else
@@ -51,6 +58,7 @@ class window.App
 
     loadServico: (urlConfServico) ->
       @setUrlConfServico(urlConfServico)
+      @ss = new SecondScreen(urlConfServico)
       window.userview = new UserView(urlConfServico)
       userview.load()
       window.gpscontrole = new GPSControle()

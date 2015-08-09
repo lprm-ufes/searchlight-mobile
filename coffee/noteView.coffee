@@ -1,5 +1,3 @@
-
-
 class NoteView
 
   @mapa =null
@@ -57,6 +55,13 @@ class NoteView
     else 
       $('#pgnoteview p.foto').hide()
 
+
+    $('#pgnoteview p.foto img').off('click')
+    $('#pgnoteview p.foto img').on 'click', =>
+      imageSrc = $('#pgnoteview p.foto img').attr('src')
+      console.log(imageSrc)
+      app.ss.session.postMessage(imageSrc)
+      
     if @note.youtubeVideoId
       $('#pgnoteview a.btn-tocar-video').off('click')
       $('#pgnoteview a.btn-tocar-video').on 'click', =>

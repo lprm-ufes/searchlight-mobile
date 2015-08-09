@@ -10,6 +10,7 @@ module.exports = (grunt) ->
           dist:
             files:
               './www/js/index.js':['./coffee/index.coffee']
+              './www/js/receiver.js':['./coffee/receiver.coffee']
             options:
               browserifyOptions:
                 debug: grunt.option('debug')

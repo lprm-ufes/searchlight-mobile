@@ -7,63 +7,75 @@
         "files": {
             "framework": {
                 "parents": {
-                    "libiconv.dylib": [
+                    "MediaPlayer.framework": [
                         {
-                            "xml": "false",
+                            "xml": false,
                             "count": 1
                         }
                     ],
                     "AVFoundation.framework": [
                         {
-                            "xml": "false",
+                            "xml": false,
+                            "count": 3
+                        }
+                    ],
+                    "JavaScriptCore.framework": [
+                        {
+                            "xml": false,
+                            "count": 2
+                        }
+                    ],
+                    "libiconv.dylib": [
+                        {
+                            "xml": false,
                             "count": 1
                         }
                     ],
                     "AssetsLibrary.framework": [
                         {
-                            "xml": "false",
+                            "xml": false,
                             "count": 4
                         }
                     ],
                     "CoreVideo.framework": [
                         {
-                            "xml": "false",
+                            "xml": false,
                             "count": 1
                         }
                     ],
                     "QuartzCore.framework": [
                         {
-                            "xml": "false",
+                            "xml": false,
                             "count": 1
                         }
                     ],
                     "ImageIO.framework": [
                         {
-                            "xml": "true",
+                            "xml": true,
                             "count": 1
                         }
                     ],
                     "CoreLocation.framework": [
                         {
-                            "xml": "false",
+                            "xml": false,
                             "count": 2
                         }
                     ],
                     "CoreGraphics.framework": [
                         {
-                            "xml": "false",
+                            "xml": false,
                             "count": 2
                         }
                     ],
                     "MobileCoreServices.framework": [
                         {
-                            "xml": "false",
+                            "xml": false,
                             "count": 2
                         }
                     ],
                     "SystemConfiguration.framework": [
                         {
-                            "xml": "true",
+                            "xml": true,
                             "count": 1
                         }
                     ]
@@ -73,11 +85,11 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<feature name=\"BarcodeScanner\"><param name=\"ios-package\" value=\"CDVBarcodeScanner\" /></feature>",
+                            "xml": "<feature name=\"YoutubeVideoPlayer\"><param name=\"ios-package\" value=\"YoutubeVideoPlayer\" /></feature>",
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Battery\"><param name=\"ios-package\" value=\"CDVBattery\" /></feature>",
+                            "xml": "<feature name=\"BarcodeScanner\"><param name=\"ios-package\" value=\"CDVBarcodeScanner\" /></feature>",
                             "count": 1
                         },
                         {
@@ -89,7 +101,23 @@
                             "count": 1
                         },
                         {
+                            "xml": "<feature name=\"Console\"><param name=\"ios-package\" value=\"CDVLogger\" /></feature>",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"BackgroundMode\"><param name=\"ios-package\" value=\"APPBackgroundMode\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Presentation\"><param name=\"ios-package\" value=\"CDVPresentationPlugin\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Battery\"><param name=\"ios-package\" value=\"CDVBattery\" /></feature>",
                             "count": 1
                         },
                         {
@@ -107,10 +135,6 @@
                         {
                             "xml": "<feature name=\"NetworkStatus\"><param name=\"ios-package\" value=\"CDVConnection\" /></feature>",
                             "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Console\"><param name=\"ios-package\" value=\"CDVLogger\" /></feature>",
-                            "count": 1
                         }
                     ]
                 }
@@ -122,22 +146,40 @@
                             "xml": "<string />",
                             "count": 2
                         }
+                    ],
+                    "UIBackgroundModes": [
+                        {
+                            "xml": "<array><string>audio</string></array>",
+                            "count": 1
+                        }
                     ]
                 }
             }
         }
     },
     "installed_plugins": {
+        "com.bunkerpalace.cordova.YoutubeVideoPlayer": {
+            "PACKAGE_NAME": "br.com.wancharle.slmobile"
+        },
         "com.phonegap.plugins.barcodescanner": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
         },
+        "cordova-plugin-camera": {
+            "PACKAGE_NAME": "br.com.wancharle.slmobile"
+        },
+        "cordova-plugin-console": {
+            "PACKAGE_NAME": "br.com.wancharle.slmobile"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "br.com.wancharle.slmobile"
+        },
+        "de.appplant.cordova.plugin.background-mode": {
+            "PACKAGE_NAME": "br.com.wancharle.slmobile"
+        },
+        "de.fhg.fokus.famium.presentation": {
+            "PACKAGE_NAME": "br.com.wancharle.slmobile"
+        },
         "org.apache.cordova.battery-status": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "org.apache.cordova.camera": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "org.apache.cordova.device": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
         },
         "org.apache.cordova.file": {
@@ -151,10 +193,11 @@
         },
         "org.apache.cordova.network-information": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "org.apache.cordova.console": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
         }
     },
-    "dependent_plugins": {}
+    "dependent_plugins": {
+        "org.apache.cordova.device": {
+            "PACKAGE_NAME": "br.com.wancharle.slmobile"
+        }
+    }
 }

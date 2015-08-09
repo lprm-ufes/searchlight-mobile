@@ -1,4 +1,82 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var SecondScreen;
+
+SecondScreen = (function() {
+  function SecondScreen(urlConfServico) {
+    this.urlConfServico = urlConfServico;
+    this.session = null;
+    this.ping = 1;
+    this.initializePresentation();
+  }
+
+  SecondScreen.prototype.initializePresentation = function() {
+    var closeElement, presentationElement;
+    presentationElement = document.querySelector('#pglogado .btn-selecttv');
+    presentationElement.addEventListener("touchstart", (function(_this) {
+      return function() {
+        return _this.createNewSession();
+      };
+    })(this));
+    closeElement = document.querySelector('#pglogado .btn-closetv');
+    closeElement.addEventListener("touchstart", (function(_this) {
+      return function() {
+        if (_this.session) {
+          return _this.session.close();
+        }
+      };
+    })(this));
+    return navigator.presentation.onavailablechange = function(dict) {
+      if (dict.available) {
+        presentationElement.setAttribute('style', 'display:block;');
+        return closeElement.setAttribute('style', 'display:none;');
+      } else {
+        presentationElement.setAttribute('style', 'display:none;');
+        return closeElement.setAttribute('style', 'display:block;');
+      }
+    };
+  };
+
+  SecondScreen.prototype.createNewSession = function() {
+    if (this.session) {
+      this.session.close();
+    }
+    this.session = navigator.presentation.requestSession("receiver.html");
+    this.session.onmessage = (function(_this) {
+      return function(msg) {
+        var pc;
+        pc = parseInt(msg);
+        if (pc) {
+          _this.ping = pc + 1;
+          return console.log("" + _this.ping);
+        }
+      };
+    })(this);
+    return this.session.onstatechange = (function(_this) {
+      return function() {
+        var closeElement, presentationElement;
+        closeElement = document.querySelector('#pglogado .btn-closetv');
+        presentationElement = document.querySelector('#pglogado .btn-selecttv');
+        if (_this.session.state === "connected") {
+          closeElement.setAttribute('style', 'display:block;');
+          presentationElement.setAttribute('style', 'display:none;');
+          return _this.session.postMessage(_this.urlConfServico);
+        } else {
+          closeElement.setAttribute('style', 'display:none;');
+          return presentationElement.setAttribute('style', 'display:block;');
+        }
+      };
+    })(this);
+  };
+
+  return SecondScreen;
+
+})();
+
+exports.SecondScreen = SecondScreen;
+
+
+
+},{}],2:[function(require,module,exports){
 var GPSControle, ListView, NoteAdd, NoteView, RastrearView;
 
 NoteAdd = require('./noteadd.coffee').NoteAdd;
@@ -75,7 +153,7 @@ exports.Anotacoes = Anotacoes;
 
 
 
-},{"./gps_controle.coffee":2,"./listView.coffee":4,"./noteView.coffee":5,"./noteadd.coffee":6,"./rastrearView.coffee":7}],2:[function(require,module,exports){
+},{"./gps_controle.coffee":3,"./listView.coffee":5,"./noteView.coffee":6,"./noteadd.coffee":7,"./rastrearView.coffee":8}],3:[function(require,module,exports){
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 window.GPSControle = (function() {
@@ -219,12 +297,14 @@ exports.GPSControle = GPSControle;
 
 
 
-},{}],3:[function(require,module,exports){
-var GPSControle, UserView, utils;
+},{}],4:[function(require,module,exports){
+var GPSControle, SecondScreen, UserView, utils;
 
 utils = require('./utils.coffee');
 
 UserView = require('./userView.coffee').UserView;
+
+SecondScreen = require('./SecondScreen.coffee').SecondScreen;
 
 GPSControle = require('./gps_controle.coffee').GPSControle;
 
@@ -245,6 +325,13 @@ window.App = (function() {
 
   App.prototype.main = function() {
     console.log('Received Event: onDeviceReady');
+    cordova.plugins.backgroundMode.enable();
+    cordova.plugins.backgroundMode.onactivate = function() {
+      return console.log('backgroundMode: ativado');
+    };
+    cordova.plugins.backgroundMode.ondeactivate = function() {
+      return console.log('backgroundMode: off');
+    };
     if (this.getUrlConfServico()) {
       return this.loadServico(this.urlConfServico);
     } else {
@@ -288,6 +375,7 @@ window.App = (function() {
 
   App.prototype.loadServico = function(urlConfServico) {
     this.setUrlConfServico(urlConfServico);
+    this.ss = new SecondScreen(urlConfServico);
     window.userview = new UserView(urlConfServico);
     userview.load();
     return window.gpscontrole = new GPSControle();
@@ -299,7 +387,7 @@ window.App = (function() {
 
 
 
-},{"./gps_controle.coffee":2,"./userView.coffee":8,"./utils.coffee":9}],4:[function(require,module,exports){
+},{"./SecondScreen.coffee":1,"./gps_controle.coffee":3,"./userView.coffee":9,"./utils.coffee":10}],5:[function(require,module,exports){
 var NoteView;
 
 NoteView = require('./noteView.coffee').NoteView;
@@ -420,7 +508,7 @@ module.exports = {
 
 
 
-},{"./noteView.coffee":5}],5:[function(require,module,exports){
+},{"./noteView.coffee":6}],6:[function(require,module,exports){
 var NoteView;
 
 NoteView = (function() {
@@ -494,6 +582,15 @@ NoteView = (function() {
     } else {
       $('#pgnoteview p.foto').hide();
     }
+    $('#pgnoteview p.foto img').off('click');
+    $('#pgnoteview p.foto img').on('click', (function(_this) {
+      return function() {
+        var imageSrc;
+        imageSrc = $('#pgnoteview p.foto img').attr('src');
+        console.log(imageSrc);
+        return app.ss.session.postMessage(imageSrc);
+      };
+    })(this));
     if (this.note.youtubeVideoId) {
       $('#pgnoteview a.btn-tocar-video').off('click');
       $('#pgnoteview a.btn-tocar-video').on('click', (function(_this) {
@@ -553,7 +650,7 @@ module.exports = {
 
 
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 var GPSControle, NoteAdd;
 
 GPSControle = require('./gps_controle.coffee').GPSControle;
@@ -747,7 +844,7 @@ exports.NoteAdd = NoteAdd;
 
 
 
-},{"./gps_controle.coffee":2}],7:[function(require,module,exports){
+},{"./gps_controle.coffee":3}],8:[function(require,module,exports){
 var RastrearView;
 
 RastrearView = (function() {
@@ -876,14 +973,14 @@ RastrearView = (function() {
   RastrearView.updateMapa = function() {
     var pos;
     GPSControle.checkpointDistance = parseInt($('#pgrastrear-distancia').val());
-    if (RastrearView.id) {
-      RastrearView.update();
-    } else {
-      RastrearView.save();
-    }
     pos = L.latLng([GPSControle.lat, GPSControle.lng]);
     RastrearView.marker.setLatLng(pos);
-    return RastrearView.polyline.setLatLngs(GPSControle.trilha);
+    RastrearView.polyline.setLatLngs(GPSControle.trilha);
+    if (RastrearView.id) {
+      return RastrearView.update();
+    } else {
+      return RastrearView.save();
+    }
   };
 
   return RastrearView;
@@ -896,7 +993,7 @@ module.exports = {
 
 
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var Anotacoes, UserView,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -990,7 +1087,7 @@ exports.UserView = UserView;
 
 
 
-},{"./anotacoes.coffee":1}],9:[function(require,module,exports){
+},{"./anotacoes.coffee":2}],10:[function(require,module,exports){
 window.zeroPad = function(num, places) {
   var zero;
   zero = places - num.toString().length + 1;
@@ -1064,4 +1161,4 @@ window.deg2rad = function(deg) {
 
 
 
-},{}]},{},[3]);
+},{}]},{},[4]);

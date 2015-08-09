@@ -107,15 +107,16 @@ class RastrearView
 
   @updateMapa: ()->
     GPSControle.checkpointDistance = parseInt($('#pgrastrear-distancia').val())
-    if RastrearView.id
-      RastrearView.update()
-    else
-      RastrearView.save()
     pos=L.latLng([GPSControle.lat,GPSControle.lng])
     RastrearView.marker.setLatLng(pos)
     RastrearView.polyline.setLatLngs(GPSControle.trilha)
 
 
+    if RastrearView.id
+      RastrearView.update()
+    else
+      RastrearView.save()
+  
 
 
 
