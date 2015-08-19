@@ -7,6 +7,7 @@ class UserView
 
     @slsapi.on SLSAPI.Config.EVENT_READY, ()=>
       $("#loginForm").on("submit", (e) => @submitLogin(e) )
+      @load()
 
       @slsapi.on SLSAPI.User.EVENT_LOGIN_START, () ->
         $.mobile.loading('show', { text:'enviando',textVisible:'true'} )

@@ -4,10 +4,31 @@ NoteView = require('./noteView.coffee').NoteView
 
 GPSControle = require('./gps_controle.coffee').GPSControle
 RastrearView = require('./rastrearView.coffee').RastrearView
+Action = require('./action.coffee').Action
 
 class window.Anotacoes
-  constructor: (slsapi) ->
-    @slsapi = slsapi
+  constructor: (@slsapi) ->
+    @acoes = []
+    @slsapi.config.register(@)
+    @parseOpcoes(@slsapi.config.opcoes)
+    @geraTelaAnotacoes()
+
+  parseOpcoes: (@opcoes)->
+    @acoes = @opcoes.get 'acoes', @acoes 
+
+  toJSON:->
+    {
+      'acoes':@createURL
+    }
+
+  geraTelaAnotacoes: ->
+    html = ""
+
+    for action in @acoes
+        html += Action.render(action)
+
+    $('#telaPrincipal').html(html)
+
 
   anotar: (categoria)->
     Anotacoes.noteadd = new NoteAdd(categoria,@slsapi)
@@ -28,7 +49,6 @@ class window.Anotacoes
     cordova.plugins.barcodeScanner.scan(
       (result) ->
         self.showAnotacaoByIdentificador(result.text)
-        console.log(result.text)
       ,(error) ->
         alert("Falha na leitura do código QR: " + error)
       )

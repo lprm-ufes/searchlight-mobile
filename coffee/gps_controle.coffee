@@ -26,7 +26,6 @@ class window.GPSControle
         $(document).on "pageinit","#pgperfil", ()->
             $( "#pgperfiltimeout" ).on 'slidestop', ( event ) ->
                   GPSControle.TIMEOUT = parseInt($('#pgperfiltimeout').val())
-                  console.log("Novo timeout GPS: #{GPSControle.TIMEOUT}")
        
     mostraGPS:()->
         $("#pganotar-gps").html(GPSControle.gps)
@@ -53,7 +52,6 @@ class window.GPSControle
         if GPSControle.trilha.length > 0
           lastPosition = GPSControle.trilha[GPSControle.trilha.length - 1]
           vetor = [lastPosition[0],lastPosition[1],newPosition[0],newPosition[1]]
-          console.log(vetor)
           distance = getDistanceFromLatLonInKm.apply(null,vetor) * 1000
           GPSControle.distance = distance
           $("#pgrastrearview p.comentarios").html(GPSControle.trilha.length + ' pontos, '+ distance.toFixed(2) + ' metros do ultimo ponto')
@@ -90,7 +88,6 @@ class window.GPSControle
             GPSControle.lng = position.coords.longitude
             GPSControle.accuracy = parseInt(position.coords.accuracy)
             GPSControle.time = (new Date()).getTime()
-            console.log("latlong: "+GPSControle.gps + " accuracy:"+position.coords.accuracy)
             @mostraGPS()
             @save()
 

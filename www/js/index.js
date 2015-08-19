@@ -77,7 +77,37 @@ exports.SecondScreen = SecondScreen;
 
 
 },{}],2:[function(require,module,exports){
-var GPSControle, ListView, NoteAdd, NoteView, RastrearView;
+var Action;
+
+Action = (function() {
+  function Action() {}
+
+  Action.normalAction = function(ctx) {
+    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' href=\"javascript:anotacoesview.anotar('" + ctx.valor + "');\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+  };
+
+  Action.identificationAction = function(ctx) {
+    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' href=\"javascript:anotacoesview.identificar();\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+  };
+
+  Action.render = function(ctx) {
+    if (ctx.tipo === 'normal') {
+      return Action.normalAction(ctx);
+    } else if (ctx.tipo === 'identification') {
+      return Action.identificationAction(ctx);
+    }
+  };
+
+  return Action;
+
+})();
+
+exports.Action = Action;
+
+
+
+},{}],3:[function(require,module,exports){
+var Action, GPSControle, ListView, NoteAdd, NoteView, RastrearView;
 
 NoteAdd = require('./noteadd.coffee').NoteAdd;
 
@@ -89,10 +119,38 @@ GPSControle = require('./gps_controle.coffee').GPSControle;
 
 RastrearView = require('./rastrearView.coffee').RastrearView;
 
+Action = require('./action.coffee').Action;
+
 window.Anotacoes = (function() {
   function Anotacoes(slsapi) {
     this.slsapi = slsapi;
+    this.acoes = [];
+    this.slsapi.config.register(this);
+    this.parseOpcoes(this.slsapi.config.opcoes);
+    this.geraTelaAnotacoes();
   }
+
+  Anotacoes.prototype.parseOpcoes = function(opcoes) {
+    this.opcoes = opcoes;
+    return this.acoes = this.opcoes.get('acoes', this.acoes);
+  };
+
+  Anotacoes.prototype.toJSON = function() {
+    return {
+      'acoes': this.createURL
+    };
+  };
+
+  Anotacoes.prototype.geraTelaAnotacoes = function() {
+    var action, html, i, len, ref;
+    html = "";
+    ref = this.acoes;
+    for (i = 0, len = ref.length; i < len; i++) {
+      action = ref[i];
+      html += Action.render(action);
+    }
+    return $('#telaPrincipal').html(html);
+  };
 
   Anotacoes.prototype.anotar = function(categoria) {
     return Anotacoes.noteadd = new NoteAdd(categoria, this.slsapi);
@@ -114,8 +172,7 @@ window.Anotacoes = (function() {
     var self;
     self = this;
     return cordova.plugins.barcodeScanner.scan(function(result) {
-      self.showAnotacaoByIdentificador(result.text);
-      return console.log(result.text);
+      return self.showAnotacaoByIdentificador(result.text);
     }, function(error) {
       return alert("Falha na leitura do código QR: " + error);
     });
@@ -153,7 +210,7 @@ exports.Anotacoes = Anotacoes;
 
 
 
-},{"./gps_controle.coffee":3,"./listView.coffee":5,"./noteView.coffee":6,"./noteadd.coffee":7,"./rastrearView.coffee":8}],3:[function(require,module,exports){
+},{"./action.coffee":2,"./gps_controle.coffee":4,"./listView.coffee":6,"./noteView.coffee":7,"./noteadd.coffee":8,"./rastrearView.coffee":9}],4:[function(require,module,exports){
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 window.GPSControle = (function() {
@@ -192,8 +249,7 @@ window.GPSControle = (function() {
     this.mostraGPS();
     $(document).on("pageinit", "#pgperfil", function() {
       return $("#pgperfiltimeout").on('slidestop', function(event) {
-        GPSControle.TIMEOUT = parseInt($('#pgperfiltimeout').val());
-        return console.log("Novo timeout GPS: " + GPSControle.TIMEOUT);
+        return GPSControle.TIMEOUT = parseInt($('#pgperfiltimeout').val());
       });
     });
   }
@@ -227,7 +283,6 @@ window.GPSControle = (function() {
       if (GPSControle.trilha.length > 0) {
         lastPosition = GPSControle.trilha[GPSControle.trilha.length - 1];
         vetor = [lastPosition[0], lastPosition[1], newPosition[0], newPosition[1]];
-        console.log(vetor);
         distance = getDistanceFromLatLonInKm.apply(null, vetor) * 1000;
         GPSControle.distance = distance;
         $("#pgrastrearview p.comentarios").html(GPSControle.trilha.length + ' pontos, ' + distance.toFixed(2) + ' metros do ultimo ponto');
@@ -271,7 +326,6 @@ window.GPSControle = (function() {
       GPSControle.lng = position.coords.longitude;
       GPSControle.accuracy = parseInt(position.coords.accuracy);
       GPSControle.time = (new Date()).getTime();
-      console.log("latlong: " + GPSControle.gps + " accuracy:" + position.coords.accuracy);
       this.mostraGPS();
       return this.save();
     }
@@ -297,7 +351,7 @@ exports.GPSControle = GPSControle;
 
 
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var GPSControle, SecondScreen, UserView, utils;
 
 utils = require('./utils.coffee');
@@ -377,7 +431,6 @@ window.App = (function() {
     this.setUrlConfServico(urlConfServico);
     this.ss = new SecondScreen(urlConfServico);
     window.userview = new UserView(urlConfServico);
-    userview.load();
     return window.gpscontrole = new GPSControle();
   };
 
@@ -387,7 +440,7 @@ window.App = (function() {
 
 
 
-},{"./SecondScreen.coffee":1,"./gps_controle.coffee":3,"./userView.coffee":9,"./utils.coffee":10}],5:[function(require,module,exports){
+},{"./SecondScreen.coffee":1,"./gps_controle.coffee":4,"./userView.coffee":10,"./utils.coffee":11}],6:[function(require,module,exports){
 var NoteView;
 
 NoteView = require('./noteView.coffee').NoteView;
@@ -508,14 +561,22 @@ module.exports = {
 
 
 
-},{"./noteView.coffee":6}],6:[function(require,module,exports){
+},{"./noteView.coffee":7}],7:[function(require,module,exports){
 var NoteView;
 
 NoteView = (function() {
   NoteView.mapa = null;
 
   NoteView.criaMapa = function(note) {
-    var marker, pos;
+    var error, marker, pos;
+    if (NoteView.mapa) {
+      try {
+        NoteView.mapa.remove();
+      } catch (_error) {
+        error = _error;
+        console.log("errors: " + error);
+      }
+    }
     pos = L.latLng(note.latitude, note.longitude);
     NoteView.mapa = L.map('mapa', {
       minZoom: 15,
@@ -552,12 +613,13 @@ NoteView = (function() {
 
   function NoteView(note1) {
     this.note = note1;
+    if (!this.note) {
+      alert('Anotação informada não existe!');
+      return;
+    }
     $.mobile.changePage("#pgnoteview", {
       changeHash: false
     });
-    if (NoteView.mapa) {
-      NoteView.mapa.remove();
-    }
     this.mapa = NoteView.criaMapa(this.note);
     setTimeout(function() {
       return NoteView.mapa.invalidateSize(false);
@@ -587,7 +649,6 @@ NoteView = (function() {
       return function() {
         var imageSrc;
         imageSrc = $('#pgnoteview p.foto img').attr('src');
-        console.log(imageSrc);
         return app.ss.session.postMessage(imageSrc);
       };
     })(this));
@@ -618,7 +679,6 @@ NoteView = (function() {
     $('#ulfilhos').empty();
     html = '';
     fi = NoteView.getFilhos(this.note);
-    console.log(fi);
     for (i = 0, len = fi.length; i < len; i++) {
       note = fi[i];
       img = '';
@@ -650,7 +710,7 @@ module.exports = {
 
 
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 var GPSControle, NoteAdd;
 
 GPSControle = require('./gps_controle.coffee').GPSControle;
@@ -844,7 +904,7 @@ exports.NoteAdd = NoteAdd;
 
 
 
-},{"./gps_controle.coffee":3}],8:[function(require,module,exports){
+},{"./gps_controle.coffee":4}],9:[function(require,module,exports){
 var RastrearView;
 
 RastrearView = (function() {
@@ -993,7 +1053,7 @@ module.exports = {
 
 
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var Anotacoes, UserView,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -1010,6 +1070,7 @@ UserView = (function() {
         $("#loginForm").on("submit", function(e) {
           return _this.submitLogin(e);
         });
+        _this.load();
         _this.slsapi.on(SLSAPI.User.EVENT_LOGIN_START, function() {
           return $.mobile.loading('show', {
             text: 'enviando',
@@ -1087,7 +1148,7 @@ exports.UserView = UserView;
 
 
 
-},{"./anotacoes.coffee":2}],10:[function(require,module,exports){
+},{"./anotacoes.coffee":3}],11:[function(require,module,exports){
 window.zeroPad = function(num, places) {
   var zero;
   zero = places - num.toString().length + 1;
@@ -1161,4 +1222,4 @@ window.deg2rad = function(deg) {
 
 
 
-},{}]},{},[4]);
+},{}]},{},[5]);

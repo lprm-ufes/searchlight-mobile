@@ -79,20 +79,7 @@ html
                      span  
     
 
-            div(data-role="content")
-                       a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.anotar('Infraestrutura');") 
-                            i.fa.fa-building
-                            span &nbsp;Anotar Infraestrutura 
-                       a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.anotar('Transporte');") 
-                            i.fa.fa-bus
-                            span &nbsp;Anotar Transporte 
-                       a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.anotar('Crime');") 
-                            i.fa.fa-unlock-alt
-                            span &nbsp;Anotar Crime
-                       a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.anotar('Acidente');")
-                            i.fa.fa-ambulance
-                            span &nbsp;Anotar Acidente
-                       br
+            div#telaPrincipal(data-role="content")
 
                        a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.identificar();")
                             i.fa.fa-qrcode
@@ -102,9 +89,6 @@ html
                             i.fa.fa-location
                             span &nbsp;Rastrear
                        br
-
-
-
                        a.ui-btn.ui-shadow.ui-corner-all(style="text-align:left",href="javascript:anotacoesview.anotar()") 
                             i.fa.fa-bullhorn
                             span &nbsp;Personalizado
@@ -150,6 +134,13 @@ html
                    p
                         label(for="pgperfiltimeout") Cache do GPS em segundos
                         input#pgperfiltimeout(type="range", max="60", min="1" ,name="pgperfiltimeout", placeholder="Cache GPS (segundos)", value="10")
+                   p(style="text-align:center") 
+                        span: i.fa.fa-location-arrow &nbsp; 
+                        span.text#pganotar-gps 27.234, 23.3434 
+                        br
+                        span.text#pganotar-gps-accuracy (20 m) 
+
+
                br
                div.ui-body.ui-body-a
                    h3 Searchlight Service

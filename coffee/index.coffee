@@ -60,7 +60,6 @@ class window.App
       @setUrlConfServico(urlConfServico)
       @ss = new SecondScreen(urlConfServico)
       window.userview = new UserView(urlConfServico)
-      userview.load()
       window.gpscontrole = new GPSControle()
 
 

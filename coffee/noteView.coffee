@@ -3,6 +3,12 @@ class NoteView
   @mapa =null
 
   @criaMapa: (note)->
+    if NoteView.mapa
+      try
+        NoteView.mapa.remove()
+      catch error
+        console.log("errors: #{error}")
+        
     pos=L.latLng(note.latitude,note.longitude)
     NoteView.mapa = L.map('mapa',{minZoom:15,maxZoom:17})
     L.tileLayer('http://{s}.tiles.mapbox.com/v3/rezo.ihpe97f0/{z}/{x}/{y}.png', {
@@ -27,10 +33,12 @@ class NoteView
     return filhos
 
   constructor: (@note) ->
+    if not @note
+      alert('Anotação informada não existe!')
+      return
+
     $.mobile.changePage("#pgnoteview",{changeHash:false})
 
-    if NoteView.mapa
-      NoteView.mapa.remove()
     @mapa = NoteView.criaMapa(@note)
     setTimeout(()-> 
       NoteView.mapa.invalidateSize(false);
@@ -59,7 +67,6 @@ class NoteView
     $('#pgnoteview p.foto img').off('click')
     $('#pgnoteview p.foto img').on 'click', =>
       imageSrc = $('#pgnoteview p.foto img').attr('src')
-      console.log(imageSrc)
       app.ss.session.postMessage(imageSrc)
       
     if @note.youtubeVideoId
@@ -88,7 +95,6 @@ class NoteView
     $('#ulfilhos').empty()
     html = ''
     fi =NoteView.getFilhos(@note) 
-    console.log(fi)
     for note in fi
       img = ''
       video = ''
