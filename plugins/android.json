@@ -7,11 +7,13 @@
         "files": {
             "res/xml/config.xml": {
                 "parents": {
-                    "/*": [
+                    "widget": [
                         {
-                            "xml": "<feature name=\"File\"><param name=\"android-package\" value=\"org.apache.cordova.file.FileUtils\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "xml": "<feature name=\"YoutubeVideoPlayer\"><param name=\"android-package\" value=\"com.bunkerpalace.cordova.YoutubeVideoPlayer\" /></feature>",
                             "count": 1
-                        },
+                        }
+                    ],
+                    "/*": [
                         {
                             "xml": "<feature name=\"BarcodeScanner\"><param name=\"android-package\" value=\"com.phonegap.plugins.barcodescanner.BarcodeScanner\" /></feature>",
                             "count": 1
@@ -37,11 +39,11 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Presentation\"><param name=\"android-package\" value=\"de.fhg.fokus.famium.presentation.CDVPresentationPlugin\" /></feature>",
+                            "xml": "<feature name=\"Battery\"><param name=\"android-package\" value=\"org.apache.cordova.batterystatus.BatteryListener\" /></feature>",
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Battery\"><param name=\"android-package\" value=\"org.apache.cordova.batterystatus.BatteryListener\" /></feature>",
+                            "xml": "<feature name=\"File\"><param name=\"android-package\" value=\"org.apache.cordova.file.FileUtils\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
                         {
@@ -51,11 +53,9 @@
                         {
                             "xml": "<feature name=\"NetworkStatus\"><param name=\"android-package\" value=\"org.apache.cordova.networkinformation.NetworkManager\" /></feature>",
                             "count": 1
-                        }
-                    ],
-                    "widget": [
+                        },
                         {
-                            "xml": "<feature name=\"YoutubeVideoPlayer\"><param name=\"android-package\" value=\"com.bunkerpalace.cordova.YoutubeVideoPlayer\" /></feature>",
+                            "xml": "<feature name=\"Presentation\"><param name=\"android-package\" value=\"de.fhg.fokus.famium.presentation.CDVPresentationPlugin\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -63,7 +63,29 @@
             },
             "AndroidManifest.xml": {
                 "parents": {
+                    "/manifest": [
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.CAMERA\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.FLASHLIGHT\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />",
+                            "count": 1
+                        }
+                    ],
                     "/manifest/application": [
+                        {
+                            "xml": "<activity android:name=\"com.keyes.youtube.OpenYouTubePlayerActivity\" android:screenOrientation=\"landscape\" />",
+                            "count": 1
+                        },
                         {
                             "xml": "<activity android:clearTaskOnLaunch=\"true\" android:configChanges=\"orientation|keyboardHidden\" android:exported=\"false\" android:name=\"com.google.zxing.client.android.CaptureActivity\" android:screenOrientation=\"landscape\" android:theme=\"@android:style/Theme.NoTitleBar.Fullscreen\" android:windowSoftInputMode=\"stateAlwaysHidden\"><intent-filter><action android:name=\"com.phonegap.plugins.barcodescanner.SCAN\" /><category android:name=\"android.intent.category.DEFAULT\" /></intent-filter></activity>",
                             "count": 1
@@ -79,38 +101,12 @@
                         {
                             "xml": "<service android:name=\"de.appplant.cordova.plugin.background.ForegroundService\" />",
                             "count": 1
-                        },
-                        {
-                            "xml": "<activity android:name=\"com.keyes.youtube.OpenYouTubePlayerActivity\" android:screenOrientation=\"landscape\" />",
-                            "count": 1
-                        }
-                    ],
-                    "/manifest": [
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.CAMERA\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.FLASHLIGHT\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
-                            "count": 1
                         }
                     ],
                     "/*": [
                         {
                             "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
                             "count": 3
-                        },
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.INTERNET\" />",
-                            "count": 1
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />",
@@ -122,6 +118,10 @@
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.INTERNET\" />",
                             "count": 1
                         }
                     ]
@@ -612,16 +612,16 @@
         }
     },
     "installed_plugins": {
-        "org.apache.cordova.file": {
+        "com.bunkerpalace.cordova.YoutubeVideoPlayer": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
         },
         "com.phonegap.plugins.barcodescanner": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
         },
-        "cordova-plugin-console": {
+        "cordova-plugin-camera": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
         },
-        "cordova-plugin-camera": {
+        "cordova-plugin-console": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
         },
         "cordova-plugin-whitelist": {
@@ -630,10 +630,10 @@
         "de.appplant.cordova.plugin.background-mode": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
         },
-        "de.fhg.fokus.famium.presentation": {
+        "org.apache.cordova.battery-status": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
         },
-        "org.apache.cordova.battery-status": {
+        "org.apache.cordova.file": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
         },
         "org.apache.cordova.file-transfer": {
@@ -645,7 +645,7 @@
         "org.apache.cordova.network-information": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
         },
-        "com.bunkerpalace.cordova.YoutubeVideoPlayer": {
+        "de.fhg.fokus.famium.presentation": {
             "PACKAGE_NAME": "br.com.wancharle.slmobile"
         }
     },
