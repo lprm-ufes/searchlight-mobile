@@ -38,6 +38,10 @@ class NoteAdd
     
     $('#pganotar a.btnQRcode').off('click')
     $('#pganotar a.btnQRcode').on('click', => @identificar())
+    $('#pganotar a.btnOCR').off('click')
+    $('#pganotar a.btnOCR').on('click', => @identificarOCR())
+
+
 
     $('#pganotar a.btnSalvar').off('click')
     $('#pganotar a.btnSalvar').on('click', => @salvar())
@@ -91,6 +95,34 @@ class NoteAdd
         console.log("upload error source #{error.source}")
         console.log("upload error target #{error.target}")
       )
+
+  identificarOCR: ->
+    win = (r)->
+      console.log(r)
+      alert(r.response)
+    
+    fail = (error)->
+      console.log(error)
+
+    navigator.camera.getPicture(
+      (imageURI) =>
+        console.log(imageURI)
+        alert(imageURI)
+        ft = new FileTransfer()
+        options = new FileUploadOptions()
+        options.fileKey = "file"
+        options.mimeType = "text/plain"
+        params = {}
+        params.privado=true
+        options.params = params
+        ft.upload(imageURI, encodeURI("http://sl.wancharle.com.br/note/ocr"), win, fail, options)
+      ,(message) =>
+        @fotoOnFail(message)
+      ,{
+        quality: 50,
+        destinationType: Camera.DestinationType.FILE_URI, 
+        sourceType:Camera.PictureSourceType.PHOTOLIBRARY
+      })
 
 
   identificar: ->

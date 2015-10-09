@@ -775,6 +775,12 @@ NoteAdd = (function() {
         return _this.identificar();
       };
     })(this));
+    $('#pganotar a.btnOCR').off('click');
+    $('#pganotar a.btnOCR').on('click', (function(_this) {
+      return function() {
+        return _this.identificarOCR();
+      };
+    })(this));
     $('#pganotar a.btnSalvar').off('click');
     $('#pganotar a.btnSalvar').on('click', (function(_this) {
       return function() {
@@ -831,6 +837,40 @@ NoteAdd = (function() {
       alert("Erro ao enviar anotação: Code = " + error.code);
       console.log("upload error source " + error.source);
       return console.log("upload error target " + error.target);
+    });
+  };
+
+  NoteAdd.prototype.identificarOCR = function() {
+    var fail, win;
+    win = function(r) {
+      console.log(r);
+      return alert(r.response);
+    };
+    fail = function(error) {
+      return console.log(error);
+    };
+    return navigator.camera.getPicture((function(_this) {
+      return function(imageURI) {
+        var ft, options, params;
+        console.log(imageURI);
+        alert(imageURI);
+        ft = new FileTransfer();
+        options = new FileUploadOptions();
+        options.fileKey = "file";
+        options.mimeType = "text/plain";
+        params = {};
+        params.privado = true;
+        options.params = params;
+        return ft.upload(imageURI, encodeURI("http://sl.wancharle.com.br/note/ocr"), win, fail, options);
+      };
+    })(this), (function(_this) {
+      return function(message) {
+        return _this.fotoOnFail(message);
+      };
+    })(this), {
+      quality: 50,
+      destinationType: Camera.DestinationType.FILE_URI,
+      sourceType: Camera.PictureSourceType.PHOTOLIBRARY
     });
   };
 
