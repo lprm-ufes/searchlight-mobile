@@ -86,6 +86,10 @@ Action = (function() {
     return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' href=\"javascript:anotacoesview.anotar('" + ctx.valor + "');\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
   };
 
+  Action.simpleAction = function(ctx) {
+    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' href=\"javascript:anotacoesview.anotar('" + ctx.valor + "','" + ctx.tipo + "');\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+  };
+
   Action.identificationAction = function(ctx) {
     return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' href=\"javascript:anotacoesview.identificar();\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
   };
@@ -93,8 +97,12 @@ Action = (function() {
   Action.render = function(ctx) {
     if (ctx.tipo === 'normal') {
       return Action.normalAction(ctx);
+    } else if (ctx.tipo === 'simple') {
+      return Action.simpleAction(ctx);
     } else if (ctx.tipo === 'identification') {
       return Action.identificationAction(ctx);
+    } else {
+      return "Não foi possível entender a estrutura do mashup informado. Verifique se o link está corrompido ou se o app precisa ser atualizado.";
     }
   };
 
@@ -152,8 +160,8 @@ window.Anotacoes = (function() {
     return $('#telaPrincipal').html(html);
   };
 
-  Anotacoes.prototype.anotar = function(categoria) {
-    return Anotacoes.noteadd = new NoteAdd(categoria, this.slsapi);
+  Anotacoes.prototype.anotar = function(categoria, tipo) {
+    return Anotacoes.noteadd = new NoteAdd(categoria, this.slsapi, false, null, tipo);
   };
 
   Anotacoes.prototype.anexar = function(note) {
@@ -722,7 +730,7 @@ var GPSControle, NoteAdd;
 GPSControle = require('./gps_controle.coffee').GPSControle;
 
 NoteAdd = (function() {
-  function NoteAdd(categoria, slsapi, anexar, note) {
+  function NoteAdd(categoria, slsapi, anexar, note, tipo) {
     if (anexar == null) {
       anexar = false;
     }
@@ -806,6 +814,11 @@ NoteAdd = (function() {
       $.mobile.loading('hide');
       return alert('Erro no envio da anotação. Verifique sua conexão wifi.');
     });
+    if (tipo === 'simple') {
+      $(".input-youtube, .input-identificar").hide();
+    } else {
+      $(".input-youtube, .input-identificar").show();
+    }
   }
 
   NoteAdd.prototype.salvar = function() {

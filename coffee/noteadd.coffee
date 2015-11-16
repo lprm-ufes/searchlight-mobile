@@ -2,7 +2,7 @@ GPSControle = require('./gps_controle.coffee').GPSControle
 
 
 class NoteAdd
-  constructor: (categoria,slsapi,anexar=false,note=null) ->
+  constructor: (categoria,slsapi,anexar=false,note=null,tipo) ->
     @slsapi = slsapi
     if anexar
       @parentId = note.hashid
@@ -57,6 +57,12 @@ class NoteAdd
       $.mobile.loading('hide')
       alert('Erro no envio da anotação. Verifique sua conexão wifi.')
 
+    # FIXME: refatorar para formulario dinamico
+    if tipo=='simple'
+      $(".input-youtube, .input-identificar").hide()
+    else
+      $(".input-youtube, .input-identificar").show()
+      
   salvar: () ->
     note = {}
     if @parentId
