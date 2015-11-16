@@ -612,6 +612,7 @@ NoteView = (function() {
   };
 
   function NoteView(note1) {
+    var user_id;
     this.note = note1;
     if (!this.note) {
       alert('Anotação informada não existe!');
@@ -632,12 +633,18 @@ NoteView = (function() {
         return anotacoesview.anexar(_this.note);
       };
     })(this));
-    $('#pgnoteview a.btn-deletar-nota').off('click');
-    $('#pgnoteview a.btn-deletar-nota').on('click', (function(_this) {
-      return function() {
-        return anotacoesview.deletar(_this.note);
-      };
-    })(this));
+    user_id = window.localStorage.getItem('user_id');
+    if (user_id === this.note.user.id) {
+      $('#pgnoteview a.btn-deletar-nota').show();
+      $('#pgnoteview a.btn-deletar-nota').off('click');
+      $('#pgnoteview a.btn-deletar-nota').on('click', (function(_this) {
+        return function() {
+          return anotacoesview.deletar(_this.note);
+        };
+      })(this));
+    } else {
+      $('#pgnoteview a.btn-deletar-nota').hide();
+    }
     if (this.note.fotoURL) {
       $('#pgnoteview p.foto').html("<img src='" + this.note.fotoURL + "' width='100%' />");
       $('#pgnoteview p.foto').show();
@@ -665,7 +672,6 @@ NoteView = (function() {
       $('#pgnoteview fieldset.video').hide();
     }
     if (this.note.notebook && this.note.notebook === ListView.storageNotebookId) {
-      $('#pgnoteview a.btn-deletar-nota').show();
       $('#pgnoteview a.btn-adicionar-nota').hide();
     } else {
       $('#pgnoteview a.btn-deletar-nota').hide();
@@ -1130,6 +1136,7 @@ UserView = (function() {
     if (this.slsapi.user.isLogged()) {
       this.anotacoesview = new Anotacoes(this.slsapi);
       window.anotacoesview = this.anotacoesview;
+      $('#pgperfil p.usuario').html("Usuário: " + (this.slsapi.user.getUsuario()));
       return $.mobile.changePage("#pglogado", {
         changeHash: false
       });

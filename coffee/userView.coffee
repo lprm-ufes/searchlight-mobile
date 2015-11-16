@@ -55,7 +55,7 @@ class UserView
     if @slsapi.user.isLogged()
       @anotacoesview = new Anotacoes(@slsapi)
       window.anotacoesview = @anotacoesview
-
+      $('#pgperfil p.usuario').html("Usuário: #{@slsapi.user.getUsuario()}")
       $.mobile.changePage("#pglogado",{changeHash:false})
     else
       $.mobile.changePage("#pglogin",{changeHash:false})

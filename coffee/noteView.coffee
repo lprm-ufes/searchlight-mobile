@@ -44,7 +44,6 @@ class NoteView
       NoteView.mapa.invalidateSize(false);
     ,1000)
 
-
     $('#pgnoteview p.comentarios').html(@note.comentarios or @note.texto)
     $('#pgnoteview p.categoria').html(@note.cat or @note.user.username)
     
@@ -53,9 +52,15 @@ class NoteView
     $('#pgnoteview a.btn-adicionar-nota').on 'click', =>
       anotacoesview.anexar(@note)
 
-    $('#pgnoteview a.btn-deletar-nota').off('click')
-    $('#pgnoteview a.btn-deletar-nota').on 'click', =>
-      anotacoesview.deletar(@note)
+    user_id = window.localStorage.getItem('user_id')
+    #console.log(user_id,@note.user)
+    if user_id == @note.user.id
+      $('#pgnoteview a.btn-deletar-nota').show()
+      $('#pgnoteview a.btn-deletar-nota').off('click')
+      $('#pgnoteview a.btn-deletar-nota').on 'click', =>
+        anotacoesview.deletar(@note)
+    else
+      $('#pgnoteview a.btn-deletar-nota').hide()
 
     if @note.fotoURL 
       $('#pgnoteview p.foto').html("<img src='#{@note.fotoURL}' width='100%' />")
@@ -82,7 +87,6 @@ class NoteView
 
 
     if @note.notebook and @note.notebook ==ListView.storageNotebookId
-      $('#pgnoteview a.btn-deletar-nota').show()
       $('#pgnoteview a.btn-adicionar-nota').hide()
     else
       $('#pgnoteview a.btn-deletar-nota').hide()
