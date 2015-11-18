@@ -24,13 +24,29 @@ html
         div#splash(data-role="page", data-theme="a")
             div(role="main", class="ui-content")
                 
- 
+        div#problemarede(data-role="page", data-theme="a")
+            div(data-role="header")
+                h1 Searchlight
+
+            div(role="main", class="ui-content")
+                h3 Oops!
+                p Não conseguimos conectar a internet.
+                p Para utilizar o Searchlight é necessário possuir conexão com a internet.  
+                p Pode checar sua conexão? 
+
+                a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.main()")
+                        i.fa.fa-refresh
+                        span &nbsp; Tentar novamente
+
+            div(data-role="footer", data-position="fixed")
+                h4 &copy UFES 
+     
         div#pgservico(data-role="page", data-theme="a")
             div(data-role="header")
                 h1 Searchlight
 
             div(role="main", class="ui-content")
-                p  Para utilizar o Searchlight Mobile é necessário que este esteja vinculado a um serviço de coleta. Vc pode fazer isso clicando no botão "vincular serviço". Ao clicá-lo posicione o smartphone de forma que possa ler o código QR gerado pelo seu serviço.
+                p  Para utilizar o Searchlight é necessário que este esteja vinculado a um serviço de coleta. Vc pode fazer isso clicando no botão "vincular serviço". Ao clicá-lo posicione o smartphone de forma que possa ler o código QR gerado pelo seu serviço.
 
                 a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.vincularServico()")
                         i.fa.fa-2x.fa-qrcode

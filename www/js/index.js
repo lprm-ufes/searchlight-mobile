@@ -1079,8 +1079,29 @@ var Anotacoes, UserView,
 Anotacoes = require('./anotacoes.coffee').Anotacoes;
 
 UserView = (function() {
+  UserView.prototype.problemarede = function() {
+    if (this.loading) {
+      this.loadging = false;
+      $.mobile.loading("hide");
+      return $.mobile.changePage('#problemarede', {
+        changeHash: false
+      });
+    }
+  };
+
   function UserView(urlConfServico) {
     this.submitLogin = bind(this.submitLogin, this);
+    this.loading = true;
+    $.mobile.loading("show", {
+      text: "Carregando definições do usuário",
+      textVisible: true,
+      textonly: false
+    });
+    setTimeout(((function(_this) {
+      return function() {
+        return _this.problemarede();
+      };
+    })(this)), 10000);
     this.slsapi = new SLSAPI({
       urlConfServico: urlConfServico
     });
@@ -1102,7 +1123,7 @@ UserView = (function() {
           if (err.response.body.error) {
             return alert(err.response.body.error);
           } else {
-            return alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!');
+            return _this.problemarede();
           }
         });
         return _this.slsapi.on(SLSAPI.User.EVENT_LOGIN_SUCCESS, function() {
@@ -1114,7 +1135,7 @@ UserView = (function() {
     })(this));
     this.slsapi.on(SLSAPI.Config.EVENT_FAIL, (function(_this) {
       return function(err) {
-        alert('Não foi possivel conectar ao serviço, verifique sua conexao de dados ou sua rede wifi!');
+        _this.problemarede();
         return console.log(err);
       };
     })(this));
@@ -1146,6 +1167,8 @@ UserView = (function() {
   };
 
   UserView.prototype.load = function() {
+    this.loading = false;
+    $.mobile.loading("hide");
     if (this.slsapi.user.isLogged()) {
       this.anotacoesview = new Anotacoes(this.slsapi);
       window.anotacoesview = this.anotacoesview;
