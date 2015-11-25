@@ -8,6 +8,7 @@ class RastrearView
   @id = false
 
   @criaMapa: ()->
+
     pos=L.latLng([GPSControle.lat,GPSControle.lng])
     RastrearView.mapa = L.map('mapaRastreio',{minZoom:15,maxZoom:17})
     L.tileLayer('http://{s}.tiles.mapbox.com/v3/rezo.ihpe97f0/{z}/{x}/{y}.png', {
@@ -75,6 +76,7 @@ class RastrearView
 
   constructor: (slsapi) ->
     storage = window.localStorage
+    cordova.plugins.backgroundMode.enable()
     RastrearView.id = storage.getItem('id_rastreamento')
     RastrearView.slsapi =slsapi
     $.mobile.changePage("#pgrastrearview",{changeHash:false})
@@ -98,6 +100,7 @@ class RastrearView
 
   @stop: ()->
     storage = window.localStorage
+    cordova.plugins.backgroundMode.disable()
     RastrearView.id = ""
     storage.setItem('id_rastreamento',RastrearView.id)
     GPSControle.trilha = []

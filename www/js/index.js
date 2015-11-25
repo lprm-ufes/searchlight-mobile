@@ -86,6 +86,10 @@ Action = (function() {
     return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' href=\"javascript:anotacoesview.anotar('" + ctx.valor + "');\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
   };
 
+  Action.trackingAction = function(ctx) {
+    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' href=\"javascript:anotacoesview.rastrear();\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+  };
+
   Action.identificationAction = function(ctx) {
     return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' href=\"javascript:anotacoesview.identificar();\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
   };
@@ -95,6 +99,8 @@ Action = (function() {
       return Action.normalAction(ctx);
     } else if (ctx.tipo === 'identification') {
       return Action.identificationAction(ctx);
+    } else if (ctx.tipo === 'tracking') {
+      return Action.trackingAction(ctx);
     }
   };
 
@@ -379,7 +385,6 @@ window.App = (function() {
 
   App.prototype.main = function() {
     console.log('Received Event: onDeviceReady');
-    cordova.plugins.backgroundMode.enable();
     cordova.plugins.backgroundMode.onactivate = function() {
       return console.log('backgroundMode: ativado');
     };
@@ -1031,6 +1036,7 @@ RastrearView = (function() {
   function RastrearView(slsapi) {
     var lastPosition, storage;
     storage = window.localStorage;
+    cordova.plugins.backgroundMode.enable();
     RastrearView.id = storage.getItem('id_rastreamento');
     RastrearView.slsapi = slsapi;
     $.mobile.changePage("#pgrastrearview", {
@@ -1060,6 +1066,7 @@ RastrearView = (function() {
   RastrearView.stop = function() {
     var storage;
     storage = window.localStorage;
+    cordova.plugins.backgroundMode.disable();
     RastrearView.id = "";
     storage.setItem('id_rastreamento', RastrearView.id);
     GPSControle.trilha = [];

@@ -2,6 +2,10 @@ class Action
   @normalAction:(ctx)->
     return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' 
     href=\"javascript:anotacoesview.anotar('#{ctx.valor}');\"><i class='fa #{ctx.extra}' /><span>&nbsp;#{ctx.legenda}</span></a>"
+ 
+  @trackingAction:(ctx)->
+    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' 
+    href=\"javascript:anotacoesview.rastrear();\"><i class='fa #{ctx.extra}' /><span>&nbsp;#{ctx.legenda}</span></a>"
          
   @identificationAction:(ctx)->
     return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' 
@@ -12,6 +16,9 @@ class Action
       return Action.normalAction(ctx)
     else if ctx.tipo == 'identification'
       return Action.identificationAction(ctx)
+    else if ctx.tipo == 'tracking'
+      return Action.trackingAction(ctx)
+    
          
 
 exports.Action = Action

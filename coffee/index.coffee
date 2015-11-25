@@ -20,7 +20,6 @@ class window.App
 
     main: ->
       console.log('Received Event: onDeviceReady' )
-      cordova.plugins.backgroundMode.enable();
       cordova.plugins.backgroundMode.onactivate = ()->
         console.log('backgroundMode: ativado')
       cordova.plugins.backgroundMode.ondeactivate = ()->
