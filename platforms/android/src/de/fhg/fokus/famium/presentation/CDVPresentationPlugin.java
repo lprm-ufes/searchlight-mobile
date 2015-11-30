@@ -136,7 +136,6 @@ public class CDVPresentationPlugin extends CordovaPlugin implements DisplayManag
 	 * @throws JSONException
 	 */
 	private boolean requestSession(JSONArray args, CallbackContext callbackContext) throws JSONException{
-        getDisplayManager();
 		String url = args.getString(0);
 		PresentationSession session = new PresentationSession(getActivity(), url, callbackContext);
 		showDisplaySelectionDialog(session);
@@ -180,7 +179,6 @@ public class CDVPresentationPlugin extends CordovaPlugin implements DisplayManag
 		else {
 			callbackContext.error("session not found");
 		}
-        //dismiss();
 		return true;
 	}
 
@@ -284,14 +282,6 @@ public class CDVPresentationPlugin extends CordovaPlugin implements DisplayManag
 		}
 		return presentations;
 	}
-
-    private void dismiss (){
-		Collection<SecondScreenPresentation> collection = getPresentations().values();
-		for (SecondScreenPresentation presentation : collection) {
-			presentation.dismiss();
-		}
-	
-        }
 	
 	private void showDisplaySelectionDialog(final PresentationSession session){
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

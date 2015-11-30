@@ -83,24 +83,32 @@ Action = (function() {
   function Action() {}
 
   Action.normalAction = function(ctx) {
-    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' href=\"javascript:anotacoesview.anotar('" + ctx.valor + "');\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left'     href=\"javascript:anotacoesview.anotar('" + ctx.valor + "');\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
   };
 
   Action.trackingAction = function(ctx) {
-    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' href=\"javascript:anotacoesview.rastrear();\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left'    href=\"javascript:anotacoesview.rastrear();\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+  };
+
+  Action.simpleAction = function(ctx) {
+    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left'  href=\"javascript:anotacoesview.anotar('" + ctx.valor + "','" + ctx.tipo + "');\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
   };
 
   Action.identificationAction = function(ctx) {
-    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left' href=\"javascript:anotacoesview.identificar();\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left'    href=\"javascript:anotacoesview.identificar();\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
   };
 
   Action.render = function(ctx) {
     if (ctx.tipo === 'normal') {
       return Action.normalAction(ctx);
+    } else if (ctx.tipo === 'simple') {
+      return Action.simpleAction(ctx);
     } else if (ctx.tipo === 'identification') {
       return Action.identificationAction(ctx);
     } else if (ctx.tipo === 'tracking') {
       return Action.trackingAction(ctx);
+    } else {
+      return "Não foi possível entender a estrutura do mashup informado. Verifique se o link está corrompido ou se o app precisa ser atualizado.";
     }
   };
 
@@ -158,8 +166,8 @@ window.Anotacoes = (function() {
     return $('#telaPrincipal').html(html);
   };
 
-  Anotacoes.prototype.anotar = function(categoria) {
-    return Anotacoes.noteadd = new NoteAdd(categoria, this.slsapi);
+  Anotacoes.prototype.anotar = function(categoria, tipo) {
+    return Anotacoes.noteadd = new NoteAdd(categoria, this.slsapi, false, null, tipo);
   };
 
   Anotacoes.prototype.anexar = function(note) {
@@ -617,6 +625,7 @@ NoteView = (function() {
   };
 
   function NoteView(note1) {
+    var user_id;
     this.note = note1;
     if (!this.note) {
       alert('Anotação informada não existe!');
@@ -637,12 +646,18 @@ NoteView = (function() {
         return anotacoesview.anexar(_this.note);
       };
     })(this));
-    $('#pgnoteview a.btn-deletar-nota').off('click');
-    $('#pgnoteview a.btn-deletar-nota').on('click', (function(_this) {
-      return function() {
-        return anotacoesview.deletar(_this.note);
-      };
-    })(this));
+    user_id = window.localStorage.getItem('user_id');
+    if (user_id === this.note.user.id) {
+      $('#pgnoteview a.btn-deletar-nota').show();
+      $('#pgnoteview a.btn-deletar-nota').off('click');
+      $('#pgnoteview a.btn-deletar-nota').on('click', (function(_this) {
+        return function() {
+          return anotacoesview.deletar(_this.note);
+        };
+      })(this));
+    } else {
+      $('#pgnoteview a.btn-deletar-nota').hide();
+    }
     if (this.note.fotoURL) {
       $('#pgnoteview p.foto').html("<img src='" + this.note.fotoURL + "' width='100%' />");
       $('#pgnoteview p.foto').show();
@@ -670,7 +685,6 @@ NoteView = (function() {
       $('#pgnoteview fieldset.video').hide();
     }
     if (this.note.notebook && this.note.notebook === ListView.storageNotebookId) {
-      $('#pgnoteview a.btn-deletar-nota').show();
       $('#pgnoteview a.btn-adicionar-nota').hide();
     } else {
       $('#pgnoteview a.btn-deletar-nota').hide();
@@ -721,7 +735,7 @@ var GPSControle, NoteAdd;
 GPSControle = require('./gps_controle.coffee').GPSControle;
 
 NoteAdd = (function() {
-  function NoteAdd(categoria, slsapi, anexar, note) {
+  function NoteAdd(categoria, slsapi, anexar, note, tipo) {
     if (anexar == null) {
       anexar = false;
     }
@@ -811,6 +825,11 @@ NoteAdd = (function() {
       $.mobile.loading('hide');
       return alert('Erro no envio da anotação. Verifique sua conexão wifi.');
     });
+    if (tipo === 'simple') {
+      $(".input-youtube, .input-identificar").hide();
+    } else {
+      $(".input-youtube, .input-identificar").show();
+    }
   }
 
   NoteAdd.prototype.salvar = function() {
@@ -1107,8 +1126,29 @@ var Anotacoes, UserView,
 Anotacoes = require('./anotacoes.coffee').Anotacoes;
 
 UserView = (function() {
+  UserView.prototype.problemarede = function() {
+    if (this.loading) {
+      this.loadging = false;
+      $.mobile.loading("hide");
+      return $.mobile.changePage('#problemarede', {
+        changeHash: false
+      });
+    }
+  };
+
   function UserView(urlConfServico) {
     this.submitLogin = bind(this.submitLogin, this);
+    this.loading = true;
+    $.mobile.loading("show", {
+      text: "Carregando definições do usuário",
+      textVisible: true,
+      textonly: false
+    });
+    setTimeout(((function(_this) {
+      return function() {
+        return _this.problemarede();
+      };
+    })(this)), 10000);
     this.slsapi = new SLSAPI({
       urlConfServico: urlConfServico
     });
@@ -1130,7 +1170,7 @@ UserView = (function() {
           if (err.response.body.error) {
             return alert(err.response.body.error);
           } else {
-            return alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!');
+            return _this.problemarede();
           }
         });
         return _this.slsapi.on(SLSAPI.User.EVENT_LOGIN_SUCCESS, function() {
@@ -1142,7 +1182,7 @@ UserView = (function() {
     })(this));
     this.slsapi.on(SLSAPI.Config.EVENT_FAIL, (function(_this) {
       return function(err) {
-        alert('Não foi possivel conectar ao serviço, verifique sua conexao de dados ou sua rede wifi!');
+        _this.problemarede();
         return console.log(err);
       };
     })(this));
@@ -1174,9 +1214,12 @@ UserView = (function() {
   };
 
   UserView.prototype.load = function() {
+    this.loading = false;
+    $.mobile.loading("hide");
     if (this.slsapi.user.isLogged()) {
       this.anotacoesview = new Anotacoes(this.slsapi);
       window.anotacoesview = this.anotacoesview;
+      $('#pgperfil p.usuario').html("Usuário: " + (this.slsapi.user.getUsuario()));
       return $.mobile.changePage("#pglogado", {
         changeHash: false
       });

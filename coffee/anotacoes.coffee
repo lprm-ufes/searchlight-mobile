@@ -30,8 +30,8 @@ class window.Anotacoes
     $('#telaPrincipal').html(html)
 
 
-  anotar: (categoria)->
-    Anotacoes.noteadd = new NoteAdd(categoria,@slsapi)
+  anotar: (categoria,tipo)->
+    Anotacoes.noteadd = new NoteAdd(categoria,@slsapi,false,null,tipo)
 
   anexar: (note)->
     Anotacoes.noteadd = new NoteAdd(null,@slsapi,true,note)

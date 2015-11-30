@@ -8,6 +8,8 @@ html
 
         // WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 
         // <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /> 
+
+        meta(http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'")
         meta(name="viewport", content="user-scalable=no, width=320")
         link(rel="stylesheet", href="bower_components/jquery-mobile-bower/css/jquery.mobile-1.4.2.css")
         link(rel="stylesheet", href="font-awesome-4.2.0/css/font-awesome.min.css")
@@ -24,13 +26,29 @@ html
         div#splash(data-role="page", data-theme="a")
             div(role="main", class="ui-content")
                 
- 
+        div#problemarede(data-role="page", data-theme="a")
+            div(data-role="header")
+                h1 Searchlight
+
+            div(role="main", class="ui-content")
+                h3 Oops!
+                p Não conseguimos conectar a internet.
+                p Para utilizar o Searchlight é necessário possuir conexão com a internet.  
+                p Pode checar sua conexão? 
+
+                a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.main()")
+                        i.fa.fa-refresh
+                        span &nbsp; Tentar novamente
+
+            div(data-role="footer", data-position="fixed")
+                h4 &copy UFES 
+     
         div#pgservico(data-role="page", data-theme="a")
             div(data-role="header")
                 h1 Searchlight
 
             div(role="main", class="ui-content")
-                p  Para utilizar o Searchlight Mobile é necessário que este esteja vinculado a um serviço de coleta. Vc pode fazer isso clicando no botão "vincular serviço". Ao clicá-lo posicione o smartphone de forma que possa ler o código QR gerado pelo seu serviço.
+                p  Para utilizar o Searchlight é necessário que este esteja vinculado a um serviço de coleta. Vc pode fazer isso clicando no botão "vincular serviço". Ao clicá-lo posicione o smartphone de forma que possa ler o código QR gerado pelo seu serviço.
 
                 a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.vincularServico()")
                         i.fa.fa-2x.fa-qrcode

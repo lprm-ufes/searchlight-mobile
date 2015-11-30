@@ -2,7 +2,19 @@
 Anotacoes = require('./anotacoes.coffee').Anotacoes
 
 class UserView
+  problemarede: ()->
+    if @loading
+      @loadging = false
+      $.mobile.loading( "hide")
+      $.mobile.changePage('#problemarede',{changeHash:false})
   constructor: (urlConfServico) ->
+    @loading = true
+    $.mobile.loading( "show", {
+        text: "Carregando definições do usuário",
+        textVisible: true,
+        textonly: false,
+      });
+    setTimeout((()=> @problemarede() ), 10000)
     @slsapi = new SLSAPI({urlConfServico:urlConfServico})
 
     @slsapi.on SLSAPI.Config.EVENT_READY, ()=>
@@ -13,13 +25,13 @@ class UserView
         $.mobile.loading('show', { text:'enviando',textVisible:'true'} )
       
 
-      @slsapi.on SLSAPI.User.EVENT_LOGIN_FAIL, (err) ->
+      @slsapi.on SLSAPI.User.EVENT_LOGIN_FAIL, (err) =>
         $.mobile.loading('hide')
         $("#submitButton").removeAttr("disabled")
         if err.response.body.error
           alert(err.response.body.error)
         else
-          alert('Não foi possivel conectar, verifique sua conexao de dados ou sua rede wifi!')
+          @problemarede()
 
       @slsapi.on SLSAPI.User.EVENT_LOGIN_SUCCESS, () =>
         $.mobile.loading('hide')
@@ -27,7 +39,7 @@ class UserView
         @load()
 
     @slsapi.on SLSAPI.Config.EVENT_FAIL, (err)=>
-      alert('Não foi possivel conectar ao serviço, verifique sua conexao de dados ou sua rede wifi!')
+      @problemarede()
       console.log(err)
     
 
@@ -52,10 +64,12 @@ class UserView
     return false
 
   load: () ->
+    @loading = false
+    $.mobile.loading( "hide")
     if @slsapi.user.isLogged()
       @anotacoesview = new Anotacoes(@slsapi)
       window.anotacoesview = @anotacoesview
-
+      $('#pgperfil p.usuario').html("Usuário: #{@slsapi.user.getUsuario()}")
       $.mobile.changePage("#pglogado",{changeHash:false})
     else
       $.mobile.changePage("#pglogin",{changeHash:false})
