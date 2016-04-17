@@ -36,9 +36,15 @@ html
                 p Para utilizar o Searchlight é necessário possuir conexão com a internet.  
                 p Pode checar sua conexão? 
 
-                a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.main()")
+                p 
+                    a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.main()")
                         i.fa.fa-refresh
                         span &nbsp; Tentar novamente
+                p(style='text-align:center') ou 
+                br
+                p 
+                    a.ui-btn(href="javascript:app.trocarServico()") Escolher outro serviço 
+
 
             div(data-role="footer", data-position="fixed")
                 h4 &copy UFES 
@@ -159,8 +165,8 @@ html
                         span.text#pganotar-gps 27.234, 23.3434 
                         br
                         span.text#pganotar-gps-accuracy (20 m) 
-
-
+                   input(type="checkbox" checked="true" class='checkAnotacoesProximas' id="anotacoesp" name="anotacoesp") 
+                   label(for="anotacoesp") Listar notas próximas
                br
                div.ui-body.ui-body-a
                    h3 Searchlight Service

@@ -23,7 +23,12 @@ class window.ListView
   
   loadData: ->
     position = { latitude:GPSControle.lat, longitude:GPSControle.lng, distance:10000}
-    ListView.dataPool.loadAllData('',position)
+    isAnotacoesProximas = $('.checkAnotacoesProximas').prop('checked')
+    console.log('oi', isAnotacoesProximas)
+    if isAnotacoesProximas
+      ListView.dataPool.loadAllData('',position)
+    else
+      ListView.dataPool.loadAllData()
 
     storageNotebookId = @slsapi.notes.storageNotebook.id
     ListView.storageNotebookId = storageNotebookId

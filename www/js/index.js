@@ -482,13 +482,19 @@ window.ListView = (function() {
   }
 
   ListView.prototype.loadData = function() {
-    var position, storageNotebookId;
+    var isAnotacoesProximas, position, storageNotebookId;
     position = {
       latitude: GPSControle.lat,
       longitude: GPSControle.lng,
       distance: 10000
     };
-    ListView.dataPool.loadAllData('', position);
+    isAnotacoesProximas = $('.checkAnotacoesProximas').prop('checked');
+    console.log('oi', isAnotacoesProximas);
+    if (isAnotacoesProximas) {
+      ListView.dataPool.loadAllData('', position);
+    } else {
+      ListView.dataPool.loadAllData();
+    }
     storageNotebookId = this.slsapi.notes.storageNotebook.id;
     ListView.storageNotebookId = storageNotebookId;
     this.slsapi.off(SLSAPI.dataPool.DataPool.EVENT_LOAD_STOP);
