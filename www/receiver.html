@@ -5,15 +5,54 @@
 <script> window.scriptFolder = 'http://wancharle.com.br/sl/' </script>
 <script>
 var sls = null;
+var slv = null;
+var urlold = null;
 function carrega(url){
+    urlold = url;
    console.log('carregando...');
    $.getJSON(url,function (conf){
        console.log(conf)
-   conf.container_id = 'porto' 
-   L.Icon.Default.imagePath = "http://wancharle.com.br/sl/images/leaflet"
-   slv = new Searchlight(conf);
+       conf.container_id = 'porto' 
+       L.Icon.Default.imagePath = "http://wancharle.com.br/sl/images/leaflet"
+       slv = new Searchlight(conf);
     })
 }
+
+function resetSearchlight(){
+sl = SL("map-porto")                                                                                                                                         
+$("#map-porto").off()                                                                                                                                          
+$("#map-porto * ").off()                                                                                                                                       
+sl.markers.off()                                                                                                                                                             
+sl.map.off()                                                                                                                                                                 
+sl.markers.clearLayers()                                                                                                                                                     
+sl.map.remove()                                                                                                                                                              
+carrega(urlold);
+}
+
+var shqrcode = false;
+function mostraQRcode()
+{
+    if ( shqrcode==false){
+        $(".searchlight-btn-qrcodigo").click()    
+        shqrcode = true;
+        console.log('show');
+    }else{
+        console.log('hide');
+        $(".modal").modal('hide')    
+        shqrcode = false;
+    }
+}
+
+function moveParaMarcador(msg){
+    var v = msg.split("|")
+    slv.openMarker(v[1],v[2],v[3]);
+    
+}
+function novoZoom(msg){
+    console.log( 'novoZoom');
+    var v = msg.split("|")
+    slv.map.setZoom(v[1]);
+    }
 </script>
 <style>
 #pac,#porto,#google { width:90%; margin:10px auto;}

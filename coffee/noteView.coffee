@@ -21,6 +21,11 @@ class NoteView
       NoteView.polyline = L.polyline(note.trilha, {color: 'red'}).addTo(NoteView.mapa)
     NoteView.mapa.setView(pos,16)
     NoteView.mapa.invalidateSize(false)
+    setTimeout(()->
+      console.log('tentando abrir nota em segunda tela')
+      app.ss.session.postMessage("move|"+note.latitude+"|"+note.longitude+"|"+note.hashid)
+      console.log('abre nota em segunda tela')
+    ,400)
 
     return NoteView.mapa
 

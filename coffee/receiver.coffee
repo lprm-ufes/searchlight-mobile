@@ -45,6 +45,14 @@ class window.App
       @carregouMapa = true
       carrega(msg)
       return
+    if msg.indexOf('reset') == 0
+      resetSearchlight()
+    if msg.indexOf('mostraQR') == 0
+      mostraQRcode()
+    if msg.indexOf('move|') == 0
+      moveParaMarcador(msg)
+    if msg.indexOf('zoom|') == 0
+      novoZoom(msg)
     if msg.indexOf('http') == 0
       if @lastMsg == msg
         console.log('close')

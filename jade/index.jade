@@ -171,7 +171,14 @@ html
                div.ui-body.ui-body-a
                    h3 Searchlight Service
                    a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.trocarServico()") Escolher serviço de coleta
-                   a#logativrecent.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.mostraHistorico()") Sincronizar
+               br
+               div.ui-body.ui-body-a
+                   h3 Segunda Tela
+                   a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.ss.mapViewReset()") Ver MapView 
+                   a#logativrecent.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.ss.mostraQR()") Mostra QR Code 
+                   label(for="pgperfilzoom") Nível de zoom 
+                   input#pgperfilzoom(type="range", max="18", min="1" ,name="pgperfilzoom", placeholder="Nível de zoom", value="1")
+ 
 
                
 

@@ -36,6 +36,14 @@ SecondScreen = (function() {
     };
   };
 
+  SecondScreen.prototype.mapViewReset = function() {
+    return this.session.postMessage('reset');
+  };
+
+  SecondScreen.prototype.mostraQR = function() {
+    return this.session.postMessage('mostraQR');
+  };
+
   SecondScreen.prototype.createNewSession = function() {
     if (this.session) {
       this.session.close();
@@ -262,9 +270,17 @@ window.GPSControle = (function() {
     this.iniciaWatch();
     this.mostraGPS();
     $(document).on("pageinit", "#pgperfil", function() {
-      return $("#pgperfiltimeout").on('slidestop', function(event) {
+      $("#pgperfiltimeout").on('slidestop', function(event) {
         return GPSControle.TIMEOUT = parseInt($('#pgperfiltimeout').val());
       });
+      return $("#pgperfilzoom").on('slidestop', (function(_this) {
+        return function(event) {
+          var zoom;
+          zoom = parseInt($('#pgperfilzoom').val());
+          console.log(zoom);
+          return app.ss.session.postMessage("zoom|" + zoom);
+        };
+      })(this));
     });
   }
 
@@ -613,6 +629,11 @@ NoteView = (function() {
     }
     NoteView.mapa.setView(pos, 16);
     NoteView.mapa.invalidateSize(false);
+    setTimeout(function() {
+      console.log('tentando abrir nota em segunda tela');
+      app.ss.session.postMessage("move|" + note.latitude + "|" + note.longitude + "|" + note.hashid);
+      return console.log('abre nota em segunda tela');
+    }, 400);
     return NoteView.mapa;
   };
 

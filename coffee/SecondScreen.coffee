@@ -23,7 +23,12 @@ class SecondScreen
             presentationElement.setAttribute('style', 'display:none;')
             closeElement.setAttribute('style', 'display:block;')
 
-           
+  mapViewReset: ()->
+    @session.postMessage('reset');
+
+  mostraQR: ()->
+    @session.postMessage('mostraQR');
+
   createNewSession: ()->
       if (@session) 
           @session.close()

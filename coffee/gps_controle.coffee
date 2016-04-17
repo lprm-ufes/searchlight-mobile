@@ -27,6 +27,12 @@ class window.GPSControle
             $( "#pgperfiltimeout" ).on 'slidestop', ( event ) ->
                   GPSControle.TIMEOUT = parseInt($('#pgperfiltimeout').val())
        
+            $( "#pgperfilzoom" ).on 'slidestop', ( event ) =>
+                  zoom = parseInt($('#pgperfilzoom').val())
+                  console.log(zoom)
+                  app.ss.session.postMessage("zoom|"+zoom)
+
+ 
     mostraGPS:()->
         $("#pganotar-gps").html(GPSControle.gps)
         $("#pganotar-gps-accuracy").html(" (#{parseInt(GPSControle.accuracy)} m)") 
