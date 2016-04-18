@@ -5,7 +5,7 @@ class window.ListView
   @noteView: null
   
   constructor: (@slsapi) ->
-    $.mobile.changePage("#pghistorico",{changeHash:false})
+    #$.mobile.changePage("#pghistorico",{changeHash:false})
 
     ListView.dataPool = SLSAPI.dataPool.createDataPool(@slsapi.mashup)
 
@@ -19,6 +19,9 @@ class window.ListView
       $("##{ul_id}").show()
 
 
+    $('#ulfornecidas,#ulcoletadas').listview().listview('refresh')
+    $('#divulcoletadas,#divulfornecidas').hide()
+    $("#notasnav a.coletadas").click()
     @loadData()
   
   loadData: ->
@@ -71,6 +74,7 @@ class window.ListView
 
       $('#ulfornecidas').html(html)
       $('#ulcoletadas').html(htmlc)
+
       $('#ulfornecidas,#ulcoletadas').listview().listview('refresh')
       $('#divulcoletadas,#divulfornecidas').hide()
       $("#notasnav a.coletadas").click()

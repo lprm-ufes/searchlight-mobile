@@ -396,11 +396,22 @@ window.App = (function() {
   function App() {
     this.storage = window.localStorage;
     this.userview = null;
+    this.runOnApp = document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
     this.bindEvents();
   }
 
   App.prototype.bindEvents = function() {
-    return document.addEventListener('deviceready', this.onDeviceReady, false);
+    $('.btn-vincular').off();
+    $('.btn-vincular').on('click', function() {
+      return app.vincularServico();
+    });
+    if (this.runOnApp) {
+      return document.addEventListener('deviceready', this.onDeviceReady, false);
+    } else {
+      return $(document).ready(function() {
+        return app.main();
+      });
+    }
   };
 
   App.prototype.onDeviceReady = function() {
@@ -409,12 +420,14 @@ window.App = (function() {
 
   App.prototype.main = function() {
     console.log('Received Event: onDeviceReady');
-    cordova.plugins.backgroundMode.onactivate = function() {
-      return console.log('backgroundMode: ativado');
-    };
-    cordova.plugins.backgroundMode.ondeactivate = function() {
-      return console.log('backgroundMode: off');
-    };
+    if (this.runOnApp) {
+      cordova.plugins.backgroundMode.onactivate = function() {
+        return console.log('backgroundMode: ativado');
+      };
+      cordova.plugins.backgroundMode.ondeactivate = function() {
+        return console.log('backgroundMode: off');
+      };
+    }
     if (this.getUrlConfServico()) {
       return this.loadServico(this.urlConfServico);
     } else {
@@ -435,11 +448,15 @@ window.App = (function() {
   App.prototype.vincularServico = function() {
     var self;
     self = this;
-    return cordova.plugins.barcodeScanner.scan(function(result) {
-      return self.loadServico(result.text);
-    }, function(error) {
-      return alert("Falha na leitura do código QR: " + error);
-    });
+    if (this.runOnApp) {
+      return cordova.plugins.barcodeScanner.scan(function(result) {
+        return self.loadServico(result.text);
+      }, function(error) {
+        return alert("Falha na leitura do código QR: " + error);
+      });
+    } else {
+      return self.loadServico(prompt('Informe a url do mashup'));
+    }
   };
 
   App.prototype.getUrlConfServico = function() {
@@ -458,7 +475,9 @@ window.App = (function() {
 
   App.prototype.loadServico = function(urlConfServico) {
     this.setUrlConfServico(urlConfServico);
-    this.ss = new SecondScreen(urlConfServico);
+    if (this.runOnApp) {
+      this.ss = new SecondScreen(urlConfServico);
+    }
     window.userview = new UserView(urlConfServico);
     return window.gpscontrole = new GPSControle();
   };
@@ -481,9 +500,6 @@ window.ListView = (function() {
 
   function ListView(slsapi) {
     this.slsapi = slsapi;
-    $.mobile.changePage("#pghistorico", {
-      changeHash: false
-    });
     ListView.dataPool = SLSAPI.dataPool.createDataPool(this.slsapi.mashup);
     $("#notasnav a").off('click');
     $("#notasnav a").on('click', function() {
@@ -494,6 +510,9 @@ window.ListView = (function() {
       $('#divulcoletadas,#divulfornecidas').hide();
       return $("#" + ul_id).show();
     });
+    $('#ulfornecidas,#ulcoletadas').listview().listview('refresh');
+    $('#divulcoletadas,#divulfornecidas').hide();
+    $("#notasnav a.coletadas").click();
     this.loadData();
   }
 
@@ -1240,10 +1259,18 @@ UserView = (function() {
     return false;
   };
 
+  UserView.prototype.bind = function() {
+    $(".btn-listar-anotacoes").off();
+    return $(".btn-listar-anotacoes").on('click', function() {
+      return window.anotacoesview.listar();
+    });
+  };
+
   UserView.prototype.load = function() {
     this.loading = false;
     $.mobile.loading("hide");
     if (this.slsapi.user.isLogged()) {
+      this.bind();
       this.anotacoesview = new Anotacoes(this.slsapi);
       window.anotacoesview = this.anotacoesview;
       $('#pgperfil p.usuario').html("Usuário: " + (this.slsapi.user.getUsuario()));

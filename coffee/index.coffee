@@ -10,20 +10,29 @@ class window.App
     constructor: ->
       @storage = window.localStorage
       @userview = null
+      @runOnApp = document.URL.indexOf( 'http://' ) == -1 and document.URL.indexOf( 'https://' ) == -1
       this.bindEvents()
-        
+      
     bindEvents: ->
-      document.addEventListener('deviceready', this.onDeviceReady, false)
+      $('.btn-vincular').off()
+      $('.btn-vincular').on('click',()->app.vincularServico())
+
+      if @runOnApp
+        document.addEventListener('deviceready', this.onDeviceReady, false)
+      else
+        $(document).ready( ()-> app.main())
 
     onDeviceReady:->
       app.main()
 
     main: ->
       console.log('Received Event: onDeviceReady' )
-      cordova.plugins.backgroundMode.onactivate = ()->
-        console.log('backgroundMode: ativado')
-      cordova.plugins.backgroundMode.ondeactivate = ()->
-        console.log('backgroundMode: off')
+    
+      if @runOnApp
+        cordova.plugins.backgroundMode.onactivate = ()->
+          console.log('backgroundMode: ativado')
+        cordova.plugins.backgroundMode.ondeactivate = ()->
+          console.log('backgroundMode: off')
 
       if @getUrlConfServico()
         @loadServico(@urlConfServico)
@@ -37,12 +46,15 @@ class window.App
       
     vincularServico: ->
       self = @
-      cordova.plugins.barcodeScanner.scan(
-        (result) ->
-          self.loadServico(result.text)
-        ,(error) ->
-          alert("Falha na leitura do código QR: " + error)
-        )
+      if @runOnApp
+        cordova.plugins.barcodeScanner.scan(
+          (result) ->
+            self.loadServico(result.text)
+          ,(error) ->
+            alert("Falha na leitura do código QR: " + error)
+          )
+      else
+        self.loadServico(prompt('Informe a url do mashup'))
 
     getUrlConfServico: ->
       @urlConfServico = @storage.getItem('urlConfServico')
@@ -57,7 +69,8 @@ class window.App
 
     loadServico: (urlConfServico) ->
       @setUrlConfServico(urlConfServico)
-      @ss = new SecondScreen(urlConfServico)
+      if @runOnApp
+        @ss = new SecondScreen(urlConfServico)
       window.userview = new UserView(urlConfServico)
       window.gpscontrole = new GPSControle()
 

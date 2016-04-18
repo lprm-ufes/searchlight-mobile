@@ -56,7 +56,7 @@ html
             div(role="main", class="ui-content")
                 p  Para utilizar o Searchlight é necessário que este esteja vinculado a um serviço de coleta. Vc pode fazer isso clicando no botão "vincular serviço". Ao clicá-lo posicione o smartphone de forma que possa ler o código QR gerado pelo seu serviço.
 
-                a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.vincularServico()")
+                a.ui-btn.ui-shadow.ui-corner-all.btn-vincular
                         i.fa.fa-2x.fa-qrcode
                         br
                         span Vincular Serviço
@@ -123,7 +123,7 @@ html
                 div(data-role="navbar")
                     ul
                         li: a.ui-btn-activ.ui-state-persist(href="#pglogado", data-icon='edit', data-rel='page', data-transition='none') Ações
-                        li: a(href="javascript:anotacoesview.listar()", data-icon='bars', data-rel='page', data-transition='none') Notas
+                        li: a.btn-listar-anotacoes( data-icon='bars', data-rel='page', data-transition='none' href="#pghistorico") Notas
                         li: a(href="#pgperfil", data-icon='user', data-rel='page', data-transition='none') Perfil
 
         div#pghistorico(data-role="page", data-theme="a")
@@ -146,7 +146,7 @@ html
                 div(data-role="navbar")
                     ul
                         li: a(href="#pglogado", data-icon='edit', data-rel='page', data-transition='none') Ações
-                        li: a.ui-btn-active.ui-state-persist(href="javascript:anotacoesview.listar()", data-icon='bars', data-rel='page', data-transition='none') Notas
+                        li: a.ui-btn-active.ui-state-persist.btn-listar-anotacoes(href="#pghistorico" data-icon='bars', data-rel='page', data-transition='none') Notas
                         li: a(href="#pgperfil", data-icon='user', data-rel='page', data-transition='none') Perfil
 
         div#pgperfil(data-role="page", data-theme="a")
@@ -188,7 +188,7 @@ html
                 div(data-role="navbar")
                     ul
                         li: a(href="#pglogado", data-icon='edit',data-rel='page', data-transition='none') Ações
-                        li: a(href="javascript:anotacoesview.listar()", data-icon='bars',data-rel='page', data-transition='none') Notas
+                        li: a.btn-listar-anotacoes(href="#pghistorico" data-icon='bars',data-rel='page', data-transition='none') Notas
                         li: a.ui-btn-active.ui-state-persist(href="#pgperfil", data-role='tab', data-rel='page', data-transition='none',data-icon='user') Perfil
         include templates/pganotar
         include templates/pgnoteview

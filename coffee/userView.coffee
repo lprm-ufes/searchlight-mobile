@@ -62,11 +62,15 @@ class UserView
     @slsapi.user.login(u,p)
 
     return false
+  bind: ()->
+    $(".btn-listar-anotacoes").off()
+    $(".btn-listar-anotacoes").on('click',()-> window.anotacoesview.listar())
 
   load: () ->
     @loading = false
     $.mobile.loading( "hide")
     if @slsapi.user.isLogged()
+      @bind()
       @anotacoesview = new Anotacoes(@slsapi)
       window.anotacoesview = @anotacoesview
       $('#pgperfil p.usuario').html("Usuário: #{@slsapi.user.getUsuario()}")
