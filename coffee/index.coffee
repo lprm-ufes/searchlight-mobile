@@ -12,6 +12,7 @@ class window.App
       @userview = null
       @runOnApp = document.URL.indexOf( 'http://' ) == -1 and document.URL.indexOf( 'https://' ) == -1
       this.bindEvents()
+      @trocadeservicos = 0
       
     bindEvents: ->
       $('.btn-vincular').off()
@@ -66,6 +67,15 @@ class window.App
         @storage.setItem('urlConfServico', @urlConfServico)
       else
         @storage.removeItem('urlConfServico')
+
+      #FIXME: --- trecho criado para resolver bug de pagina principal 
+      # que recarrega sozinha ao usuario escolher outra pagina, ocorre
+      # logo apos a troca de um servico
+      if @trocadeservicos > 0
+        window.location = "index.html"
+      @trocadeservicos +=1
+      # --- fim
+      
 
     loadServico: (urlConfServico) ->
       @setUrlConfServico(urlConfServico)

@@ -398,6 +398,7 @@ window.App = (function() {
     this.userview = null;
     this.runOnApp = document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
     this.bindEvents();
+    this.trocadeservicos = 0;
   }
 
   App.prototype.bindEvents = function() {
@@ -467,10 +468,14 @@ window.App = (function() {
   App.prototype.setUrlConfServico = function(url) {
     this.urlConfServico = url;
     if (url) {
-      return this.storage.setItem('urlConfServico', this.urlConfServico);
+      this.storage.setItem('urlConfServico', this.urlConfServico);
     } else {
-      return this.storage.removeItem('urlConfServico');
+      this.storage.removeItem('urlConfServico');
     }
+    if (this.trocadeservicos > 0) {
+      window.location = "index.html";
+    }
+    return this.trocadeservicos += 1;
   };
 
   App.prototype.loadServico = function(urlConfServico) {
