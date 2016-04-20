@@ -32,6 +32,17 @@ class window.GPSControle
                   console.log(zoom)
                   app.ss.session.postMessage("zoom|"+zoom)
 
+
+            $(document).on( 'change', '#flipss', (e)-> 
+              val = $("#flipss").val()
+              if val =="on"
+                if ! window.app.ss
+                  app.iniciaSegundaTela()
+                $(".painel-segunda-tela").show()
+              else
+                $(".painel-segunda-tela").hide()
+            )
+
  
     mostraGPS:()->
         $("#pganotar-gps").html(GPSControle.gps)

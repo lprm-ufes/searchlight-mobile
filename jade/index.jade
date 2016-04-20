@@ -165,24 +165,29 @@ html
                         span.text#pganotar-gps 27.234, 23.3434 
                         br
                         span.text#pganotar-gps-accuracy (20 m) 
-                   input(type="checkbox" checked="true" class='checkAnotacoesProximas' id="anotacoesp" name="anotacoesp") 
-                   label(for="anotacoesp") Listar notas próximas
                br
                div.ui-body.ui-body-a
                    h3 Searchlight Service
                    a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.trocarServico()") Escolher serviço de coleta
                br
-               div.ui-body.ui-body-a
+               form
+                ul(data-role="listview" data-inset="true")
+                    li.ui-field-contain
+                        label(for"flipss") Segunda Tela
+                        select(name="flipss" id="flipss" data-role="slider")
+                            option(value="off" selected="selected") off
+                            option(value="on") on
+
+               div.ui-body.ui-body-a.painel-segunda-tela(style="display:none")
                    h3 Segunda Tela
                    a.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.ss.mapViewReset()") Ver MapView 
                    a#logativrecent.ui-btn.ui-shadow.ui-corner-all(href="javascript:app.ss.mostraQR()") Mostra QR Code 
                    label(for="pgperfilzoom") Nível de zoom 
                    input#pgperfilzoom(type="range", max="18", min="1" ,name="pgperfilzoom", placeholder="Nível de zoom", value="1")
  
-
-               
-
-
+               input(type="checkbox" checked="true" class='checkAnotacoesProximas' id="anotacoesp" name="anotacoesp") 
+               label(for="anotacoesp") Listar notas próximas
+ 
 
             div(data-role="footer", data-position="fixed")
                 div(data-role="navbar")

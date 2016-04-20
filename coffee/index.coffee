@@ -23,6 +23,7 @@ class window.App
       else
         $(document).ready( ()-> app.main())
 
+
     onDeviceReady:->
       app.main()
 
@@ -76,11 +77,16 @@ class window.App
       @trocadeservicos +=1
       # --- fim
       
+    iniciaSegundaTela: ()->
+      console.log('iniciado segunda tela')
+      if @runOnApp
+        @ss = new SecondScreen(@urlConfServico)
+      else
+        @ss = true
 
     loadServico: (urlConfServico) ->
       @setUrlConfServico(urlConfServico)
-      if @runOnApp
-        @ss = new SecondScreen(urlConfServico)
+
       window.userview = new UserView(urlConfServico)
       window.gpscontrole = new GPSControle()
 

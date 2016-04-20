@@ -273,7 +273,7 @@ window.GPSControle = (function() {
       $("#pgperfiltimeout").on('slidestop', function(event) {
         return GPSControle.TIMEOUT = parseInt($('#pgperfiltimeout').val());
       });
-      return $("#pgperfilzoom").on('slidestop', (function(_this) {
+      $("#pgperfilzoom").on('slidestop', (function(_this) {
         return function(event) {
           var zoom;
           zoom = parseInt($('#pgperfilzoom').val());
@@ -281,6 +281,18 @@ window.GPSControle = (function() {
           return app.ss.session.postMessage("zoom|" + zoom);
         };
       })(this));
+      return $(document).on('change', '#flipss', function(e) {
+        var val;
+        val = $("#flipss").val();
+        if (val === "on") {
+          if (!window.app.ss) {
+            app.iniciaSegundaTela();
+          }
+          return $(".painel-segunda-tela").show();
+        } else {
+          return $(".painel-segunda-tela").hide();
+        }
+      });
     });
   }
 
@@ -478,11 +490,17 @@ window.App = (function() {
     return this.trocadeservicos += 1;
   };
 
+  App.prototype.iniciaSegundaTela = function() {
+    console.log('iniciado segunda tela');
+    if (this.runOnApp) {
+      return this.ss = new SecondScreen(this.urlConfServico);
+    } else {
+      return this.ss = true;
+    }
+  };
+
   App.prototype.loadServico = function(urlConfServico) {
     this.setUrlConfServico(urlConfServico);
-    if (this.runOnApp) {
-      this.ss = new SecondScreen(urlConfServico);
-    }
     window.userview = new UserView(urlConfServico);
     return window.gpscontrole = new GPSControle();
   };
@@ -656,7 +674,11 @@ NoteView = (function() {
     setTimeout(function() {
       console.log('tentando abrir nota em segunda tela');
       app.ss.session.postMessage("move|" + note.latitude + "|" + note.longitude + "|" + note.hashid);
-      return console.log('abre nota em segunda tela');
+      console.log('abre nota em segunda tela');
+      NoteView.mapa.off('zoomend');
+      return NoteView.mapa.on('zoomend', function() {
+        return app.ss.session.postMessage("zoom|" + NoteView.mapa.getZoom());
+      });
     }, 400);
     return NoteView.mapa;
   };

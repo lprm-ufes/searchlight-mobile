@@ -25,6 +25,11 @@ class NoteView
       console.log('tentando abrir nota em segunda tela')
       app.ss.session.postMessage("move|"+note.latitude+"|"+note.longitude+"|"+note.hashid)
       console.log('abre nota em segunda tela')
+      NoteView.mapa.off('zoomend')
+      NoteView.mapa.on('zoomend',()->
+        app.ss.session.postMessage("zoom|"+NoteView.mapa.getZoom())
+      )
+
     ,400)
 
     return NoteView.mapa
