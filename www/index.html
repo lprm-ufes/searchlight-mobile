@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <!-- <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /> -->
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+    <meta name="viewport" content="user-scalable=no, width=320">
+    <link rel="stylesheet" href="bower_components/jquery-mobile-bower/css/jquery.mobile-1.4.2.css">
+    <link rel="stylesheet" href="font-awesome-4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css">
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/slsapi/dist/slsapi.js"></script>
+    <script src="bower_components/jquery-mobile-bower/js/jquery.mobile-1.4.2.js"></script>
+    <script src="bower_components/leaflet/dist/leaflet-src.js"></script>
+    <title>Searchlight Mobile</title>
+  </head>
+  <body>
+    <div id="splash" data-role="page" data-theme="a">
+      <div role="main" class="ui-content"></div>
+    </div>
+    <div id="problemarede" data-role="page" data-theme="a">
+      <div data-role="header">
+        <h1>Searchlight</h1>
+      </div>
+      <div role="main" class="ui-content">
+        <h3>Oops!</h3>
+        <p>Não conseguimos conectar a internet.</p>
+        <p>Para utilizar o Searchlight é necessário possuir conexão com a internet.  </p>
+        <p>Pode checar sua conexão? </p>
+        <p><a href="javascript:app.main()" class="ui-btn ui-shadow ui-corner-all"><i class="fa fa-refresh"></i><span>&nbsp; Tentar novamente</span></a></p>
+        <p style="text-align:center">ou </p><br>
+        <p><a href="javascript:app.trocarServico()" class="ui-btn">Escolher outro serviço </a></p>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <h4>&copy UFES </h4>
+      </div>
+    </div>
+    <div id="pgservico" data-role="page" data-theme="a">
+      <div data-role="header">
+        <h1>Searchlight</h1>
+      </div>
+      <div role="main" class="ui-content">
+        <p> Para utilizar o Searchlight é necessário que este esteja vinculado a um serviço de coleta. Vc pode fazer isso clicando no botão "vincular serviço". Ao clicá-lo posicione o smartphone de forma que possa ler o código QR gerado pelo seu serviço.</p><a class="ui-btn ui-shadow ui-corner-all btn-vincular"><i class="fa fa-2x fa-qrcode"></i><br><span>Vincular Serviço</span></a>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <h4>&copy UFES </h4>
+      </div>
+    </div>
+    <div id="pglogin" data-role="page" data-theme="a">
+      <div data-role="header">
+        <h1>Searchlight</h1>
+      </div>
+      <div role="main" class="ui-content">
+        <h3>Login</h3>
+        <form id="loginForm">
+          <div data-role="fieldcontain" class="ui-hide-label">
+            <label for="username">Usuário:</label>
+            <input type="text" name="username" id="username" value="" placeholder="Usuário">
+          </div>
+          <div data-role="fieldcontain" class="ui-hide-label">
+            <label for="password">Senha:</label>
+            <input type="password" name="password" id="password" value="" placeholder="Senha">
+          </div>
+          <p>
+            <input type="submit" value="Entrar" id="submitButton">
+          </p><br>
+          <p style="text-align:center">ou </p><br>
+          <p><a href="javascript:app.trocarServico()" class="ui-btn">Escolher outro serviço </a></p>
+        </form>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <h4>&copy UFES </h4>
+      </div>
+    </div>
+    <div id="pglogado" data-role="page" data-theme="a">
+      <div data-role="header">
+        <h1>Searchlight </h1><a style="display:none" data-role="button" data-inline="true" class="ui-btn-right ui-mini btn-closetv"><i class="fa fa-share-square"></i><span> </span></a><a style="display:none" data-role="button" data-inline="true" class="ui-btn-right ui-mini btn-selecttv"><i class="fa fa-share-square-o"></i><span> </span></a>
+      </div>
+      <div id="telaPrincipal" data-role="content"><a style="text-align:left" href="javascript:anotacoesview.identificar();" class="ui-btn ui-shadow ui-corner-all"><i class="fa fa-qrcode"></i><span>&nbsp;Anotação Identificada</span></a><br><a style="text-align:left" href="javascript:anotacoesview.rastrear();" class="ui-btn ui-shadow ui-corner-all"><i class="fa fa-location"></i><span>&nbsp;Rastrear</span></a><br><a style="text-align:left" href="javascript:anotacoesview.anotar()" class="ui-btn ui-shadow ui-corner-all"><i class="fa fa-bullhorn"></i><span>&nbsp;Personalizado</span></a></div>
+      <div data-role="footer" data-position="fixed">
+        <div data-role="navbar">
+          <ul>
+            <li><a href="#pglogado" data-icon="edit" data-rel="page" data-transition="none" class="ui-btn-activ ui-state-persist">Ações</a></li>
+            <li><a data-icon="bars" data-rel="page" data-transition="none" href="#pghistorico" class="btn-listar-anotacoes">Notas</a></li>
+            <li><a href="#pgperfil" data-icon="user" data-rel="page" data-transition="none">Perfil</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div id="pghistorico" data-role="page" data-theme="a">
+      <div data-role="header" data-position="fixed">
+        <h1>Notas</h1>
+        <div id="notasnav" data-role="navbar" data-iconpos="left">
+          <ul>
+            <li><a data-ul-id="divulcoletadas" class="ui-btn-active coletadas">Coletadas</a></li>
+            <li><a data-ul-id="divulfornecidas" class="fornecidas">Fornecidas </a></li>
+          </ul>
+        </div>
+      </div>
+      <div data-role="content">
+        <div id="divulcoletadas">
+          <ul id="ulcoletadas" data-role="listview" data-filter="true" data-filter-placeholder="Buscar notas coletadas" data-inset="true" data-shadow="false"></ul>
+        </div>
+        <div id="divulfornecidas">
+          <ul id="ulfornecidas" data-role="listview" data-filter="true" data-filter-placeholder="Buscar notas fornecidas" data-inset="true" data-shadow="false"></ul>
+        </div>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <div data-role="navbar">
+          <ul>
+            <li><a href="#pglogado" data-icon="edit" data-rel="page" data-transition="none">Ações</a></li>
+            <li><a href="#pghistorico" data-icon="bars" data-rel="page" data-transition="none" class="ui-btn-active ui-state-persist btn-listar-anotacoes">Notas</a></li>
+            <li><a href="#pgperfil" data-icon="user" data-rel="page" data-transition="none">Perfil</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div id="pgperfil" data-role="page" data-theme="a">
+      <div data-role="header">
+        <h1>Searchlight </h1>
+      </div>
+      <div data-role="content">
+        <div class="ui-body ui-body-a">
+          <h3> Perfil </h3>
+          <p class="usuario"></p><a href="javascript:userview.trocarUsuario();" class="ui-btn ui-shadow ui-corner-all">Trocar de Usuario</a>
+          <p>
+            <label for="pgperfiltimeout">Cache do GPS em segundos</label>
+            <input id="pgperfiltimeout" type="range" max="60" min="1" name="pgperfiltimeout" placeholder="Cache GPS (segundos)" value="10">
+          </p>
+          <p style="text-align:center"><span><i class="fa fa-location-arrow">&nbsp; </i></span><span id="pganotar-gps" class="text">27.234, 23.3434 </span><br><span id="pganotar-gps-accuracy" class="text">(20 m) </span></p>
+        </div><br>
+        <div class="ui-body ui-body-a">
+          <h3>Searchlight Service</h3><a href="javascript:app.trocarServico()" class="ui-btn ui-shadow ui-corner-all">Escolher serviço de coleta</a>
+        </div><br>
+        <form>
+          <ul data-role="listview" data-inset="true">
+            <li class="ui-field-contain">
+              <label for"flipss>Segunda Tela</label>
+              <select name="flipss" id="flipss" data-role="slider">
+                <option value="off" selected="selected">off</option>
+                <option value="on">on</option>
+              </select>
+            </li>
+          </ul>
+        </form>
+        <div style="display:none" class="ui-body ui-body-a painel-segunda-tela">
+          <h3>Segunda Tela</h3><a href="javascript:app.ss.mapViewReset()" class="ui-btn ui-shadow ui-corner-all">Ver MapView </a><a id="logativrecent" href="javascript:app.ss.mostraQR()" class="ui-btn ui-shadow ui-corner-all">Mostra QR Code </a>
+          <label for="pgperfilzoom">Nível de zoom </label>
+          <input id="pgperfilzoom" type="range" max="18" min="1" name="pgperfilzoom" placeholder="Nível de zoom" value="1">
+        </div>
+        <input type="checkbox" checked="true" id="anotacoesp" name="anotacoesp" class="checkAnotacoesProximas">
+        <label for="anotacoesp">Listar notas próximas</label>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <div data-role="navbar">
+          <ul>
+            <li><a href="#pglogado" data-icon="edit" data-rel="page" data-transition="none">Ações</a></li>
+            <li><a href="#pghistorico" data-icon="bars" data-rel="page" data-transition="none" class="btn-listar-anotacoes">Notas</a></li>
+            <li><a href="#pgperfil" data-role="tab" data-rel="page" data-transition="none" data-icon="user" class="ui-btn-active ui-state-persist">Perfil</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div id="pganotar" data-role="page" data-theme="a">
+      <div data-role="header"><a href="#pglogado" class="ui-btn ui-btn-left ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Voltar</a>
+        <h1>Searchlight </h1>
+      </div>
+      <div data-role="content">
+        <div class="ui-body ui-body-a">
+          <h3 id="pganotar-titulo">Categoria</h3>
+          <p class="nota-relacionada"></p>
+          <p class="categoria">
+            <label for="pganotar-categoria" class="ui-hidden-accessible">Categoria</label>
+            <input id="pganotar-categoria" type="text" name="pganotar-categoria" placeholder="Categoria" value="">
+          </p>
+          <p>
+            <label for="txtcomments" class="ui-hidden-accessible">Comentários</label>
+            <textarea type="text" rows="3" name="txtcomments" id="txtcomments" placeholder="Comentários" value=""></textarea>
+          </p>
+          <fieldset class="ui-grid-a">
+            <div class="ui-block-a"><a class="ui-btn ui-shadow ui-corner-all btnFotografar"><i class="fa fa-camera-retro"></i><br><span> Fotografar</span></a></div>
+            <div style="text-align:center" class="ui-block-b"><img id="fotoTirada" width="72px" height="72px" src="/"></div>
+          </fieldset>
+          <fieldset class="ui-grid-a input-youtube">
+            <div class="ui-block-a"><a class="ui-btn ui-shadow ui-corner-all btnYoutube"><i class="fa fa-youtube"></i><br><span> Youtube</span></a></div>
+            <div style="text-align:center" class="ui-block-b"><img id="youtubeThumb" width="72px" height="72px" src="/"></div>
+          </fieldset>
+          <fieldset class="ui-grid-a input-identificar">
+            <div class="ui-block-a"><a class="ui-btn ui-shadow ui-corner-all btnQRcode"><i class="fa fa-qrcode"></i><br><span> Identificar</span></a></div>
+            <div style="text-align:center" class="ui-block-b">
+              <p id="noteHashid"></p>
+            </div>
+          </fieldset>
+          <fieldset style="display:none" class="ui-grid-a input-identificar-ocr">
+            <div class="ui-block-a"><a class="ui-btn ui-shadow ui-corner-all btnOCR"><i class="fa fa-camera"></i><br><span> ID por OCR</span></a></div>
+            <div style="text-align:center" class="ui-block-b">
+              <p id="ocrTEXT"></p>
+            </div>
+          </fieldset>
+        </div><br>
+        <fieldset class="ui-grid-solo">
+          <div class="ui-block-a"><a class="btnSalvar ui-btn ui-btn-b ui-shadow ui-corner-all"><i class="fa fa-save"></i><span>&nbsp;Salvar</span></a></div>
+        </fieldset>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <h4>&copy UFES</h4>
+      </div>
+    </div>
+    <div id="pgnoteview" data-role="page" data-theme="a">
+      <div data-role="header"><a href="#pghistorico" class="ui-btn ui-btn-left ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Voltar</a>
+        <h1>Searchlight </h1><a data-role="button" data-inline="true" class="ui-btn-right ui-mini btn-deletar-nota"><i class="fa fa-trash-o"></i><span> </span></a>
+      </div>
+      <div data-role="content">
+        <div id="mapa" style="height:200px;width:100%"></div>
+        <div class="ui-body ui-body-a">
+          <p class="categoria"></p>
+          <p class="comentarios"></p>
+          <p class="foto"></p>
+          <fieldset class="ui-grid-a video">
+            <div class="ui-block-a"><img id="notevideo" width="100%"></div>
+            <div style="text-align:center" class="ui-block-b"><a class="btn-tocar-video ui-btn ui-shadow ui-corner-all"><i class="fa fa-2x fa-youtube-play"></i><span>&nbsp; </span></a></div>
+          </fieldset>
+          <p><a data-role="button" class="btn-adicionar-nota"><i class="fa fa-plus"></i><span> &nbsp;Adicionar nota</span></a></p>
+        </div>
+        <div>
+          <ul id="ulfilhos" data-role="listview" data-inset="true" data-shadow="false"></ul>
+        </div>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <h4>&copy UFES</h4>
+      </div>
+    </div>
+    <div id="pgrastrearview" data-role="page" data-theme="a">
+      <div data-role="header"><a href="#pghistorico" class="ui-btn ui-btn-left ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-back">Voltar</a>
+        <h1>Searchlight </h1>
+      </div>
+      <div data-role="content">
+        <div id="mapaRastreio" style="height:200px;width:100%"></div>
+        <div class="ui-body ui-body-a">
+          <p><a data-role="button" class="btn-atualizar-rastreamento"><i class="fa fa-refresh"></i><span> &nbsp;Atualizar Posição</span></a></p>
+          <p>
+            <input id="pgrastrear-distancia" type="text" name="pgrastrear-distancia" placeholder="Distancia entre pontos" value="250">
+          </p>
+          <p class="comentarios"></p>
+          <p><a data-role="button" class="btn-parar-rastreamento"><i class="fa fa-stop"></i><span> &nbsp;Parar Rastreamento</span></a></p>
+        </div>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <h4>&copy UFES</h4>
+      </div>
+    </div>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+      var app = new App();
+      
+    </script>
+  </body>
+</html>
