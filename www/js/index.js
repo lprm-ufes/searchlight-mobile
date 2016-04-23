@@ -473,7 +473,11 @@ window.App = (function() {
   };
 
   App.prototype.getUrlConfServico = function() {
-    this.urlConfServico = this.storage.getItem('urlConfServico');
+    if (PARAMETROS_GET.mashup) {
+      this.setUrlConfServico(PARAMETROS_GET.mashup);
+    } else {
+      this.urlConfServico = this.storage.getItem('urlConfServico');
+    }
     return this.urlConfServico;
   };
 
@@ -1320,6 +1324,8 @@ exports.UserView = UserView;
 
 
 },{"./anotacoes.coffee":3}],11:[function(require,module,exports){
+var getParams;
+
 window.zeroPad = function(num, places) {
   var zero;
   zero = places - num.toString().length + 1;
@@ -1375,6 +1381,21 @@ window.formatDistance = function(distance) {
     return (distance.toFixed(1)) + " km";
   }
 };
+
+getParams = function() {
+  var i, key, len, params, query, raw_vars, ref, v, val;
+  query = window.location.search.substring(1);
+  raw_vars = query.split("&");
+  params = {};
+  for (i = 0, len = raw_vars.length; i < len; i++) {
+    v = raw_vars[i];
+    ref = v.split("="), key = ref[0], val = ref[1];
+    params[key] = decodeURIComponent(val);
+  }
+  return params;
+};
+
+window.PARAMETROS_GET = getParams();
 
 window.getDistanceFromLatLonInKm = function(lat1, lon1, lat2, lon2) {
   var R, a, c, d, dLat, dLon;

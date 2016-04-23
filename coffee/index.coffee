@@ -59,7 +59,10 @@ class window.App
         self.loadServico(prompt('Informe a url do mashup'))
 
     getUrlConfServico: ->
-      @urlConfServico = @storage.getItem('urlConfServico')
+      if PARAMETROS_GET.mashup
+        @setUrlConfServico(PARAMETROS_GET.mashup)
+      else
+        @urlConfServico = @storage.getItem('urlConfServico')
       return @urlConfServico
 
     setUrlConfServico: (url) ->

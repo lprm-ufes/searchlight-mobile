@@ -39,7 +39,16 @@ window.formatDistance = (distance)->
     return "#{(distance * 1000).toFixed(0)} m"
   else
     return "#{distance.toFixed(1)} km"
+getParams = ->
+  query = window.location.search.substring(1)
+  raw_vars = query.split("&")
+  params = {}
+  for v in raw_vars
+    [key, val] = v.split("=")
+    params[key] = decodeURIComponent(val)
+  params
 
+window.PARAMETROS_GET = getParams()
 
 window.getDistanceFromLatLonInKm = (lat1,lon1,lat2,lon2) ->
   R = 6371; # Radius of the earth in km
