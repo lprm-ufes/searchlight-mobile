@@ -1,5 +1,5 @@
 {
-  "name": "slmobile",
+  "name": "slc-mobile",
   "version": "1.0.0",
   "authors": [
     "wancharle sebastião quirino <wancharle@gmail.com>"
@@ -9,19 +9,27 @@
   "private": true,
   "ignore": [
     "**/.*",
+    "coffee",
+    "jade",
+    "**/*.coffee",
+    "**/*.sh",
+    "plugins",
+    "config.xml",
     "node_modules",
+    "www/node_modules",
     "bower_components",
+    "www/bower_components",
     "test",
     "tests"
   ],
   "dependencies": {
     "slsapi": "git@bitbucket.org:wancharle/searchlight-service-api.git",
-    "leaflet": "~0.7.3",
-    "emoji-css": "^1.0.2",
-    "font-awesome": "^4.6.1"
+    "leaflet": "0.7.3",
+    "emoji-css": "1.0.2",
+    "font-awesome": "4.6.1"
   },
   "devDependencies": {
-    "jquery": "~2.1.1",
-    "jquery-mobile-bower": "~1.4.2"
+    "jquery": "2.1.1",
+    "jquery-mobile-bower": "1.4.2"
   }
 }
