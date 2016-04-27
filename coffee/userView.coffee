@@ -66,6 +66,12 @@ class UserView
     $(".btn-listar-anotacoes").off()
     $(".btn-listar-anotacoes").on('click',()-> window.anotacoesview.listar())
 
+  loadPermissions: ()->
+    @data = @slsapi.user.user_data
+    @data = JSON.parse(@data)
+    @isRoot = @data.isRoot
+    @isAdmin = @data.isAdmin
+
   load: () ->
     @loading = false
     $.mobile.loading( "hide")
@@ -75,6 +81,7 @@ class UserView
       window.anotacoesview = @anotacoesview
       $('#pgperfil p.usuario').html("Usuário: #{@slsapi.user.getUsuario()}")
       $.mobile.changePage("#pglogado",{changeHash:false})
+      @loadPermissions()
     else
       $.mobile.changePage("#pglogin",{changeHash:false})
 

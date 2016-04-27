@@ -90,31 +90,61 @@ var Action;
 Action = (function() {
   function Action() {}
 
-  Action.normalAction = function(ctx) {
-    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left'     href=\"javascript:anotacoesview.anotar('" + ctx.valor + "');\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+  Action.normalAction = function(ctx, classe) {
+    return "<a class='ui-btn ui-shadow ui-corner-all action-anotar' style='text-align:left'    data-valor=\"" + ctx.valor + "\"><i class='" + classe + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
   };
 
-  Action.trackingAction = function(ctx) {
-    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left'    href=\"javascript:anotacoesview.rastrear();\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+  Action.trackingAction = function(ctx, classe) {
+    return "<a class='ui-btn ui-shadow ui-corner-all action-rastrear' style='text-align:left'\"><i class='" + classe + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
   };
 
-  Action.simpleAction = function(ctx) {
-    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left'  href=\"javascript:anotacoesview.anotar('" + ctx.valor + "','" + ctx.tipo + "');\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+  Action.simpleAction = function(ctx, classe) {
+    return "<a class='ui-btn ui-shadow ui-corner-all action-anotar-simples' style='text-align:left'  data-valor=\"" + ctx.valor + "\" data-tipo=\"" + ctx.tipo + "\"><i class='" + classe + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
   };
 
-  Action.identificationAction = function(ctx) {
-    return "<a class='ui-btn ui-shadow ui-corner-all' style='text-align:left'    href=\"javascript:anotacoesview.identificar();\"><i class='fa " + ctx.extra + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+  Action.identificationAction = function(ctx, classe) {
+    return "<a class='ui-btn ui-shadow ui-corner-all action-identificar' style='text-align:left'><i class='" + classe + "' /><span>&nbsp;" + ctx.legenda + "</span></a>";
+  };
+
+  Action.bindEvents = function() {
+    $(".action-rastrear").off('click');
+    $(".action-rastrear").on('click', function() {
+      return anotacoesview.rastrear();
+    });
+    $(".action-identificar").off('click');
+    $(".action-identificar").on('click', function() {
+      return anotacoesview.identificar();
+    });
+    $(".action-anotar").off('click');
+    $(".action-anotar").on('click', function(e) {
+      var valor;
+      valor = $(e.target).closest('a.action-anotar').data('valor');
+      return anotacoesview.anotar(valor);
+    });
+    $(".action-anotar-simples").off('click');
+    return $(".action-anotar-simples").on('click', function(e) {
+      var a, tipo, valor;
+      a = $(e.target).closest('a.action-anotar-simples');
+      valor = a.data('valor');
+      tipo = a.data('tipo');
+      return anotacoesview.anotar(valor, tipo);
+    });
   };
 
   Action.render = function(ctx) {
+    var classe;
+    classe = "fa " + ctx.extra;
+    if (ctx.extra && ctx.extra.trim().indexOf("fa-") === -1) {
+      classe = "fa " + ctx.extra;
+    }
     if (ctx.tipo === 'normal') {
-      return Action.normalAction(ctx);
+      return Action.normalAction(ctx, classe);
     } else if (ctx.tipo === 'simple') {
-      return Action.simpleAction(ctx);
+      return Action.simpleAction(ctx, classe);
     } else if (ctx.tipo === 'identification') {
-      return Action.identificationAction(ctx);
+      return Action.identificationAction(ctx, classe);
     } else if (ctx.tipo === 'tracking') {
-      return Action.trackingAction(ctx);
+      return Action.trackingAction(ctx, classe);
     } else {
       return "Não foi possível entender a estrutura do mashup informado. Verifique se o link está corrompido ou se o app precisa ser atualizado.";
     }
@@ -171,15 +201,18 @@ window.Anotacoes = (function() {
       action = ref[i];
       html += Action.render(action);
     }
-    return $('#telaPrincipal').html(html);
+    $('#telaPrincipal').html(html);
+    return Action.bindEvents();
   };
 
   Anotacoes.prototype.anotar = function(categoria, tipo) {
-    return Anotacoes.noteadd = new NoteAdd(categoria, this.slsapi, false, null, tipo);
+    Anotacoes.noteadd = new NoteAdd(categoria, this.slsapi, false, null, tipo);
+    return false;
   };
 
   Anotacoes.prototype.anexar = function(note) {
-    return Anotacoes.noteadd = new NoteAdd(null, this.slsapi, true, note);
+    Anotacoes.noteadd = new NoteAdd(null, this.slsapi, true, note);
+    return false;
   };
 
   Anotacoes.prototype.showAnotacaoByIdentificador = function(identificador) {
@@ -191,19 +224,26 @@ window.Anotacoes = (function() {
   };
 
   Anotacoes.prototype.identificar = function() {
-    var self;
-    self = this;
-    return cordova.plugins.barcodeScanner.scan(function(result) {
-      return self.showAnotacaoByIdentificador(result.text);
-    }, function(error) {
-      return alert("Falha na leitura do código QR: " + error);
-    });
+    var identificador, self;
+    if (app.runOnApp === false) {
+      identificador = prompt("(leitura de barras simulada) Infome o identificador númerico:");
+      this.showAnotacaoByIdentificador(identificador);
+    } else {
+      self = this;
+      cordova.plugins.barcodeScanner.scan(function(result) {
+        return self.showAnotacaoByIdentificador(result.text);
+      }, function(error) {
+        return alert("Falha na leitura do código QR: " + error);
+      });
+    }
+    return false;
   };
 
   Anotacoes.prototype.rastrear = function() {
     gpscontrole.modoTrilha = true;
     Anotacoes.rastrearView = new RastrearView(this.slsapi);
-    return RastrearView.updateMapa();
+    RastrearView.updateMapa();
+    return true;
   };
 
   Anotacoes.prototype.listar = function() {
@@ -215,7 +255,10 @@ window.Anotacoes = (function() {
       return this.slsapi.notes.getByQuery("hashid=" + note.hashid, (function(_this) {
         return function(notes) {
           return _this.slsapi.notes["delete"](notes[0].id, function() {
-            return _this.listar();
+            _this.listar();
+            return $.mobile.changePage("#pghistorico", {
+              changeHash: false
+            });
           });
         };
       })(this), function() {
@@ -594,10 +637,10 @@ window.ListView = (function() {
             video = "<span class='fa fa-file-video-o'>&nbsp;</span>";
           }
           if (ds.url.indexOf(storageNotebookId) > 0) {
-            li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + video + "<p>" + (note.texto || note.comentarios) + "</p><p class='ul-li-aside'>" + (formatDistance(distance)) + "</p></a></li>";
+            li = "<li><a class='action-note-select' data-note-id=\"" + note.hashid + "\">" + img + video + "<p>" + (note.texto || note.comentarios) + "</p><p class='ul-li-aside'>" + (formatDistance(distance)) + "</p></a></li>";
             htmlc = htmlc + " " + li;
           } else {
-            li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + video + "<p>" + (note.texto || note.comentarios) + "</p><p>" + (formatDistance(distance)) + "</p></a></li>";
+            li = "<li><a class='action-note-select' data-note-id=\"" + note.hashid + "\">" + img + video + "<p>" + (note.texto || note.comentarios) + "</p><p>" + (formatDistance(distance)) + "</p></a></li>";
             html = html + " " + li;
           }
         }
@@ -606,7 +649,18 @@ window.ListView = (function() {
       $('#ulcoletadas').html(htmlc);
       $('#ulfornecidas,#ulcoletadas').listview().listview('refresh');
       $('#divulcoletadas,#divulfornecidas').hide();
-      return $("#notasnav a.coletadas").click();
+      $("#notasnav a.coletadas").click();
+      return ListView.bindEvents();
+    });
+  };
+
+  ListView.bindEvents = function() {
+    $("a.action-note-select").off('click');
+    return $("a.action-note-select").on('click', function(e) {
+      var closest, hashid;
+      closest = $(e.target).closest("a.action-note-select");
+      hashid = $(closest).data('note-id');
+      return ListView.selecionar(hashid);
     });
   };
 
@@ -660,7 +714,7 @@ NoteView = (function() {
     }
     pos = L.latLng(note.latitude, note.longitude);
     NoteView.mapa = L.map('mapa', {
-      minZoom: 15,
+      minZoom: 10,
       maxZoom: 17
     });
     L.tileLayer('http://{s}.tiles.mapbox.com/v3/rezo.ihpe97f0/{z}/{x}/{y}.png', {
@@ -704,6 +758,7 @@ NoteView = (function() {
   function NoteView(note1) {
     var user_id;
     this.note = note1;
+    console.log("note", this.note);
     if (!this.note) {
       alert('Anotação informada não existe!');
       return;
@@ -717,6 +772,7 @@ NoteView = (function() {
     }, 1000);
     $('#pgnoteview p.comentarios').html(this.note.comentarios || this.note.texto);
     $('#pgnoteview p.categoria').html(this.note.cat || this.note.user.username);
+    $('#pgnoteview p.data').html(this.note.createdAt);
     $('#pgnoteview a.btn-adicionar-nota').off('click');
     $('#pgnoteview a.btn-adicionar-nota').on('click', (function(_this) {
       return function() {
@@ -724,7 +780,7 @@ NoteView = (function() {
       };
     })(this));
     user_id = window.localStorage.getItem('user_id');
-    if (user_id === this.note.user.id) {
+    if (user_id === this.note.user.id || userview.isRoot) {
       $('#pgnoteview a.btn-deletar-nota').show();
       $('#pgnoteview a.btn-deletar-nota').off('click');
       $('#pgnoteview a.btn-deletar-nota').on('click', (function(_this) {
@@ -789,11 +845,12 @@ NoteView = (function() {
       if (note.youtubeVideoId) {
         video = "<span class='fa fa-file-video-o'>&nbsp;</span>";
       }
-      li = "<li><a href='javascript:ListView.selecionar(\"" + note.hashid + "\")'>" + img + video + "<p>" + (note.texto || note.comentarios) + "</p></a></li>";
+      li = "<li><a class='action-note-select' data-note-id=\"" + note.hashid + "\">" + img + video + "<p>" + (note.texto || note.comentarios) + "</p></a></li>";
       html = html + " " + li;
     }
     $('#ulfilhos').html(html);
-    return $('#ulfilhos').listview().listview('refresh');
+    $('#ulfilhos').listview().listview('refresh');
+    return ListView.bindEvents();
   };
 
   return NoteView;
@@ -1132,7 +1189,9 @@ RastrearView = (function() {
   function RastrearView(slsapi) {
     var lastPosition, storage;
     storage = window.localStorage;
-    cordova.plugins.backgroundMode.enable();
+    if (app.runOnApp) {
+      cordova.plugins.backgroundMode.enable();
+    }
     RastrearView.id = storage.getItem('id_rastreamento');
     RastrearView.slsapi = slsapi;
     $.mobile.changePage("#pgrastrearview", {
@@ -1162,7 +1221,9 @@ RastrearView = (function() {
   RastrearView.stop = function() {
     var storage;
     storage = window.localStorage;
-    cordova.plugins.backgroundMode.disable();
+    if (app.runOnApp) {
+      cordova.plugins.backgroundMode.disable();
+    }
     RastrearView.id = "";
     storage.setItem('id_rastreamento', RastrearView.id);
     GPSControle.trilha = [];
@@ -1297,6 +1358,13 @@ UserView = (function() {
     });
   };
 
+  UserView.prototype.loadPermissions = function() {
+    this.data = this.slsapi.user.user_data;
+    this.data = JSON.parse(this.data);
+    this.isRoot = this.data.isRoot;
+    return this.isAdmin = this.data.isAdmin;
+  };
+
   UserView.prototype.load = function() {
     this.loading = false;
     $.mobile.loading("hide");
@@ -1305,9 +1373,10 @@ UserView = (function() {
       this.anotacoesview = new Anotacoes(this.slsapi);
       window.anotacoesview = this.anotacoesview;
       $('#pgperfil p.usuario').html("Usuário: " + (this.slsapi.user.getUsuario()));
-      return $.mobile.changePage("#pglogado", {
+      $.mobile.changePage("#pglogado", {
         changeHash: false
       });
+      return this.loadPermissions();
     } else {
       return $.mobile.changePage("#pglogin", {
         changeHash: false

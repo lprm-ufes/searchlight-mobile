@@ -76,7 +76,8 @@ class RastrearView
 
   constructor: (slsapi) ->
     storage = window.localStorage
-    cordova.plugins.backgroundMode.enable()
+    if app.runOnApp
+      cordova.plugins.backgroundMode.enable()
     RastrearView.id = storage.getItem('id_rastreamento')
     RastrearView.slsapi =slsapi
     $.mobile.changePage("#pgrastrearview",{changeHash:false})
@@ -100,7 +101,8 @@ class RastrearView
 
   @stop: ()->
     storage = window.localStorage
-    cordova.plugins.backgroundMode.disable()
+    if app.runOnApp
+      cordova.plugins.backgroundMode.disable()
     RastrearView.id = ""
     storage.setItem('id_rastreamento',RastrearView.id)
     GPSControle.trilha = []

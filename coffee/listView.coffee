@@ -66,10 +66,10 @@ class window.ListView
           if note.youtubeVideoId
             video = "<span class='fa fa-file-video-o'>&nbsp;</span>"
           if ds.url.indexOf(storageNotebookId) > 0
-            li = "<li><a href='javascript:ListView.selecionar(\"#{note.hashid}\")'>#{img}#{video}<p>#{note.texto or note.comentarios}</p><p class='ul-li-aside'>#{formatDistance(distance)}</p></a></li>"
+            li = "<li><a class='action-note-select' data-note-id=\"#{note.hashid}\">#{img}#{video}<p>#{note.texto or note.comentarios}</p><p class='ul-li-aside'>#{formatDistance(distance)}</p></a></li>"
             htmlc="#{htmlc} #{li}"
           else
-            li = "<li><a href='javascript:ListView.selecionar(\"#{note.hashid}\")'>#{img}#{video}<p>#{note.texto or note.comentarios}</p><p>#{formatDistance(distance)}</p></a></li>"
+            li = "<li><a class='action-note-select' data-note-id=\"#{note.hashid}\">#{img}#{video}<p>#{note.texto or note.comentarios}</p><p>#{formatDistance(distance)}</p></a></li>"
             html="#{html} #{li}"
 
       $('#ulfornecidas').html(html)
@@ -78,6 +78,16 @@ class window.ListView
       $('#ulfornecidas,#ulcoletadas').listview().listview('refresh')
       $('#divulcoletadas,#divulfornecidas').hide()
       $("#notasnav a.coletadas").click()
+      ListView.bindEvents()
+
+   @bindEvents: ()->
+      $("a.action-note-select").off('click')
+      $("a.action-note-select").on('click',(e)->
+        closest = $(e.target).closest("a.action-note-select")
+        hashid = $(closest).data('note-id')
+        ListView.selecionar(hashid)
+        )
+
 
 
   @selecionar: (hashid) ->

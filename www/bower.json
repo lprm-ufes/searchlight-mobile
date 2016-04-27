@@ -1,6 +1,6 @@
 {
   "name": "slmobile",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "authors": [
     "wancharle sebastião quirino <wancharle@gmail.com>"
   ],
@@ -16,7 +16,9 @@
   ],
   "dependencies": {
     "slsapi": "git@bitbucket.org:wancharle/searchlight-service-api.git",
-    "leaflet": "~0.7.3"
+    "leaflet": "~0.7.3",
+    "emoji-css": "^1.0.2",
+    "font-awesome": "^4.6.1"
   },
   "devDependencies": {
     "jquery": "~2.1.1",

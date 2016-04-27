@@ -10,7 +10,7 @@ class NoteView
         console.log("errors: #{error}")
         
     pos=L.latLng(note.latitude,note.longitude)
-    NoteView.mapa = L.map('mapa',{minZoom:15,maxZoom:17})
+    NoteView.mapa = L.map('mapa',{minZoom:10,maxZoom:17})
     L.tileLayer('http://{s}.tiles.mapbox.com/v3/rezo.ihpe97f0/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(NoteView.mapa)
@@ -43,6 +43,7 @@ class NoteView
     return filhos
 
   constructor: (@note) ->
+    console.log("note",@note)
     if not @note
       alert('Anotação informada não existe!')
       return
@@ -56,6 +57,7 @@ class NoteView
 
     $('#pgnoteview p.comentarios').html(@note.comentarios or @note.texto)
     $('#pgnoteview p.categoria').html(@note.cat or @note.user.username)
+    $('#pgnoteview p.data').html(@note.createdAt)
     
 
     $('#pgnoteview a.btn-adicionar-nota').off('click')
@@ -64,7 +66,7 @@ class NoteView
 
     user_id = window.localStorage.getItem('user_id')
     #console.log(user_id,@note.user)
-    if user_id == @note.user.id
+    if user_id == @note.user.id or userview.isRoot #TODO: adicionar opcao para dono do mashup nao-root poder apagar notas tambem 
       $('#pgnoteview a.btn-deletar-nota').show()
       $('#pgnoteview a.btn-deletar-nota').off('click')
       $('#pgnoteview a.btn-deletar-nota').on 'click', =>
@@ -121,11 +123,13 @@ class NoteView
       if note.youtubeVideoId
         video = "<span class='fa fa-file-video-o'>&nbsp;</span>"
 
-      li = "<li><a href='javascript:ListView.selecionar(\"#{note.hashid}\")'>#{img}#{video}<p>#{note.texto or note.comentarios}</p></a></li>"
+      li = "<li><a class='action-note-select' data-note-id=\"#{note.hashid}\">#{img}#{video}<p>#{note.texto or note.comentarios}</p></a></li>"
       html="#{html} #{li}"
 
     $('#ulfilhos').html(html)
     $('#ulfilhos').listview().listview('refresh')
+    ListView.bindEvents()
+    
 
 
 module.exports= {NoteView: NoteView}

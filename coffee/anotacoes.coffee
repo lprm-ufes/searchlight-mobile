@@ -28,13 +28,16 @@ class window.Anotacoes
         html += Action.render(action)
 
     $('#telaPrincipal').html(html)
+    Action.bindEvents()
 
 
   anotar: (categoria,tipo)->
     Anotacoes.noteadd = new NoteAdd(categoria,@slsapi,false,null,tipo)
+    return false
 
   anexar: (note)->
     Anotacoes.noteadd = new NoteAdd(null,@slsapi,true,note)
+    return false
 
   showAnotacaoByIdentificador: (identificador)->
     @slsapi.notes.getByQuery("identificador=#{identificador}",
@@ -45,18 +48,24 @@ class window.Anotacoes
     )
 
   identificar: ->
-    self = @
-    cordova.plugins.barcodeScanner.scan(
-      (result) ->
-        self.showAnotacaoByIdentificador(result.text)
-      ,(error) ->
-        alert("Falha na leitura do código QR: " + error)
-      )
+    if app.runOnApp == false
+      identificador=prompt("(leitura de barras simulada) Infome o identificador númerico:")
+      @showAnotacaoByIdentificador(identificador)
+    else
+      self = @
+      cordova.plugins.barcodeScanner.scan(
+        (result) ->
+          self.showAnotacaoByIdentificador(result.text)
+        ,(error) ->
+          alert("Falha na leitura do código QR: " + error)
+        )
+    return false
 
   rastrear: ->
     gpscontrole.modoTrilha = true
     Anotacoes.rastrearView = new RastrearView(@slsapi)
     RastrearView.updateMapa()
+    return true
     
   listar: ()->
     Anotacoes.listview = new ListView(@slsapi)
@@ -64,7 +73,10 @@ class window.Anotacoes
   deletar: (note)->
     if confirm('Deseja apagar esta anotação?')
       @slsapi.notes.getByQuery("hashid=#{note.hashid}", (notes)=>
-        @slsapi.notes.delete(notes[0].id, ()=> @listar())
+        @slsapi.notes.delete(notes[0].id, ()=>
+          @listar()
+          $.mobile.changePage("#pghistorico",{changeHash:false})
+        )
       , ()-> alert('erro ao deletar nota'))
     
 exports.Anotacoes = Anotacoes
