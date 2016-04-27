@@ -1,9 +1,10 @@
 {
   "name": "slc-mobile",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "authors": [
     "wancharle sebastião quirino <wancharle@gmail.com>"
   ],
+  "main": "index.html",
   "description": "app mobile para searchlight",
   "license": "MIT",
   "private": true,

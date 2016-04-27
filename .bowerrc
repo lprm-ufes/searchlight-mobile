@@ -1,3 +1,19 @@
 {
- "cwd": "./www"   
+ "cwd": "./www",
+  "ignore": [
+    "**/.*",
+    "coffee",
+    "jade",
+    "**/*.coffee",
+    "**/*.sh",
+    "plugins",
+    "config.xml",
+    "node_modules",
+    "www/node_modules",
+    "bower_components",
+    "www/bower_components",
+    "test",
+    "tests"
+  ]
+ 
 }
