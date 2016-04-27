@@ -83,7 +83,6 @@ SecondScreen = (function() {
 exports.SecondScreen = SecondScreen;
 
 
-
 },{}],2:[function(require,module,exports){
 var Action;
 
@@ -135,7 +134,7 @@ Action = (function() {
     var classe;
     classe = "fa " + ctx.extra;
     if (ctx.extra && ctx.extra.trim().indexOf("fa-") === -1) {
-      classe = "fa " + ctx.extra;
+      classe = "em " + ctx.extra;
     }
     if (ctx.tipo === 'normal') {
       return Action.normalAction(ctx, classe);
@@ -155,7 +154,6 @@ Action = (function() {
 })();
 
 exports.Action = Action;
-
 
 
 },{}],3:[function(require,module,exports){
@@ -272,7 +270,6 @@ window.Anotacoes = (function() {
 })();
 
 exports.Anotacoes = Anotacoes;
-
 
 
 },{"./action.coffee":2,"./gps_controle.coffee":4,"./listView.coffee":6,"./noteView.coffee":7,"./noteadd.coffee":8,"./rastrearView.coffee":9}],4:[function(require,module,exports){
@@ -435,7 +432,6 @@ window.GPSControle = (function() {
 exports.GPSControle = GPSControle;
 
 
-
 },{}],5:[function(require,module,exports){
 var GPSControle, SecondScreen, UserView, utils;
 
@@ -555,7 +551,6 @@ window.App = (function() {
   return App;
 
 })();
-
 
 
 },{"./SecondScreen.coffee":1,"./gps_controle.coffee":4,"./userView.coffee":10,"./utils.coffee":11}],6:[function(require,module,exports){
@@ -695,7 +690,6 @@ module.exports = {
 };
 
 
-
 },{"./noteView.coffee":7}],7:[function(require,module,exports){
 var NoteView;
 
@@ -703,12 +697,12 @@ NoteView = (function() {
   NoteView.mapa = null;
 
   NoteView.criaMapa = function(note) {
-    var error, marker, pos;
+    var error, error1, marker, pos;
     if (NoteView.mapa) {
       try {
         NoteView.mapa.remove();
-      } catch (_error) {
-        error = _error;
+      } catch (error1) {
+        error = error1;
         console.log("errors: " + error);
       }
     }
@@ -860,7 +854,6 @@ NoteView = (function() {
 module.exports = {
   NoteView: NoteView
 };
-
 
 
 },{}],8:[function(require,module,exports){
@@ -1101,7 +1094,6 @@ NoteAdd = (function() {
 exports.NoteAdd = NoteAdd;
 
 
-
 },{"./gps_controle.coffee":4}],9:[function(require,module,exports){
 var RastrearView;
 
@@ -1256,7 +1248,6 @@ module.exports = {
 };
 
 
-
 },{}],10:[function(require,module,exports){
 var Anotacoes, UserView,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -1360,7 +1351,6 @@ UserView = (function() {
 
   UserView.prototype.loadPermissions = function() {
     this.data = this.slsapi.user.user_data;
-    this.data = JSON.parse(this.data);
     this.isRoot = this.data.isRoot;
     return this.isAdmin = this.data.isAdmin;
   };
@@ -1389,7 +1379,6 @@ UserView = (function() {
 })();
 
 exports.UserView = UserView;
-
 
 
 },{"./anotacoes.coffee":3}],11:[function(require,module,exports){
@@ -1480,7 +1469,6 @@ window.getDistanceFromLatLonInKm = function(lat1, lon1, lat2, lon2) {
 window.deg2rad = function(deg) {
   return deg * (Math.PI / 180);
 };
-
 
 
 },{}]},{},[5]);
