@@ -6,11 +6,12 @@
     <meta name="msapplication-tap-highlight" content="no">
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
     <!-- <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /> -->
-    <meta http-equiv="Content-Security-Policy" content="default-src *;img-src * data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+    <meta http-equiv="Content-Security-Policy" content="default-src *;img-src * data:; style-src * 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
     <meta name="viewport" content="user-scalable=no, width=320">
     <link rel="stylesheet" href="bower_components/jquery-mobile-bower/css/jquery.mobile-1.4.2.css">
-    <link rel="stylesheet" href="font-awesome-4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css">
+    <link href="/bower_components/emoji-css/_site/emoji.css" rel="stylesheet">
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/slsapi/dist/slsapi.js"></script>
     <script src="bower_components/jquery-mobile-bower/js/jquery.mobile-1.4.2.js"></script>
@@ -223,6 +224,7 @@
             <div class="ui-block-a"><img id="notevideo" width="100%"></div>
             <div style="text-align:center" class="ui-block-b"><a class="btn-tocar-video ui-btn ui-shadow ui-corner-all"><i class="fa fa-2x fa-youtube-play"></i><span>&nbsp; </span></a></div>
           </fieldset>
+          <p class="data"></p>
           <p><a data-role="button" class="btn-adicionar-nota"><i class="fa fa-plus"></i><span> &nbsp;Adicionar nota</span></a></p>
         </div>
         <div>
