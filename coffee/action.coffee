@@ -39,7 +39,7 @@ class Action
   @render: (ctx)->
     classe = "fa #{ctx.extra}"
     if ctx.extra and ctx.extra.trim().indexOf("fa-") == -1
-      classe = "fa #{ctx.extra}"
+      classe = "em #{ctx.extra}"
 
     if ctx.tipo == 'normal'
       return Action.normalAction(ctx,classe)

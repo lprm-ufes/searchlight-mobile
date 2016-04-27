@@ -68,7 +68,6 @@ class UserView
 
   loadPermissions: ()->
     @data = @slsapi.user.user_data
-    @data = JSON.parse(@data)
     @isRoot = @data.isRoot
     @isAdmin = @data.isAdmin
 
