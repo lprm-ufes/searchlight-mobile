@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="br.com.wancharle.slmobile" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="br.com.wancharle.slmobile" version="0.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Searchlight</name>
     <description>
         Um applicação para coleta de anotações de crowdsourcing
@@ -11,4 +11,8 @@
     <access origin="*" />
     <allow-navigation href="*" />
     <preference name="BackupWebStorage" value="local"/>
+<preference name="AutoHideSplashScreen" value="true"/>
+<preference name="SplashScreenDelay" value="3000" />
+    <preference name="FadeSplashScreen" value="false"/>
+
 </widget>
