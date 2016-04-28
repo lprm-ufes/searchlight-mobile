@@ -83,6 +83,7 @@ SecondScreen = (function() {
 exports.SecondScreen = SecondScreen;
 
 
+
 },{}],2:[function(require,module,exports){
 var Action;
 
@@ -154,6 +155,7 @@ Action = (function() {
 })();
 
 exports.Action = Action;
+
 
 
 },{}],3:[function(require,module,exports){
@@ -270,6 +272,7 @@ window.Anotacoes = (function() {
 })();
 
 exports.Anotacoes = Anotacoes;
+
 
 
 },{"./action.coffee":2,"./gps_controle.coffee":4,"./listView.coffee":6,"./noteView.coffee":7,"./noteadd.coffee":8,"./rastrearView.coffee":9}],4:[function(require,module,exports){
@@ -432,6 +435,7 @@ window.GPSControle = (function() {
 exports.GPSControle = GPSControle;
 
 
+
 },{}],5:[function(require,module,exports){
 var GPSControle, SecondScreen, UserView, utils;
 
@@ -551,6 +555,7 @@ window.App = (function() {
   return App;
 
 })();
+
 
 
 },{"./SecondScreen.coffee":1,"./gps_controle.coffee":4,"./userView.coffee":10,"./utils.coffee":11}],6:[function(require,module,exports){
@@ -690,6 +695,7 @@ module.exports = {
 };
 
 
+
 },{"./noteView.coffee":7}],7:[function(require,module,exports){
 var NoteView;
 
@@ -697,12 +703,12 @@ NoteView = (function() {
   NoteView.mapa = null;
 
   NoteView.criaMapa = function(note) {
-    var error, error1, marker, pos;
+    var error, marker, pos;
     if (NoteView.mapa) {
       try {
         NoteView.mapa.remove();
-      } catch (error1) {
-        error = error1;
+      } catch (_error) {
+        error = _error;
         console.log("errors: " + error);
       }
     }
@@ -854,6 +860,7 @@ NoteView = (function() {
 module.exports = {
   NoteView: NoteView
 };
+
 
 
 },{}],8:[function(require,module,exports){
@@ -1094,6 +1101,7 @@ NoteAdd = (function() {
 exports.NoteAdd = NoteAdd;
 
 
+
 },{"./gps_controle.coffee":4}],9:[function(require,module,exports){
 var RastrearView;
 
@@ -1248,6 +1256,7 @@ module.exports = {
 };
 
 
+
 },{}],10:[function(require,module,exports){
 var Anotacoes, UserView,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -1381,6 +1390,7 @@ UserView = (function() {
 exports.UserView = UserView;
 
 
+
 },{"./anotacoes.coffee":3}],11:[function(require,module,exports){
 var getParams;
 
@@ -1469,6 +1479,7 @@ window.getDistanceFromLatLonInKm = function(lat1, lon1, lat2, lon2) {
 window.deg2rad = function(deg) {
   return deg * (Math.PI / 180);
 };
+
 
 
 },{}]},{},[5]);
