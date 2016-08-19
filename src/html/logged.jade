@@ -1,0 +1,69 @@
+doctype html
+html(ng-app='SearchlightApp')
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui')
+    meta(name='apple-mobile-web-app-capable', content='yes')
+    meta(name='apple-mobile-web-app-status-bar-style', content='black')
+    title MyApp
+    // Styles
+    link(rel='stylesheet', href='bower_components/Framework7/dist/css/framework7.ios.min.css')
+    link(rel='stylesheet', href='bower_components/Framework7/dist/css/framework7.ios.colors.min.css')
+    link(rel='stylesheet', href='bower_components/Ionicons/css/ionicons.min.css')
+    // Scripts
+
+    script(type='text/javascript', src='bower_components/jquery/dist/jquery.min.js')
+    script(type='text/javascript', src='bower_components/angular/angular.min.js')
+    script(type='text/javascript', src='bower_components/ngstorage/ngStorage.min.js')
+    script(type='text/javascript', src='bower_components/Framework7/dist/js/framework7.min.js')
+    script(type='text/javascript', src='bower_components/slsapi/dist/slsapi.js')
+    script(type='text/javascript', src='js/searchlight-app.js')
+  body(data-pagina='logged')
+    .statusbar-overlay
+    .panel-overlay
+
+    // Tabs, now tabs wrapper is "views"
+    .views.tabs.toolbar-fixed
+      // Tab 1 - View 1, active by default
+      #tab1.view.tab
+        .navbar
+          .navbar-inner
+            .center View 1
+        .pages.navbar-fixed
+          .page(data-page='acoes' ng-controller='AcoesPageController')
+            .page-content
+              .content-block
+                p This is view 1
+      // Tab 2 - View 2
+      #tab2.view.tab
+        .navbar
+          .navbar-inner
+            .center View 2
+        .pages.navbar-fixed
+          .page(data-page='home-2')
+            .page-content
+              .content-block
+                p This is view 2
+      // Tab 2 - View 3
+      #tab3.view.tab
+        .navbar
+          .navbar-inner
+            .center View 3
+        .pages.navbar-fixed
+          .page(data-page='home-3')
+            .page-content
+              .content-block
+                p This is view 3
+      // Tab bar with tab links
+      .toolbar.tabbar
+        .toolbar-inner
+          a.tab-link.active(href='#tab1')
+            i.icon.ion-speakerphone 
+          a.tab-link(href='#tab2')
+            i.icon.ion-ios-list 
+          a.tab-link(href='#tab3')
+            i.icon.ion-ios-settings-strong 
+           
+
+
+// vim: set ts=2 sw=2 sts=2 expandtab:

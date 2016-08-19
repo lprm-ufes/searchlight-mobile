@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html ng-app="SearchlightApp">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>MyApp</title>
+    <!-- Styles-->
+    <link rel="stylesheet" href="bower_components/Framework7/dist/css/framework7.ios.min.css">
+    <link rel="stylesheet" href="bower_components/Framework7/dist/css/framework7.ios.colors.min.css">
+    <link rel="stylesheet" href="bower_components/Ionicons/css/ionicons.min.css">
+    <!-- Scripts-->
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="bower_components/ngstorage/ngStorage.min.js"></script>
+    <script type="text/javascript" src="bower_components/Framework7/dist/js/framework7.min.js"></script>
+    <script type="text/javascript" src="bower_components/slsapi/dist/slsapi.js"></script>
+    <script type="text/javascript" src="js/searchlight-app.js"></script>
+  </head>
+  <body data-pagina="logged">
+    <div class="statusbar-overlay"></div>
+    <div class="panel-overlay"></div>
+    <!-- Tabs, now tabs wrapper is "views"-->
+    <div class="views tabs toolbar-fixed">
+      <!-- Tab 1 - View 1, active by default-->
+      <div class="view tab" id="tab1">
+        <div class="navbar">
+          <div class="navbar-inner">
+            <div class="center">View 1</div>
+          </div>
+        </div>
+        <div class="pages navbar-fixed">
+          <div class="page" data-page="acoes" ng-controller="AcoesPageController">
+            <div class="page-content">
+              <div class="content-block">
+                <p>This is view 1</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Tab 2 - View 2-->
+      <div class="view tab" id="tab2">
+        <div class="navbar">
+          <div class="navbar-inner">
+            <div class="center">View 2</div>
+          </div>
+        </div>
+        <div class="pages navbar-fixed">
+          <div class="page" data-page="home-2">
+            <div class="page-content">
+              <div class="content-block">
+                <p>This is view 2</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Tab 2 - View 3-->
+      <div class="view tab" id="tab3">
+        <div class="navbar">
+          <div class="navbar-inner">
+            <div class="center">View 3</div>
+          </div>
+        </div>
+        <div class="pages navbar-fixed">
+          <div class="page" data-page="home-3">
+            <div class="page-content">
+              <div class="content-block">
+                <p>This is view 3</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Tab bar with tab links-->
+      <div class="toolbar tabbar">
+        <div class="toolbar-inner"><a class="tab-link active" href="#tab1"><i class="icon ion-speakerphone"> </i></a><a class="tab-link" href="#tab2"><i class="icon ion-ios-list"> </i></a><a class="tab-link" href="#tab3"><i class="icon ion-ios-settings-strong"> </i></a></div>
+      </div>
+    </div>
+  </body>
+</html>
+<!-- vim: set ts=2 sw=2 sts=2 expandtab:-->

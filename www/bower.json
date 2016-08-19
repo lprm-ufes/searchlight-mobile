@@ -27,7 +27,11 @@
     "slsapi": "git@bitbucket.org:wancharle/searchlight-service-api.git",
     "leaflet": "0.7.3",
     "emoji-css": "1.0.2",
-    "font-awesome": "4.6.1"
+    "font-awesome": "4.6.1",
+    "ngstorage": "0.3.11",
+    "angular": "1.5.8",
+    "Framework7": "framework7#^1.4.2",
+    "Ionicons": "ionicons#^2.0.1"
   },
   "devDependencies": {
     "jquery": "2.1.1",
