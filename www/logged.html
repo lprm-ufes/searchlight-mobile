@@ -61,14 +61,16 @@
       <div class="view tab" id="tab3">
         <div class="navbar">
           <div class="navbar-inner">
-            <div class="center">View 3</div>
+            <div class="center">Perfil</div>
           </div>
         </div>
         <div class="pages navbar-fixed">
           <div class="page" data-page="home-3">
             <div class="page-content">
               <div class="content-block">
-                <p>This is view 3</p>
+                <div ng-controller="UserController">
+                  <p>{{ data.username }}</p><a ng-click="trocarUsuario()">Trocar de Usuario</a>
+                </div>
               </div>
             </div>
           </div>

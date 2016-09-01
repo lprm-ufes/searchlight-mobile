@@ -14,7 +14,9 @@
     app: new Framework7({
       animateNavBackIcon: true
     }),
-    options: '',
+    options: {
+      domCache: true
+    },
     views: []
   };
 
@@ -95,39 +97,22 @@
   MyApp.angular.factory('SearchlightService', [
     'InitService', '$localStorage', function(InitService, storage) {
       'use strict';
-      var eventListeners, onApiFail, onApiReady, pub;
+      var eventListeners, onApiFail, onApiReady, pub, urlServicoTemporaria;
       pub = {};
+      urlServicoTemporaria = null;
       eventListeners = {
-        'ready': []
+        'ready': [],
+        'fail': []
       };
       pub.addEventListener = function(eventName, listener) {
         eventListeners[eventName].push(listener);
       };
       pub.trocarServico = function() {
         pub.api.user.logout();
-        pub.setUrlConfServico(null);
-        return $.mobile.changePage("#pgservico", {
-          changeHash: false
-        });
+        return pub.setConfServico(null);
       };
-      pub.vincularServico = function() {
-        var url;
-        if (InitService.runOnApp) {
-          return cordova.plugins.barcodeScanner.scan(function(result) {
-            return pub.loadServico(result.text);
-          }, function(error) {
-            return alert("Falha na leitura do código QR: " + error);
-          });
-        } else {
-          url = prompt('Informe a url do mashup');
-          if (url !== null) {
-            if (url) {
-              return pub.loadServico(url);
-            } else {
-              return alert('Informe uma url de serviço válida!');
-            }
-          }
-        }
+      pub.temServicoVinculado = function() {
+        return pub.getUrlConfServico();
       };
       pub.getUrlConfServico = function() {
         if (PARAMETROS_GET.mashup) {
@@ -137,16 +122,22 @@
         }
         return pub.urlConfServico;
       };
-      pub.setUrlConfServico = function(url) {
-        pub.urlConfServico = url;
+      pub.getConfServico = function() {
+        return storage.mashup;
+      };
+      pub.setConfServico = function(url) {
         if (url) {
-          return storage.urlConfServico = pub.urlConfServico;
+          storage.urlConfServico = urlServicoTemporaria;
+          return storage.mashup = pub.api.config.opcoesOriginais;
         } else {
-          return delete storage.urlConfServico;
+          delete storage.urlConfServico;
+          return delete storage.mashup;
         }
       };
       onApiReady = function() {
         var i, results;
+        MyApp.fw7.app.hidePreloader();
+        pub.setConfServico(urlServicoTemporaria);
         i = 0;
         results = [];
         while (i < eventListeners.ready.length) {
@@ -156,44 +147,110 @@
         return results;
       };
       onApiFail = function(err) {
-        return console.log(err);
+        var i, results;
+        MyApp.fw7.app.hidePreloader();
+        i = 0;
+        results = [];
+        while (i < eventListeners.fail.length) {
+          eventListeners.fail[i](err);
+          results.push(i = i + 1);
+        }
+        return results;
       };
-      pub.loadServico = function(urlConfServico) {
-        console.log(urlConfServico);
-        pub.setUrlConfServico(urlConfServico);
-        pub.api = new SLSAPI({
-          urlConfServico: pub.urlConfServico
-        });
-        MyApp.fw7.app.showPreloader('Carregando Serviço');
+      pub.loadAPI = function(conf) {
+        pub.api = new SLSAPI(conf);
         pub.api.on(SLSAPI.Config.EVENT_READY, onApiReady);
-        pub.api.on(SLSAPI.Config.EVENT_FAIL, onApiFail);
+        return pub.api.on(SLSAPI.Config.EVENT_FAIL, onApiFail);
+      };
+      pub.loadServico = function() {
+        var conf;
+        console.log('Carregando serviço previamente vinculado');
+        urlServicoTemporaria = pub.getUrlConfServico();
+        if (urlServicoTemporaria) {
+          conf = pub.getConfServico();
+          if (conf) {
+            pub.loadAPI(conf);
+            return;
+          } else {
+            pub.setConfServico();
+          }
+        }
+        return console.error('Não possível carregar serviço. UrlConfServico não definida!');
+      };
+      pub.loadServicoPorUrl = function(urlConfServico) {
+        MyApp.fw7.app.showPreloader('Carregando Serviço');
+        console.log('Carregando serviço por url');
+        urlServicoTemporaria = urlConfServico;
+        pub.loadAPI({
+          urlConfServico: urlConfServico
+        });
       };
       return pub;
     }
   ]);
 
   MyApp.angular.controller('AcoesPageController', [
-    '$scope', '$http', 'InitService', function($scope, $http, InitService) {
+    '$scope', '$http', 'InitService', 'SearchlightService', function($scope, $http, InitService, SLS) {
       'use strict';
       InitService.addEventListener('ready', function() {
         console.log('AcoesPageController: ok, DOM ready');
+        SLS.loadServico();
       });
     }
   ]);
 
-  MyApp.angular.controller('DetailPageController', [
-    '$scope', '$http', 'InitService', function($scope, $http, InitService) {
+  MyApp.angular.controller('EscolheServicoController', [
+    '$scope', 'InitService', 'SearchlightService', function($scope, InitService, SLS) {
       'use strict';
+      var mostraPaginaEscolheServico;
+      $scope.vincularServico = function() {
+        var url;
+        if (InitService.runOnApp) {
+          return cordova.plugins.barcodeScanner.scan(function(result) {
+            return SLS.loadServicoPorUrl(result.text);
+          }, function(error) {
+            return alert("Falha na leitura do código QR: " + error);
+          });
+        } else {
+          url = prompt('Informe a url do mashup');
+          if (url !== null) {
+            if (url) {
+              return SLS.loadServicoPorUrl(url);
+            } else {
+              return alert('Informe uma url de serviço válida!');
+            }
+          }
+        }
+      };
+      mostraPaginaEscolheServico = function() {
+        return MyApp.viewBase.router.load({
+          pageName: "escolheServico"
+        });
+      };
+      SLS.addEventListener('fail', function(err) {
+        console.log(err);
+        MyApp.fw7.app.alert(err.message, 'Vinculação incompleta');
+        return mostraPaginaEscolheServico();
+      });
       InitService.addEventListener('ready', function() {
-        console.log('DetailPageController: ok, DOM ready');
+        console.log('EscolheServicoController: ok');
+        if (SLS.temServicoVinculado()) {
+          SLS.loadServico();
+        } else {
+          mostraPaginaEscolheServico();
+        }
       });
     }
   ]);
 
-  MyApp.angular.controller('UserController', [
-    '$window', '$scope', '$http', 'SearchlightService', function($window, $scope, $http, SLS) {
+  MyApp.angular.controller('LoginController', [
+    '$window', '$scope', 'SearchlightService', function($window, $scope, SLS) {
       'use strict';
-      var bindLoginEvents, load, loadPermissions, loading, mostraLoading, onLoginFail, onLoginSuccess, onSearchlightReady, submitLogin;
+      var bindLoginEvents, load, loading, mostraLoading, onLoginFail, onLoginSuccess, onSearchlightReady, submitLogin;
+      $scope.trocarServico = function() {
+        SLS.trocarServico();
+        return $window.location.href = './index.html';
+      };
       submitLogin = function(e) {
         var p, u;
         u = $$("#username").val();
@@ -219,25 +276,22 @@
         loading = true;
         return MyApp.fw7.app.showPreloader('Enviando');
       };
-      loadPermissions = function() {
-        $scope.data = SLS.api.user.user_data;
-        $scope.isRoot = $scope.data.isRoot;
-        return $scope.isAdmin = $scope.data.isAdmin;
-      };
       load = function() {
         var loading;
+        console.log('load');
+        MyApp.fw7.app.hidePreloader();
         loading = false;
         if (SLS.api.user.isLogged()) {
-          loadPermissions();
-          $window.location.href = './logged.html';
-          return console.log('tentei');
+          return $window.location.href = './logged.html';
         } else {
-          bindLoginEvents();
-          return MyApp.viewBase.router.loadPage("#loginPage");
+          MyApp.viewBase.router.load({
+            pageName: "loginPage"
+          });
+          return bindLoginEvents();
         }
       };
       onLoginFail = function(err) {
-        $.mobile.loading('hide');
+        MyApp.fw7.app.hidePreloader();
         $("#submitButton").removeAttr("disabled");
         if (err.response.body.error) {
           return alert(err.response.body.error);
@@ -246,30 +300,80 @@
         }
       };
       onLoginSuccess = function() {
-        MyApp.fw7.app.hidePreloader();
         $("#submitButton").removeAttr("disabled");
         return load();
       };
       onSearchlightReady = function() {
-        console.log('LoginPageController: ok, SearchlightService carregou api corretamente');
+        console.log('LoginController: ok');
+        console.log('Searchlight Service API: ok');
         load();
       };
       loading = true;
       SLS.addEventListener('ready', onSearchlightReady);
-      console.log('User controller');
     }
   ]);
 
-  MyApp.angular.controller('StartupController', [
+  MyApp.angular.controller('UserController', [
+    '$window', '$scope', 'SearchlightService', function($window, $scope, SLS) {
+      'use strict';
+      var bindLoginEvents, load, loadPermissions, mostraLoading, onSearchlightReady;
+      $scope.trocarUsuario = function() {
+        SLS.api.user.logout();
+        return $window.location.href = './index.html';
+      };
+      $scope.trocarServico = function() {
+        SLS.trocarServico();
+        return $window.location.href = './index.html';
+      };
+      bindLoginEvents = function() {
+        SLS.api.on(SLSAPI.User.EVENT_LOGIN_START, mostraLoading);
+        SLS.api.on(SLSAPI.User.EVENT_LOGIN_FAIL, onLoginFail);
+        SLS.api.on(SLSAPI.User.EVENT_LOGIN_SUCCESS, onLoginSuccess);
+        return $$("#loginForm").on("submit", function(e) {
+          return submitLogin(e);
+        });
+      };
+      mostraLoading = function() {
+        var loading;
+        loading = true;
+        return MyApp.fw7.app.showPreloader('Enviando');
+      };
+      loadPermissions = function() {
+        $scope.isRoot = $scope.data.isRoot;
+        return $scope.isAdmin = $scope.data.isAdmin;
+      };
+      load = function() {
+        $scope.data = SLS.api.user.user_data;
+        loadPermissions();
+        return $scope.$apply();
+      };
+      onSearchlightReady = function() {
+        console.log('UserController: ok');
+        console.log('Searchlight Service API: ok');
+        load();
+      };
+      SLS.addEventListener('ready', onSearchlightReady);
+    }
+  ]);
+
+  MyApp.angular.controller('ServicoPageController', [
     '$scope', 'InitService', 'SearchlightService', function($scope, InitService, SLS) {
       'use strict';
       $scope.vincularServico = SLS.vincularServico;
       InitService.addEventListener('ready', function() {
-        console.log('StartupController: ok, DOM ready');
+        console.log('ServicoPageController: ok, DOM ready');
         if (SLS.getUrlConfServico()) {
           SLS.loadServico(SLS.urlConfServico);
+          SLS.addEventListener('fail', function() {
+            console.log('fail');
+            return MyApp.viewBase.router.load({
+              pageName: "escolheServico"
+            });
+          });
         } else {
-          MyApp.viewBase.router.loadPage("#escolheServico");
+          MyApp.viewBase.router.load({
+            pageName: "escolheServico"
+          });
         }
       });
     }

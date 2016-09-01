@@ -10,7 +10,7 @@ MyApp.angular = angular.module('SearchlightApp', ['ngStorage'])
 $$ = Dom7
 MyApp.fw7 =
   app: new Framework7(animateNavBackIcon: true)
-  options: ''
+  options: { domCache:true }
   views: []
 
 

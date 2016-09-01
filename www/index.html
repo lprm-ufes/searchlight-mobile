@@ -9,6 +9,7 @@
     <!-- Styles-->
     <link rel="stylesheet" href="bower_components/Framework7/dist/css/framework7.ios.min.css">
     <link rel="stylesheet" href="bower_components/Framework7/dist/css/framework7.ios.colors.min.css">
+    <link rel="stylesheet" href="bower_components/Ionicons/css/ionicons.min.css">
     <!-- Scripts-->
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
@@ -22,33 +23,37 @@
     <div class="panel-overlay"></div>
     <div class="views">
       <div class="view view-base">
-        <div class="pages navbar-fixed" ng-controller="StartupController">
+        <div class="pages">
           <div class="page" data-page="startup"> 
             <div class="page-content"></div>
           </div>
-          <div class="page cached" data-page="escolheServico">
+          <div class="page cached" data-page="escolheServico" ng-controller="EscolheServicoController">
             <div class="page-content">
-              <p> Para utilizar o Searchlight é necessário que este esteja vinculado a um serviço de coleta. Vc pode fazer isso clicando no botão "vincular serviço". Ao clicá-lo posicione o smartphone de forma que possa ler o código QR gerado pelo seu serviço.</p><a class="ui-btn ui-shadow ui-corner-all btn-vincular" ng-click="vincularServico()"><i class="fa fa-2x fa-qrcode"></i><br><span>Vincular Serviço</span></a>
+              <div class="content-block">
+                <p> Para utilizar o Searchlight é necessário que este esteja vinculado a um serviço de coleta. Vc pode fazer isso clicando no botão "vincular serviço". Ao clicá-lo posicione o smartphone de forma que possa ler o código QR gerado pelo seu serviço.</p><a class="button active" ng-click="vincularServico()"><span>Vincular Serviço</span></a>
+              </div>
             </div>
           </div>
-          <div class="page cached" data-page="loginPage" ng-controller="UserController">
+          <div class="page cached" data-page="loginPage" ng-controller="LoginController">
             <div class="page-content">
-              <h3>Login</h3>
-              <form id="loginForm">
-                <div class="ui-hide-label" data-role="fieldcontain">
-                  <label for="username">Usuário:</label>
-                  <input type="text" name="username" id="username" value="" placeholder="Usuário">
-                </div>
-                <div class="ui-hide-label" data-role="fieldcontain">
-                  <label for="password">Senha:</label>
-                  <input type="password" name="password" id="password" value="" placeholder="Senha">
-                </div>
-                <p> 
-                  <input type="submit" value="Entrar" id="submitButton">
-                </p><br>
-                <p style="text-align:center">ou </p><br>
-                <p> <a class="ui-btn" href="javascript:app.trocarServico()">Escolher outro serviço </a></p>
-              </form>
+              <div class="content-block">
+                <h3>Login</h3>
+                <form id="loginForm">
+                  <div class="ui-hide-label" data-role="fieldcontain">
+                    <label for="username">Usuário:</label>
+                    <input type="text" name="username" id="username" value="" placeholder="Usuário">
+                  </div>
+                  <div class="ui-hide-label" data-role="fieldcontain">
+                    <label for="password">Senha:</label>
+                    <input type="password" name="password" id="password" value="" placeholder="Senha">
+                  </div>
+                  <p> 
+                    <input type="submit" value="Entrar" id="submitButton">
+                  </p><br>
+                  <p style="text-align:center">ou </p><br>
+                  <p> <a class="ui-btn" ng-click="trocarServico()">Escolher outro serviço </a></p>
+                </form>
+              </div>
             </div>
           </div>
         </div>

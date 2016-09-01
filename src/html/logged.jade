@@ -48,12 +48,15 @@ html(ng-app='SearchlightApp')
       #tab3.view.tab
         .navbar
           .navbar-inner
-            .center View 3
+            .center Perfil
         .pages.navbar-fixed
           .page(data-page='home-3')
             .page-content
               .content-block
-                p This is view 3
+                div(ng-controller='UserController')
+                   p {{ data.username }}
+                   a(ng-click='trocarUsuario()') Trocar de Usuario
+      
       // Tab bar with tab links
       .toolbar.tabbar
         .toolbar-inner

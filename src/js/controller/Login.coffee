@@ -1,0 +1,73 @@
+
+
+MyApp.angular.controller 'LoginController', [
+  '$window'
+  '$scope'
+  'SearchlightService'
+  ($window,$scope, SLS) ->
+    'use strict'
+
+    $scope.trocarServico = ->
+      SLS.trocarServico()
+      $window.location.href='./index.html'
+      
+    submitLogin= (e) ->
+      u = $$("#username").val()
+      p = $$("#password").val()
+      if (u and  p)
+        # disable the button so we can't resubmit while we wait
+        $$("#submitButton").attr("disabled","disabled")
+      else
+        alert('Forneça um usuario e uma senha para autenticação')
+
+      SLS.api.user.login(u,p)
+      return false
+   
+    bindLoginEvents = ->
+      SLS.api.on SLSAPI.User.EVENT_LOGIN_START, mostraLoading
+      SLS.api.on SLSAPI.User.EVENT_LOGIN_FAIL, onLoginFail
+      SLS.api.on SLSAPI.User.EVENT_LOGIN_SUCCESS, onLoginSuccess
+      $$("#loginForm").on("submit", (e) -> submitLogin(e) )
+
+    mostraLoading = ->
+        loading = true
+        MyApp.fw7.app.showPreloader('Enviando')
+
+    load = ->
+      console.log('load')
+      MyApp.fw7.app.hidePreloader()
+      loading = false
+      if SLS.api.user.isLogged()
+        $window.location.href='./logged.html'
+      else
+        MyApp.viewBase.router.load({pageName:"loginPage"})
+        bindLoginEvents()
+
+    onLoginFail = (err) ->
+      MyApp.fw7.app.hidePreloader()
+      $("#submitButton").removeAttr("disabled")
+      if err.response.body.error
+        alert(err.response.body.error)
+      else
+        @problemarede()
+
+    onLoginSuccess = ->
+        $("#submitButton").removeAttr("disabled")
+        load()
+
+    onSearchlightReady = ->
+      console.log 'LoginController: ok'
+      console.log 'Searchlight Service API: ok'
+      load()
+      return
+
+    loading = true
+    SLS.addEventListener 'ready', onSearchlightReady
+
+    return
+]
+
+
+
+# vim: set ts=2 sw=2 sts=2 expandtab:
+

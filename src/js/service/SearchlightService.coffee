@@ -5,7 +5,10 @@ MyApp.angular.factory 'SearchlightService', [
   (InitService,storage) ->
     'use strict'
     pub = {}
-    eventListeners = 'ready': []
+    urlServicoTemporaria = null
+    eventListeners =
+      'ready': []
+      'fail': []
 
     pub.addEventListener = (eventName, listener) ->
       eventListeners[eventName].push listener
@@ -13,24 +16,9 @@ MyApp.angular.factory 'SearchlightService', [
 
     pub.trocarServico = ->
       pub.api.user.logout()
-      pub.setUrlConfServico(null)
-      $.mobile.changePage("#pgservico",{changeHash:false}) # colocar no controller
-      
-    pub.vincularServico = ->
-      if InitService.runOnApp
-        cordova.plugins.barcodeScanner.scan(
-          (result) ->
-            pub.loadServico(result.text)
-          ,(error) ->
-            alert("Falha na leitura do código QR: " + error)
-          )
-      else
-        url = prompt('Informe a url do mashup')
-        if url != null
-          if url
-            pub.loadServico(url)
-          else
-            alert('Informe uma url de serviço válida!')
+      pub.setConfServico(null)
+     
+    pub.temServicoVinculado = -> pub.getUrlConfServico()
 
     pub.getUrlConfServico = ->
       if PARAMETROS_GET.mashup
@@ -39,12 +27,15 @@ MyApp.angular.factory 'SearchlightService', [
         pub.urlConfServico = storage.urlConfServico
       return pub.urlConfServico
 
-    pub.setUrlConfServico = (url) ->
-      pub.urlConfServico = url
+    pub.getConfServico = -> storage.mashup
+
+    pub.setConfServico = (url) ->
       if url
-        storage.urlConfServico = pub.urlConfServico
+        storage.urlConfServico = urlServicoTemporaria
+        storage.mashup = pub.api.config.opcoesOriginais
       else
         delete storage.urlConfServico
+        delete storage.mashup
 
     #pub.iniciaSegundaTela: ()-> # colocar no servico de segunda tela
       #console.log('iniciado segunda tela')
@@ -54,26 +45,44 @@ MyApp.angular.factory 'SearchlightService', [
       #  @ss = true
 
     onApiReady = ->
+      MyApp.fw7.app.hidePreloader()
+      pub.setConfServico(urlServicoTemporaria)
       i = 0
       while i < eventListeners.ready.length
         eventListeners.ready[i]()
         i = i + 1
 
     onApiFail = (err)->
+      MyApp.fw7.app.hidePreloader()
+      i = 0
+      while i < eventListeners.fail.length
+        eventListeners.fail[i](err)
+        i = i + 1
+
       #@problemarede()
-      console.log(err)
- 
-
-    pub.loadServico = (urlConfServico) ->
-      console.log(urlConfServico)
-      pub.setUrlConfServico(urlConfServico)
-      pub.api = new SLSAPI({urlConfServico:pub.urlConfServico})
-
-      MyApp.fw7.app.showPreloader('Carregando Serviço')
-
+    pub.loadAPI = (conf)->
+      pub.api = new SLSAPI(conf)
       pub.api.on SLSAPI.Config.EVENT_READY, onApiReady
       pub.api.on SLSAPI.Config.EVENT_FAIL, onApiFail
-      
+
+    pub.loadServico = ->
+      console.log('Carregando serviço previamente vinculado')
+      urlServicoTemporaria = pub.getUrlConfServico()
+      if urlServicoTemporaria
+        conf = pub.getConfServico()
+        if conf
+          pub.loadAPI(conf)
+          return
+        else
+          pub.setConfServico() # apaga conf incorreta
+      console.error('Não possível carregar serviço. UrlConfServico não definida!')
+
+    pub.loadServicoPorUrl = (urlConfServico) ->
+      MyApp.fw7.app.showPreloader('Carregando Serviço')
+      console.log('Carregando serviço por url')
+      urlServicoTemporaria = urlConfServico
+      pub.loadAPI({urlConfServico: urlConfServico})
+
       #window.gpscontrole = new GPSControle() # FIXME: colocar num service
 
       return 

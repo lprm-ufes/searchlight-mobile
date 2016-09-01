@@ -3,22 +3,17 @@
 MyApp.angular.controller 'UserController', [
   '$window'
   '$scope'
-  '$http'
   'SearchlightService'
-  ($window,$scope, $http, SLS) ->
+  ($window,$scope,  SLS) ->
     'use strict'
 
-    submitLogin= (e) ->
-      u = $$("#username").val()
-      p = $$("#password").val()
-      if (u and  p)
-        # disable the button so we can't resubmit while we wait
-        $$("#submitButton").attr("disabled","disabled")
-      else
-        alert('Forneça um usuario e uma senha para autenticação')
+    $scope.trocarUsuario = ->
+      SLS.api.user.logout()
+      $window.location.href='./index.html'
 
-      SLS.api.user.login(u,p)
-      return false
+    $scope.trocarServico = ->
+      SLS.trocarServico()
+      $window.location.href='./index.html'
    
     bindLoginEvents = ->
       SLS.api.on SLSAPI.User.EVENT_LOGIN_START, mostraLoading
@@ -31,47 +26,24 @@ MyApp.angular.controller 'UserController', [
         MyApp.fw7.app.showPreloader('Enviando')
 
     loadPermissions = ()->
-      $scope.data = SLS.api.user.user_data
       $scope.isRoot = $scope.data.isRoot
       $scope.isAdmin = $scope.data.isAdmin
 
     load = ->
-      loading = false
-      if SLS.api.user.isLogged()
-        #@bind()
-        #@anotacoesview = new Anotacoes(@slsapi)
-        #window.anotacoesview = @anotacoesview
+        $scope.data = SLS.api.user.user_data
+        loadPermissions()
+
+        $scope.$apply()
         #$('#pgperfil p.usuario').html("Usuário: #{@slsapi.user.getUsuario()}")
 
-        loadPermissions()
-        $window.location.href='./logged.html'
-        console.log('tentei')
-        #goPageInAnotherView('.view-main','#index')
-      else
-        bindLoginEvents()
-        MyApp.viewBase.router.loadPage("#loginPage")
-
-    onLoginFail = (err) ->
-      $.mobile.loading('hide')
-      $("#submitButton").removeAttr("disabled")
-      if err.response.body.error
-        alert(err.response.body.error)
-      else
-        @problemarede()
-
-    onLoginSuccess = ->
-        MyApp.fw7.app.hidePreloader()
-        $("#submitButton").removeAttr("disabled")
-        load()
 
     onSearchlightReady = ->
-      console.log 'LoginPageController: ok, SearchlightService carregou api corretamente'
+      console.log 'UserController: ok'
+      console.log 'Searchlight Service API: ok'
       load()
       return
 
-    loading = true
     SLS.addEventListener 'ready', onSearchlightReady
-    console.log('User controller')
 
     return
 ]

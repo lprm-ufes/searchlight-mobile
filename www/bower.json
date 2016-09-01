@@ -24,7 +24,7 @@
     "tests"
   ],
   "dependencies": {
-    "slsapi": "git@bitbucket.org:wancharle/searchlight-service-api.git",
+    "slsapi": "git@bitbucket.org:wancharle/searchlight-service-api.git#83ac385e08a4b322cb0dc91a72e39a872ccaccea",
     "leaflet": "0.7.3",
     "emoji-css": "1.0.2",
     "font-awesome": "4.6.1",
