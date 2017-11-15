@@ -1,54 +1,52 @@
 {
-    "prepare_queue": {
-        "installed": [],
-        "uninstalled": []
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-background-mode": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
     },
-    "config_munge": {
-        "files": {}
+    "cordova-plugin-battery-status": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
     },
-    "installed_plugins": {
-        "com.bunkerpalace.cordova.YoutubeVideoPlayer": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "cordova-plugin-battery-status": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "cordova-plugin-camera": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "cordova-plugin-console": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "cordova-plugin-file": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "cordova-plugin-file-transfer": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "cordova-plugin-geolocation": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "cordova-plugin-network-information": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "cordova-plugin-splashscreen": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "de.appplant.cordova.plugin.background-mode": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "de.fhg.fokus.famium.presentation": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        },
-        "phonegap-plugin-barcodescanner": {
-            "PACKAGE_NAME": "br.com.wancharle.slmobile"
-        }
+    "cordova-plugin-camera": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
     },
-    "dependent_plugins": {}
+    "cordova-plugin-console": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
+    },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
+    },
+    "cordova-plugin-file-transfer": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
+    },
+    "cordova-plugin-geolocation": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
+    },
+    "cordova-plugin-presentation": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
+    },
+    "phonegap-plugin-barcodescanner": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
+    },
+    "cordova-plugin-youtubevideoplayer": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
+    }
+  },
+  "dependent_plugins": {
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "slmobile.wancharle.com.br"
+    }
+  }
 }

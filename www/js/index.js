@@ -697,7 +697,7 @@ NoteView = (function() {
   NoteView.mapa = null;
 
   NoteView.criaMapa = function(note) {
-    var error, error1, marker, pos;
+    var error, marker, pos;
     if (NoteView.mapa) {
       try {
         NoteView.mapa.remove();

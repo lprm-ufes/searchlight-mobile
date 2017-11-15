@@ -24,7 +24,7 @@
     "tests"
   ],
   "dependencies": {
-    "slsapi": "git@bitbucket.org:wancharle/searchlight-service-api.git",
+    "slsapi": "https://wancharle@bitbucket.org/wancharle/searchlight-service-api.git",
     "leaflet": "0.7.3",
     "emoji-css": "1.0.2",
     "font-awesome": "4.6.1"
@@ -32,5 +32,8 @@
   "devDependencies": {
     "jquery": "2.1.1",
     "jquery-mobile-bower": "1.4.2"
+  },
+  "resolutions": {
+    "jquery": "2.1.1"
   }
 }

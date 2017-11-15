@@ -1,18 +1,38 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="br.com.wancharle.slmobile" version="0.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="slmobile.wancharle.com.br" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Searchlight</name>
     <description>
-        Um applicação para coleta de anotações de crowdsourcing
+        A sample Apache Cordova application that responds to the deviceready event.
     </description>
-    <author email="contato@wancharle.com.br" href="http://wancharle.com.br">
-        Wancharle Sebastião Quirino
+    <author email="dev@cordova.apache.org" href="http://cordova.io">
+        Apache Cordova Team
     </author>
     <content src="index.html" />
     <access origin="*" />
-    <allow-navigation href="*" />
-    <preference name="BackupWebStorage" value="local"/>
-<preference name="AutoHideSplashScreen" value="true"/>
-<preference name="SplashScreenDelay" value="3000" />
-    <preference name="FadeSplashScreen" value="false"/>
-
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+    </platform>
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+    </platform>
+    <engine name="android" spec="^6.3.0" />
+    <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
+    <plugin name="phonegap-plugin-barcodescanner" spec="^7.0.0" />
+    <plugin name="cordova-plugin-console" spec="^1.1.0" />
+    <plugin name="cordova-plugin-camera" spec="^3.0.0" />
+    <plugin name="cordova-plugin-battery-status" spec="^1.2.5" />
+    <plugin name="cordova-plugin-file" spec="^5.0.0" />
+    <plugin name="cordova-plugin-file-transfer" spec="^1.7.0" />
+    <plugin name="cordova-plugin-geolocation" spec="^3.0.0" />
+    <plugin name="cordova-plugin-network-information" spec="^1.3.4" />
+    <plugin name="cordova-plugin-background-mode" spec="^0.7.2" />
+    <plugin name="cordova-plugin-presentation" spec="git+https://github.com/wancharle/cordova-plugin-presentation.git" />
+    <plugin name="cordova-plugin-youtubevideoplayer" spec="git+https://github.com/wancharle/CordovaYoutubeVideoPlayer.git" />
 </widget>
